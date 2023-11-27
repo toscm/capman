@@ -1,0 +1,10 @@
+#include edit.ahk
+#include go.ahk
+#include goto.ahk
+#include gui.ahk
+#include keymap.ahk
+#include mouse.ahk
+#include select.ahk
+#include send.ahk
+#include sys.ahk
+#include window.ahk
