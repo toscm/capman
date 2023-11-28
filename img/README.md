@@ -16,7 +16,7 @@ For this page, I'll depict Capman flying on his huge caps lock key, wearing his 
 
 Let's create this image!
 
-![capman_dalle](capman_dalle.png)
+<img src="capman_dalle.png" width="50%">
 
 Here is the coloring book page featuring Capman, the computer-savvy superhero. He's ready for action on his caps lock key, equipped with an arrow and a pipe, and his cape resembling a window frame. This page should be a delightful and creative coloring activity for children. Enjoy bringing Capman to life with colors!
 
@@ -24,4 +24,4 @@ Here is the coloring book page featuring Capman, the computer-savvy superhero. H
 
 Created by modifying [capman_dalle.png](capman_dalle.png) in Paint.
 
-![capman_dalle](capman_edited.png)
+<img src="capman_edited.png" width="50%">
