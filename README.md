@@ -1,5 +1,10 @@
 # Capman
 
+Capman turns your Capslock key into a Modifier and allows you do control the Windows Desktop Environment using different modes, such as Control Mode, Find Mode and Mouse Mode.
+
+![](img/capman_edited.png)
+
+
 ## Installation
 
 1. Install [AutoHotkey](https://www.autohotkey.com/) (AHK)
