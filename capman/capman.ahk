@@ -3,16 +3,16 @@
 #Requires AutoHotkey >=2.0
 
 ; Provided commands
-#include "keyboard.ahk"
-#include "mouse.ahk"
-#include "commands.ahk"
+#include keyboard.ahk
+#include mouse.ahk
+#include commands.ahk
 
 ; Default config and default key mappings
-#include "config.ahk"
-#include "keymaps.ahk"
+#include config.ahk
+#include keymaps.ahk
 
 ; User config
-#include "%A_AppData%/capman/config.ahk"
+#include %A_AppData%/capman/config.ahk
 
 ; App state
 WinMode := "" ; set to "#" after {Win down}, cleared after {Win up}
