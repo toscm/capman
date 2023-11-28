@@ -1,19 +1,22 @@
-#include lib.ahk
+#include commands.ahk
+#include keyboard.ahk
+#include keymaps.ahk
+#include mouse.ahk
 
 Keymaps := Map()
 
 Keymaps["Caps"] := [
     ; Movement
-    ["CapsLock & i", GoUp],
-    ["CapsLock & j", GoLeft],
-    ["CapsLock & k", GoDown],
-    ["CapsLock & l", GoRight],
+    ["CapsLock & i", Up],
+    ["CapsLock & j", (hotkey) => SendInput("{Blind}{Left}")],
+    ["CapsLock & k", Down],
+    ["CapsLock & l", Right],
     ["CapsLock & o", SendEnd],
     ["CapsLock & u", SendHome],
-    ["CapsLock & h", GoWordLeft],
+    ["CapsLock & h", CtrlLeft],
     ["CapsLock & ,", SendPageDown],
     ["CapsLock & 8", SendPageUp],
-    ["CapsLock & `;", GoWordRight],
+    ["CapsLock & `;", CtrlRight],
 
     ; Edit
     ["CapsLock & b", Backspace],
@@ -39,8 +42,9 @@ Keymaps["Caps"] := [
     ["CapsLock & f", SendAltSemicolon],
     ["CapsLock & g", GoToAnything],
     ["CapsLock & r", ReloadCapman],
-    ["CapsLock & s", ReleaseShift],
+    ["CapsLock & s", ToggleShift],
     ["CapsLock & Space", SwitchToModeMouse],
+    ["CapsLock & F12", ToggleInfoBar],
     ; ["CapsLock & Enter", SendWinEnter], ; We can not trigger powertoys because its running with admin privileges I think. Maybe in the future we can think about giving capman admin privileges as well.
 
     ; Free
@@ -81,10 +85,10 @@ Keymaps["Mouse"] := [
     ["f", LeftClick],
     ["g", DoNothing],
     ["h", MouseLeft120px],
-    ["i", MouseUp24px],
-    ["j", MouseLeft24px],
-    ["k", MouseDown24px],
-    ["l", MouseRight24px],
+    ["i", MouseUp012Px],
+    ["j", MouseLeft012Px],
+    ["k", MouseDown012Px],
+    ["l", MouseRight012Px],
     ["m", DoNothing],
     ["n", DoNothing],
     ["o", ScrollDown],
@@ -102,26 +106,26 @@ Keymaps["Mouse"] := [
 
     ["*`;", MouseRight120px],
 
-    ["^i", MouseUp1Px],
-    ["^j", MouseLeft1Px],
-    ["^k", MouseDown1Px],
-    ["^l", MouseRight1Px],
+    ["^i", MouseUp001Px],
+    ["^j", MouseLeft001Px],
+    ["^k", MouseDown001Px],
+    ["^l", MouseRight001Px],
 
     ["CapsLock", SwitchToModeControl]
 ]
 
 Keymaps["Control"] := [
     ; Movement
-    ["*i", GoUp],
-    ["*k", GoDown],
-    ["*j", Goleft],
-    ["*l", GoRight],
+    ["*i", Up],
+    ["*k", Down],
+    ["*j", Left],
+    ["*l", Right],
     ["*u", SendHome],
     ["*o", SendEnd],
-    ["8", SendPageUp],
-    [",", SendPageDown],
-    ["*h", GoWordLeft],
-    ["*`;", GoWordRight],
+    ["*8", SendPageUp],
+    ["*,", SendPageDown],
+    ["*h", CtrlLeft],
+    ["*`;", CtrlRight],
 
     ; ModeSwitches
     ["a", SwitchToModeInsert],
@@ -132,7 +136,7 @@ Keymaps["Control"] := [
 
     ; Editing
     ["b", Backspace],
-    ["c", Copy],
+    ["c", CtrlC],
     ["d", Delete],
     ["v", Paste],
     ["x", Cut],
@@ -147,6 +151,8 @@ Keymaps["Control"] := [
     ["m", SendF6],
     ["+m", SendShiftF6],
     ["f", SendAltSemicolon],
+    ["[", ScrollUp],
+    ["]", ScrollDown],
 
     ; Free
     ["q", DoNothing],
@@ -162,39 +168,3 @@ Keymaps["Control"] := [
     ["``", SendCtrlBacktick], ; Opens Terminal
     [".", SendCtrlL] ; Selects current
 ]
-
-EnableKeyMap(Map) {
-    for Index, Row in Map {
-        Hotkey(Row[1], Row[2], "On")
-    }
-}
-
-DisableKeyMap(Map) {
-    for Index, Row in Map {
-        Hotkey(Row[1], Row[2], "Off")
-    }
-}
-
-SwitchToMode(NewMode) {
-    global Mode
-    DisableKeyMap(Keymaps[Mode])
-    EnableKeyMap(Keymaps[NewMode])
-    Mode := NewMode
-    UpdateModeBar()
-}
-
-SwitchToModeInsert(Hotkey) {
-    SwitchToMode("Insert")
-}
-
-SwitchToModeControl(Hotkey) {
-    SwitchToMode("Control")
-}
-
-SwitchToModeGoto(Hotkey) {
-    SwitchToMode("Goto")
-}
-
-SwitchToModeMouse(Hotkey) {
-    SwitchToMode("Mouse")
-}

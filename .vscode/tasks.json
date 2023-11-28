@@ -6,7 +6,7 @@
         {
             "label": "Run capman",
             "type": "shell",
-            "command": ". 'C:/Program Files/Autohotkey/v2/AutoHotkey64.exe' /ErrorStdOut=utf-8 'c:/Users/tobi/repos/github/toscm/private/capman/capman.ahk'",
+            "command": ". 'C:/Program Files/Autohotkey/v2/AutoHotkey64_UIA.exe' /ErrorStdOut=utf-8 'c:/Users/tobi/repos/github/toscm/private/capman/capman/main.ahk'",
             "problemMatcher": [],
             "group": {
                 "kind": "build",

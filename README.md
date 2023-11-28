@@ -11,28 +11,28 @@ Capman turns your Capslock key into a Modifier and allows you do control the Win
 
 ## Usage
 
-1. Start `capman.ahk` via command `. 'C:/Program Files/Autohotkey/v2/AutoHotkey64.exe' /ErrorStdOut=utf-8 'c:/Users/tobi/capman/capman.ahk' ` (replace the paths with your own paths)
-2. Use the hotkeys listed in [keymap.ahk](keymap.ahk)
+1. Start `capman.ahk` via command `. 'C:/Program Files/Autohotkey/v2/AutoHotkey64_UIA.exe' 'c:/Users/tobi/capman/capman.ahk' ` (replace the paths with your own paths)
+2. Use the hotkeys listed in [keymaps.ahk](keymaps.ahk)
 3. *Optional:* Create a shortcut to `capman.ahk` and place it in your startup folder (e.g. `C:\Users\Tobi\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup`)
 
 ## Features
 
 ### Capslock as Modifier
 
-As soon as you start Capman, the native functionality of your `Capslock` key will be disabled. Instead, it will behave as another modifier key, like `Ctrl`, `Shift`, `Alt` or `Win`. This allows us to bind commonly used keys or key-combinations, which are hard to reach, to easy-to-reach substitutes. As of 2023-11-27, the following bindings are configured as default. To see the "100%-up-to-date" list, checkout [keymap.ahk](keymap.ahk) directly.
+As soon as you start Capman, the native functionality of your `Capslock` key will be disabled. Instead, it will behave as another modifier key, like `Ctrl`, `Shift`, `Alt` or `Win`. This allows us to bind commonly used keys or key-combinations, which are hard to reach, to easy-to-reach substitutes. As of 2023-11-27, the following bindings are configured as default. To see the "100%-up-to-date" list, checkout [keymaps.ahk](capman/keymaps.ahk) directly.
 
 ```python
 # Movement
-["CapsLock & i", GoUp]
-["CapsLock & j", GoLeft]
-["CapsLock & k", GoDown]R
-["CapsLock & l", GoRight]
+["CapsLock & i", Up]
+["CapsLock & j", Left]
+["CapsLock & k", Down]R
+["CapsLock & l", Right]
 ["CapsLock & o", SendEnd]
 ["CapsLock & u", SendHome]
-["CapsLock & h", GoWordLeft]
+["CapsLock & h", CtrlLeft]
 ["CapsLock & ,", SendPageDown]
 ["CapsLock & 8", SendPageUp]
-["CapsLock & `;", GoWordRight]
+["CapsLock & `;", CtrlRight]
 
 # Edit
 ["CapsLock & b", Backspace]
@@ -64,22 +64,22 @@ As soon as you start Capman, the native functionality of your `Capslock` key wil
 
 ### Control Mode
 
-Sometimes it's hard to continously press CapsLock, e.g. when you move around the file. For such cases, you can switch to Control Mode by pressing `CapsLock` once, without any other keys. Your current mode is indicated by a status line at the top right of your primary monitor. By default, the status bar only shows app when you switch from the default mode into a special mode, like [control-mode](control-mode), [mouse-mode](mouse-mode) or [window-mode], but is hidden otherwise.
+Sometimes it's hard to continuously press CapsLock, e.g. when you move around the file. For such cases, you can switch to Control Mode by pressing `CapsLock` once, without any other keys. Your current mode is indicated by a status line at the top right of your primary monitor. By default, the status bar only shows app when you switch from the default mode into a special mode, like [control-mode](control-mode), [mouse-mode](mouse-mode) or [find-mode](#find-mode), but is hidden otherwise.
 
 Control Mode changes your Keybindings as follows:
 
 ```python
 # Movement
-["*i", GoUp]
-["*k", GoDown]
-["*j", Goleft]
-["*l", GoRight]
+["*i", Up]
+["*k", Down]
+["*j", Left]
+["*l", Right]
 ["*u", SendHome]
 ["*o", SendEnd]
 ["8", SendPageUp]
 [",", SendPageDown]
-["*h", GoWordLeft]
-["*`;", GoWordRight]
+["*h", CtrlLeft]
+["*`;", CtrlRight]
 
 # ModeSwitches
 ["a", SwitchToModeInsert]
@@ -131,3 +131,11 @@ Press `Capslock-f` to select any button on screen directly via the keyboard. Lik
 * Press/Release `LButton` by pressing/releasing `f`
 * Press/Release `RButton` by pressing/releasing `d`
 * Press/Release `MButton` by pressing/releasing `s`
+
+## Configuration
+
+The last file included by capman is `%USERPROFILE%/capman/config.ahk`. That means, this file can be used to override anything previously defined. Useful things to configure are:
+
+1. Program options (like the starting mode). For a list of all existing options and their default values see [capman/config.ahk](capman/config.ahk).
+2. Hotkeys (e.g. to use the vim motion keys `hjkl` keys instead of `jikl`). For a list of default bindings see [capman/keymaps.ahk](capman/keymaps.ahk).
+3. New commands
