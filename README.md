@@ -2,7 +2,7 @@
 
 Capman turns your Capslock key into a Modifier and allows you to control the Windows Desktop Environment using different modes, such as Control Mode, Find Mode and Mouse Mode.
 
-<img src="img/capman_edited.png" width="50%">
+<img src="img/capman_edited.png" width="33%">
 
 ## Installation
 
