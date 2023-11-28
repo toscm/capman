@@ -11,7 +11,7 @@ Capman turns your Capslock key into a Modifier and allows you do control the Win
 
 ## Usage
 
-1. Start `capman.ahk` via command `. 'C:/Program Files/Autohotkey/v2/AutoHotkey64.exe' /ErrorStdOut=utf-8 'c:/Users/tobi/repos/github/toscm/private/capman_v2/capman.ahk' ` (replace the paths with your own paths)
+1. Start `capman.ahk` via command `. 'C:/Program Files/Autohotkey/v2/AutoHotkey64.exe' /ErrorStdOut=utf-8 'c:/Users/tobi/capman/capman.ahk' ` (replace the paths with your own paths)
 2. Use the hotkeys listed in [keymap.ahk](keymap.ahk)
 3. *Optional:* Create a shortcut to `capman.ahk` and place it in your startup folder (e.g. `C:\Users\Tobi\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup`)
 
