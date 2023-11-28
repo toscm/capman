@@ -12,7 +12,7 @@ Capman turns your Capslock key into a Modifier and allows you to control the Win
 ## Usage
 
 1. Start `capman.ahk` via command `. 'C:/Program Files/Autohotkey/v2/AutoHotkey64_UIA.exe' 'c:/Users/tobi/capman/capman.ahk' ` (replace the paths with your own paths)
-2. Use the hotkeys listed in [keymaps.ahk](keymaps.ahk)
+2. Use the hotkeys listed in [keymaps.ahk](capman/keymaps.ahk)
 3. *Optional:* Create a shortcut to `capman.ahk` and place it in your startup folder (e.g. `C:\Users\Tobi\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup`)
 
 ## Features
@@ -64,7 +64,7 @@ As soon as you start Capman, the native functionality of your `Capslock` key wil
 
 ### Control Mode
 
-Sometimes it's hard to continuously press CapsLock, e.g. when you move around the file. For such cases, you can switch to Control Mode by pressing `CapsLock` once, without any other keys. Your current mode is indicated by a status line at the top right of your primary monitor. By default, the status bar only shows app when you switch from the default mode into a special mode, like [control-mode](control-mode), [mouse-mode](mouse-mode) or [find-mode](#find-mode), but is hidden otherwise.
+Sometimes it's hard to continuously press CapsLock, e.g. when you move around the file. For such cases, you can switch to Control Mode by pressing `CapsLock` once, without any other keys. Your current mode is indicated by a status line at the top right of your primary monitor. By default, the status bar only shows app when you switch from the default mode into a special mode, like [control-mode](#control-mode), [mouse-mode](#mouse-mode) or [find-mode](#find-mode), but is hidden otherwise.
 
 Control Mode changes your Keybindings as follows:
 
