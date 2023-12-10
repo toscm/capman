@@ -60,26 +60,13 @@ SendSS(hotkey) => SendInput("ß")
 SendUE(hotkey) => SendInput("ü")
 SendUEUpper(hotkey) => SendInput("Ü")
 SendWinEnter(Hotkey) => SendInput("#Enter")
+SendWinUp(Hotkey) => SendInput("#{Up}")
+SendWinDown(Hotkey) => SendInput("#{Down}")
+SendWinLeft(Hotkey) => SendInput("#{Left}")
+SendWinRight(Hotkey) => SendInput("#{Right}")
 
 Undo(Hotkey) => SendInput("^{z}")
 Up(hotkey) => SendInput("{Blind}{Up}")
-
-ToggleWin(Hotkey) {
-    global WinMode
-    If (WinMode = "") {
-        SendInput("{LWin down}")
-        WinMode := "#"
-        ; try Hotkey("#l", "Off")
-        OutputDebug("WinMode: " . WinMode)
-        UpdateModeBar()
-    } Else {
-        SendInput("{LWin up}")
-        WinMode := ""
-        ; Hotkey("#l", LockWorkstation, "On")
-        OutputDebug("WinMode: " . WinMode)
-        UpdateModeBar()
-    }
-}
 
 ToggleCtrl(Hotkey) {
     global CtrlMode
@@ -101,10 +88,24 @@ ReleaseShift(Hotkey) {
     UpdateModeBar()
 }
 
+ReleaseWin(Hotkey) {
+    global WinMode
+    SendInput("{LWin up}")
+    WinMode := ""
+    UpdateModeBar()
+}
+
 PressShift(Hotkey) {
     global ShiftMode
     SendInput("{LShift down}")
     ShiftMode := "#"
+    UpdateModeBar()
+}
+
+PressWin(Hotkey) {
+    global WinMode
+    SendInput("{LWin down}")
+    WinMode := "#"
     UpdateModeBar()
 }
 
@@ -117,6 +118,19 @@ ToggleShift(Hotkey) {
     } Else {
         SendInput("{LShift up}")
         ShiftMode := ""
+        UpdateModeBar()
+    }
+}
+
+ToggleWin(Hotkey) {
+    global WinMode
+    If (WinMode = "") {
+        SendInput("{LWin down}")
+        WinMode := "#"
+        UpdateModeBar()
+    } Else {
+        SendInput("{LWin up}")
+        WinMode := ""
         UpdateModeBar()
     }
 }

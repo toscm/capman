@@ -15,6 +15,7 @@
 #include %A_AppData%/capman/config.ahk
 
 ; App state
+LastMode := "Insert"
 WinMode := "" ; set to "#" after {Win down}, cleared after {Win up}
 CtrlMode := "" ; set to "^" after {Ctrl down}, cleared after {Ctrl up}
 ShiftMode := "" ; set to "+" after {Shift down}, cleared after {Shift up}
@@ -30,5 +31,5 @@ ModeBarText := Tmp.ModeBarText
 ; Main
 SetCapsLockState("AlwaysOff")
 EnableKeyMap(Keymaps["Caps"])
-EnableKeyMap(Keymaps[Mode])
+SwitchToMode(Mode)
 UpdateModeBar()

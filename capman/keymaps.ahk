@@ -36,6 +36,7 @@ Keymaps["Caps"] := [
     ["CapsLock & ``", SendCtrlBacktick], ; Toggles between Terminal and Editor in VSCode
     ["Capslock & '", SendCtrlBacktick], ; Toggles between Terminal and Editor in VSCode
     ["CapsLock & .", SendCtrlL],
+    ["CapsLock & y", OpenCopilot],
 
     ; Misc
     ["CapsLock & e", SendEscape],
@@ -43,6 +44,7 @@ Keymaps["Caps"] := [
     ["CapsLock & g", GoToAnything],
     ["CapsLock & r", ReloadCapman],
     ["CapsLock & s", ToggleShift],
+    ["CapsLock & w", SwitchToModeWindow],
     ["CapsLock & Space", SwitchToModeMouse],
     ["CapsLock & F12", ToggleInfoBar],
     ; ["CapsLock & Enter", SendWinEnter], ; We can not trigger powertoys because its running with admin privileges I think. Maybe in the future we can think about giving capman admin privileges as well.
@@ -52,10 +54,7 @@ Keymaps["Caps"] := [
     ["CapsLock & q", DoNothing],
     ["CapsLock & v", DoNothing],
     ["CapsLock & x", DoNothing],
-    ["CapsLock & y", DoNothing],
     ["CapsLock & z", DoNothing],
-    ["CapsLock & w", DoNothing],
-
 ]
 
 Keymaps["Insert"] := [
@@ -72,8 +71,14 @@ Keymaps["Insert"] := [
 ]
 
 Keymaps["Window"] := [
-    ["o", SwitchToModeInsert],
-    ["a", SwitchToModeInsert]
+    ["CapsLock", SwitchToModeLast],
+    ["a", SwitchToModeInsert],
+    ["*i", SendWinUp],
+    ["*k", SendWinDown],
+    ["*j", SendWinLeft],
+    ["*l", SendWinRight],
+    ["n", SendCtrlAltTab],
+    ["+n", SendCtrlShiftAltTab]
 ]
 
 Keymaps["Mouse"] := [
@@ -128,8 +133,9 @@ Keymaps["Control"] := [
     ["*`;", CtrlRight],
 
     ; ModeSwitches
-    ["a", SwitchToModeInsert],
     ["CapsLock", SwitchToModeInsert],
+    ["w", SwitchToModeWindow],
+    ["a", SwitchToModeInsert],
     ["g", GoToAnything],
     ["s", PressShift],
     ["+s", ReleaseShift],
@@ -157,7 +163,6 @@ Keymaps["Control"] := [
     ; Free
     ["q", DoNothing],
     ["p", DoNothing],
-    ["w", DoNothing],
 
     ; Misc
     ["e", SendEscape],

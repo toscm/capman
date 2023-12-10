@@ -203,18 +203,25 @@ DisableKeyMap(Map) {
 }
 
 SwitchToMode(NewMode) {
-    global Mode
+    global Mode, LastMode
     DisableKeyMap(Keymaps[Mode])
     EnableKeyMap(Keymaps[NewMode])
+    LastMode := Mode
     Mode := NewMode
     UpdateModeBar()
 }
 
 SwitchToModeInsert(Hotkey) {
+    if (A_IsAdmin) {
+        EnableWinL("")
+    }
     SwitchToMode("Insert")
 }
 
 SwitchToModeControl(Hotkey) {
+    if (A_IsAdmin) {
+        DisableWinL("")
+    }
     SwitchToMode("Control")
 }
 
@@ -222,6 +229,15 @@ SwitchToModeGoto(Hotkey) {
     SwitchToMode("Goto")
 }
 
+SwitchToModeWindow(Hotkey) {
+    SwitchToMode("Window")
+}
+
 SwitchToModeMouse(Hotkey) {
     SwitchToMode("Mouse")
+}
+
+SwitchToModeLast(Hotkey) {
+    global LastMode
+    SwitchToMode(LastMode)
 }
