@@ -122,7 +122,6 @@ Keymaps["Control"] := [
     ["*k", Down],
     ["*j", Left],
     ["*l", Right],
-    ["*u", Undo],
     ["*8", SendPageUp],
     ["*,", SendPageDown],
     ["*e", SendEnd],
@@ -139,12 +138,13 @@ Keymaps["Control"] := [
 
     ; Editing
     ["b", Backspace],
-    ["c", CtrlC],
+    ["c", Copy],
     ["d", Delete],
-    ["v", Paste],
-    ["x", Cut],
     ["r", Redo],
     ["u", Undo],
+    ["v", SwitchToModeVisual],
+    ["x", Cut],
+    ["y", Yank],
 
     ; Window
     ["n", SendCtrlAltTab],
@@ -168,4 +168,55 @@ Keymaps["Control"] := [
     ["'", SendCtrlBacktick], ; Opens Terminal
     ["``", SendCtrlBacktick], ; Opens Terminal
     [".", SendCtrlL] ; Selects current
+]
+
+Keymaps["Visual"] := [
+    ; Movement
+    ["*e", SelectEnd],
+    ["*h", SelectHome],
+    ["*i", SelectUp],
+    ["*j", SelectLeft],
+    ["*k", SelectDown],
+    ["*l", SelectRight],
+    ["*Up", SelectUp],
+    ["*Down", SelectDown],
+    ["*Left", SelectLeft],
+    ["*Right", SelectRight],
+
+    ; ModeSwitches
+    ["a", SwitchToModeInsert],
+    ["CapsLock", SwitchToModeLast],
+    ["o", SwitchToModeInsert],
+    ["w", SwitchToModeWindow],
+    ["v", SwitchToModeLast],
+
+    ; Editing
+    ["b", BackspaceAndSwitchToModeLast],
+    ["c", CopyAndSwitchToModeLast],
+    ["d", DeleteAndSwitchToModeLast],
+    ["x", CutAndSwitchToModeLast],
+    ["y", YankAndSwitchToModeLast],
+    ["Enter", EnterAndSwitchToModeLast],
+    ["Space", SpaceAndSwitchToModeLast]
+
+    ; Free
+    [".", DoNothing],
+    ["'", DoNothing],
+    ["[", DoNothing],
+    ["]", DoNothing],
+    ["/", DoNothing],
+    ["``", DoNothing],
+    ["+m", DoNothing],
+    ["+n", DoNothing],
+    ["+t", DoNothing],
+    ["f", DoNothing],
+    ["g", DoNothing],
+    ["m", DoNothing],
+    ["n", DoNothing],
+    ["p", DoNothing],
+    ["q", DoNothing],
+    ["r", DoNothing],
+    ["t", DoNothing],
+    ["u", DoNothing],
+    ["z", DoNothing],
 ]

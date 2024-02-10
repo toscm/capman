@@ -3,34 +3,40 @@
 #include keymaps.ahk
 #include mouse.ahk
 
+
 Backspace(Hotkey) => SendInput("{BackSpace}")
+Delete(Hotkey) => SendInput("{Delete}")
+Cut(Hotkey) => SendInput("^{x}")
+Copy(Hotkey) => SendInput("^{c}")
+Yank(Hotkey) => SendInput("^{c}")
+Paste(Hotkey) => SendInput("^{v}")
+
+Left(hotkey) => SendInput("{Blind}{Left}")
+Up(hotkey) => SendInput("{Blind}{Up}")
+Down(hotkey) => SendInput("{Blind}{Down}")
+Right(hotkey) => SendInput("{Blind}{Right}")
+
+Redo(Hotkey) => SendInput("^{y}")
+Undo(Hotkey) => SendInput("^{z}")
+
+GoToFileEnd(hotkey) => SendInput("^{End}")
+GoToFileStart(hotkey) => SendInput("^{Home}")
+GoToLineEnd(hotkey) => SendInput("{End}")
+GoToLineStart(hotkey) => SendInput("{Home}")
+
+OpenControlPanel(Hotkey) => SendInput("^+p")
+OpenCopilot(Hotkey) => SendInput("^+i")
 
 CtrlC(Hotkey) => SendInput("^{c}")
 CtrlLeft(hotkey) => SendInput("{Blind}^{Left}")
 CtrlRight(hotkey) => SendInput("{Blind}^{Right}")
 
-Cut(Hotkey) => SendInput("^{x}")
-Delete(Hotkey) => SendInput("{Delete}")
-Down(hotkey) => SendInput("{Blind}{Down}")
-
-GoToFileEnd(hotkey) => SendInput("^{Home}")
-GoToFileStart(hotkey) => SendInput("^{Home}")
-GoToLineEnd(hotkey) => SendInput("{Home}")
-GoToLineStart(hotkey) => SendInput("{Home}")
-Left(hotkey) => SendInput("{Blind}{Left}")
-
-OpenControlPanel(Hotkey) => SendInput("^+p")
-OpenCopilot(Hotkey) => SendInput("^+i")
-Paste(Hotkey) => SendInput("^{v}")
-Redo(Hotkey) => SendInput("^{y}")
-Right(hotkey) => SendInput("{Blind}{Right}")
-
-SelectLeft(hotkey) => SendInput("+{Left}")
-SelectDown(hotkey) => SendInput("+{Down}")
-SelectUp(hotkey) => SendInput("+{Up}")
-SelectRight(hotkey) => SendInput("+{Right}")
-SelectWordBack(hotkey) => SendInput("^+{Left}")
-SelectWord(hotkey) => SendInput("^+{Right}")
+SelectLeft(hotkey) => SendInput("{Blind}+{Left}")
+SelectDown(hotkey) => SendInput("{Blind}+{Down}")
+SelectUp(hotkey) => SendInput("{Blind}+{Up}")
+SelectRight(hotkey) => SendInput("{Blind}+{Right}")
+SelectHome(hotkey) => SendInput("{Blind}+{Home}")
+SelectEnd(hotkey) => SendInput("{Blind}+{End}")
 
 SendAE(hotkey) => SendInput("ä")
 SendAEUpper(hotkey) => SendInput("Ä")
@@ -73,9 +79,9 @@ SendWin6(Hotkey) => SendInput("#6")
 SendWin7(Hotkey) => SendInput("#7")
 SendWin8(Hotkey) => SendInput("#8")
 SendWin9(Hotkey) => SendInput("#9")
+SendSpace(Hotkey) => SendInput("{Space}")
+SendEnter(Hotkey) => SendInput("{Enter}")
 
-Undo(Hotkey) => SendInput("^{z}")
-Up(hotkey) => SendInput("{Blind}{Up}")
 
 ToggleCtrl(Hotkey) {
     global CtrlMode

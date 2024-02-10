@@ -8,6 +8,76 @@ DoNothing(Hotkey) {
     ; do nothing
 }
 
+BackspaceAndAndSwitchToModeInsert(Hotkey) {
+    Backspace(Hotkey)
+    SwitchToModeInsert(Hotkey)
+}
+
+CopyAndAndSwitchToModeInsert(Hotkey) {
+    Copy(Hotkey)
+    SwitchToModeInsert(Hotkey)
+}
+
+DeleteAndAndSwitchToModeInsert(Hotkey) {
+    Delete(Hotkey)
+    SwitchToModeInsert(Hotkey)
+}
+
+CutAndAndSwitchToModeInsert(Hotkey) {
+    Cut(Hotkey)
+    SwitchToModeInsert(Hotkey)
+}
+
+YankAndAndSwitchToModeInsert(Hotkey) {
+    Yank(Hotkey)
+    SwitchToModeInsert(Hotkey)
+}
+
+EnterAndAndSwitchToModeInsert(Hotkey) {
+    SendEnter(Hotkey)
+    SwitchToModeInsert(Hotkey)
+}
+
+SpaceAndAndSwitchToModeInsert(Hotkey) {
+    SendSpace(Hotkey)
+    SwitchToModeInsert(Hotkey)
+}
+
+BackspaceAndSwitchToModeLast(Hotkey) {
+    Backspace(Hotkey)
+    SwitchToModeLast(Hotkey)
+}
+
+CopyAndSwitchToModeLast(Hotkey) {
+    Copy(Hotkey)
+    SwitchToModeLast(Hotkey)
+}
+
+DeleteAndSwitchToModeLast(Hotkey) {
+    Delete(Hotkey)
+    SwitchToModeLast(Hotkey)
+}
+
+CutAndSwitchToModeLast(Hotkey) {
+    Cut(Hotkey)
+    SwitchToModeLast(Hotkey)
+}
+
+YankAndSwitchToModeLast(Hotkey) {
+    Yank(Hotkey)
+    SwitchToModeLast(Hotkey)
+}
+
+EnterAndSwitchToModeLast(Hotkey) {
+    SendEnter(Hotkey)
+    SwitchToModeLast(Hotkey)
+}
+
+SpaceAndSwitchToModeLast(Hotkey) {
+    SendSpace(Hotkey)
+    SwitchToModeLast(Hotkey)
+}
+
 GoogleSelection() {
     oldClipboard := ClipboardAll
     Clipboard := "" ; Clear the clipboard
@@ -179,15 +249,15 @@ ToggleInfoBar(Hotkey) {
 UpdateModeBar() {
     global Mode, WinMode, CtrlMode, ShiftMode, AltMode, ModeBar, InfoBar, ModeBarText
     ModeBarText.Value := Mode " " WinMode CtrlMode ShiftMode AltMode
-    if (Mode = "Insert") {
+    ModeColors := Map("Insert", "0x448e3a", "Control", "0xFF0000", "Goto", "0x0000FF", "Window", "0x00FF00", "Mouse", "0xFFFF00", "Visual", "0xFF00FF")
+    if (Mode == "Insert") {
         ModeBar.Hide()
-        ModeBar.BackColor := "0x448e3a"
-        InfoBar.BackColor := "0x448e3a"
     } else {
-        ModeBar.BackColor := "0xFF0000"
-        InfoBar.BackColor := "0xFF0000"
         ModeBar.Show("NoActivate")
     }
+    ModeBar.BackColor := ModeColors[Mode]
+    InfoBar.BackColor := ModeColors[Mode]
+
 }
 
 EnableKeyMap(Map) {
@@ -235,6 +305,10 @@ SwitchToModeWindow(Hotkey) {
 
 SwitchToModeMouse(Hotkey) {
     SwitchToMode("Mouse")
+}
+
+SwitchToModeVisual(Hotkey) {
+    SwitchToMode("Visual")
 }
 
 SwitchToModeLast(Hotkey) {
