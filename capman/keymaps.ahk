@@ -11,14 +11,13 @@ Keymaps["Caps"] := [
     ["CapsLock & j", (hotkey) => SendInput("{Blind}{Left}")],
     ["CapsLock & k", Down],
     ["CapsLock & l", Right],
-    ["CapsLock & o", SendEnd],
-    ["CapsLock & u", SendHome],
-    ["CapsLock & h", CtrlLeft],
+    ["CapsLock & e", SendEnd],
+    ["CapsLock & h", SendHome],
     ["CapsLock & ,", SendPageDown],
     ["CapsLock & 8", SendPageUp],
-    ["CapsLock & `;", CtrlRight],
 
     ; Edit
+    ["CapsLock & u", Undo],
     ["CapsLock & b", Backspace],
     ["CapsLock & d", Delete],
 
@@ -39,7 +38,7 @@ Keymaps["Caps"] := [
     ["CapsLock & y", OpenCopilot],
 
     ; Misc
-    ["CapsLock & e", SendEscape],
+    ["CapsLock & c", SendEscape],
     ["CapsLock & f", SendAltSemicolon],
     ["CapsLock & g", GoToAnything],
     ["CapsLock & r", ReloadCapman],
@@ -50,7 +49,7 @@ Keymaps["Caps"] := [
     ; ["CapsLock & Enter", SendWinEnter], ; We can not trigger powertoys because its running with admin privileges I think. Maybe in the future we can think about giving capman admin privileges as well.
 
     ; Free
-    ["CapsLock & c", DoNothing],
+    ["CapsLock & o", DoNothing],
     ["CapsLock & q", DoNothing],
     ["CapsLock & v", DoNothing],
     ["CapsLock & x", DoNothing],
@@ -86,7 +85,7 @@ Keymaps["Mouse"] := [
     ["b", DoNothing],
     ["c", DoNothing],
     ["d", RightClick],
-    ["e", SendEscape],
+    ["e", MouseRight120px],
     ["f", LeftClick],
     ["g", DoNothing],
     ["h", MouseLeft120px],
@@ -109,8 +108,6 @@ Keymaps["Mouse"] := [
     ["y", DoNothing],
     ["z", DoNothing],
 
-    ["*`;", MouseRight120px],
-
     ["^i", MouseUp001Px],
     ["^j", MouseLeft001Px],
     ["^k", MouseDown001Px],
@@ -125,12 +122,11 @@ Keymaps["Control"] := [
     ["*k", Down],
     ["*j", Left],
     ["*l", Right],
-    ["*u", SendHome],
-    ["*o", SendEnd],
+    ["*u", Undo],
     ["*8", SendPageUp],
     ["*,", SendPageDown],
-    ["*h", CtrlLeft],
-    ["*`;", CtrlRight],
+    ["*e", SendEnd],
+    ["*h", SendHome],
 
     ; ModeSwitches
     ["CapsLock", SwitchToModeInsert],
@@ -139,6 +135,7 @@ Keymaps["Control"] := [
     ["g", GoToAnything],
     ["s", PressShift],
     ["+s", ReleaseShift],
+    ["o", SwitchToModeInsert],
 
     ; Editing
     ["b", Backspace],
@@ -146,8 +143,8 @@ Keymaps["Control"] := [
     ["d", Delete],
     ["v", Paste],
     ["x", Cut],
-    ["y", Redo],
-    ["z", Undo],
+    ["r", Redo],
+    ["u", Undo],
 
     ; Window
     ["n", SendCtrlAltTab],
@@ -165,7 +162,6 @@ Keymaps["Control"] := [
     ["p", DoNothing],
 
     ; Misc
-    ["e", SendEscape],
     ["/", ShowActiveHotkeys],
 
     ; VSCode
