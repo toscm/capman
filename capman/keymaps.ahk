@@ -141,6 +141,7 @@ Keymaps["Control"] := [
     ["c", Copy],
     ["d", Delete],
     ["r", Redo],
+    ["p", Paste],
     ["u", Undo],
     ["v", SwitchToModeVisual],
     ["x", Cut],
@@ -159,7 +160,6 @@ Keymaps["Control"] := [
 
     ; Free
     ["q", DoNothing],
-    ["p", DoNothing],
 
     ; Misc
     ["/", ShowActiveHotkeys],
@@ -197,7 +197,7 @@ Keymaps["Visual"] := [
     ["x", CutAndSwitchToModeLast],
     ["y", YankAndSwitchToModeLast],
     ["Enter", EnterAndSwitchToModeLast],
-    ["Space", SpaceAndSwitchToModeLast]
+    ["Space", SpaceAndSwitchToModeLast],
 
     ; Free
     [".", DoNothing],
