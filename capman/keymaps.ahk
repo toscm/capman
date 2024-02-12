@@ -42,7 +42,6 @@ Keymaps["Caps"] := [
     ["CapsLock & f", SendAltSemicolon],
     ["CapsLock & g", GoToAnything],
     ["CapsLock & r", ReloadCapman],
-    ["CapsLock & s", ToggleShift],
     ["CapsLock & w", SwitchToModeWindow],
     ["CapsLock & Space", SwitchToModeMouse],
     ["CapsLock & F12", ToggleInfoBar],
@@ -51,6 +50,7 @@ Keymaps["Caps"] := [
     ; Free
     ["CapsLock & o", DoNothing],
     ["CapsLock & q", DoNothing],
+    ["CapsLock & s", DoNothing],
     ["CapsLock & v", DoNothing],
     ["CapsLock & x", DoNothing],
     ["CapsLock & z", DoNothing],
@@ -70,14 +70,36 @@ Keymaps["Insert"] := [
 ]
 
 Keymaps["Window"] := [
+
     ["CapsLock", SwitchToModeLast],
+
     ["a", SwitchToModeInsert],
+    ["b", DoNothing],
+    ["c", DoNothing],
+    ["d", DoNothing],
+    ["e", DoNothing],
+    ["f", DoNothing],
+    ["g", DoNothing],
+    ["h", DoNothing],
     ["*i", SendWinUp],
-    ["*k", SendWinDown],
     ["*j", SendWinLeft],
+    ["*k", SendWinDown],
     ["*l", SendWinRight],
+    ["m", DoNothing],
     ["n", SendCtrlAltTab],
-    ["+n", SendCtrlShiftAltTab]
+    ["+n", SendCtrlShiftAltTab],
+    ["o", DoNothing],
+    ["p", DoNothing],
+    ["q", DoNothing],
+    ["r", DoNothing],
+    ["s", DoNothing],
+    ["t", DoNothing],
+    ["u", DoNothing],
+    ["v", DoNothing],
+    ["w", SwitchToModeLast],
+    ["x", DoNothing],
+    ["y", DoNothing],
+    ["z", DoNothing]
 ]
 
 Keymaps["Mouse"] := [
@@ -132,8 +154,6 @@ Keymaps["Control"] := [
     ["w", SwitchToModeWindow],
     ["a", SwitchToModeInsert],
     ["g", GoToAnything],
-    ["s", PressShift],
-    ["+s", ReleaseShift],
     ["o", SwitchToModeInsert],
 
     ; Editing
@@ -160,6 +180,7 @@ Keymaps["Control"] := [
 
     ; Free
     ["q", DoNothing],
+    ["s", DoNothing],
 
     ; Misc
     ["/", ShowActiveHotkeys],
