@@ -25,7 +25,7 @@ As soon as you start Capman, the native functionality of your `Capslock` key wil
 # Movement
 ["CapsLock & i", Up]
 ["CapsLock & j", Left]
-["CapsLock & k", Down]R
+["CapsLock & k", Down]
 ["CapsLock & l", Right]
 ["CapsLock & o", SendEnd]
 ["CapsLock & u", SendHome]

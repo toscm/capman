@@ -12,6 +12,7 @@ Keymaps["Caps"] := [
     ["CapsLock & k", Down],
     ["CapsLock & l", Right],
     ["CapsLock & e", SendEnd],
+    ["CapsLock & `;", SendEnd],
     ["CapsLock & h", SendHome],
     ["CapsLock & ,", SendPageDown],
     ["CapsLock & 8", SendPageUp],
@@ -147,6 +148,7 @@ Keymaps["Control"] := [
     ["*8", SendPageUp],
     ["*,", SendPageDown],
     ["*e", SendEnd],
+    ["*;", SendEnd],
     ["*h", SendHome],
 
     ; ModeSwitches
