@@ -92,18 +92,26 @@ GoogleSelection() {
     return
 }
 
-GoToAnything(Hotkey) {
-    Hook := InputHook("L1 M")
-    Hook.Start()
-    Hook.Wait()
-    if (Hook.Input = "d") { ; GoToDefinition
-        SendInput("{F12}")
-    } else if (Hook.Input == "s") { ; GoToSymbolInEditor
-        SendInput("^+{o}")
-    } else if (Hook.Input == "S") { ; GoToSymbolInWorkspace
-        SendInput("^t")
-    }
+GoToLine(Hotkey) {
+    SendInput("^g")
+    SwitchToModeLast(Hotkey)
 }
+
+GoToDefinition(Hotkey) {
+    SendInput("{F12}")
+    SwitchToModeLast(Hotkey)
+}
+
+GoToSymbolInEditor(Hotkey) {
+    SendInput("^+{o}")
+    SwitchToModeLast(Hotkey)
+}
+
+GoToSymbolInWorkspace(Hotkey) {
+    SendInput("^t")
+    SwitchToModeLast(Hotkey)
+}
+
 
 InsertNewLine(Hotkey) {
     SendInput("{End}")
@@ -249,7 +257,14 @@ ToggleInfoBar(Hotkey) {
 UpdateModeBar() {
     global Mode, WinMode, CtrlMode, ShiftMode, AltMode, ModeBar, InfoBar, ModeBarText
     ModeBarText.Value := Mode " " WinMode CtrlMode ShiftMode AltMode
-    ModeColors := Map("Insert", "0x448e3a", "Control", "0xFF0000", "Goto", "0x0000FF", "Window", "0x00FF00", "Mouse", "0xFFFF00", "Visual", "0xFF00FF")
+    ModeColors := Map(
+        "Insert", "0x448e3a",
+        "Control", "0xFF0000",
+        "Goto", "0x0000FF",
+        "Window", "0x00FF00",
+        "Mouse", "0xFFFF00",
+        "Visual", "0xFF00FF"
+    )
     if (Mode == "Insert") {
         ModeBar.Hide()
     } else {

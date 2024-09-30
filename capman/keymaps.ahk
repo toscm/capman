@@ -6,53 +6,58 @@
 Keymaps := Map()
 
 Keymaps["Caps"] := [
+
+    ; IMPORTANT: CapsLock seems to be not combinable with other modifier keys,
+    ; so e.g.
+    ;
+    ; >>> ["CapsLock & t", SendCtrlTab],       ; Next Tab
+    ; >>> ["CapsLock & +t", SendCtrlShiftTab], ; Previous Tab
+    ;
+    ; doesn't work. However, this is just an observation from interactive
+    ; experiments and might be wrong, so if ; this feature is really needed,
+    ; some research should be done!
+
     ; Movement
     ["CapsLock & i", Up],
-    ["CapsLock & j", (hotkey) => SendInput("{Blind}{Left}")],
+    ["CapsLock & j", Left],
     ["CapsLock & k", Down],
     ["CapsLock & l", Right],
     ["CapsLock & e", SendEnd],
-    ["CapsLock & `;", SendEnd],
     ["CapsLock & h", SendHome],
-    ["CapsLock & ,", SendPageDown],
-    ["CapsLock & 8", SendPageUp],
 
     ; Edit
     ["CapsLock & u", Undo],
-    ["CapsLock & b", Backspace],
     ["CapsLock & d", Delete],
 
     ; Window Management
+    ["CapsLock & w", SwitchToModeWindow],
+    ["CapsLock & v", SwitchToModeWindow],
     ["CapsLock & [", ScrollUp],
     ["CapsLock & ]", ScrollDown],
-    ["CapsLock & a", SendAltD],
-    ["CapsLock & m", SendF6],
-    ["CapsLock & +m", SendShiftF6],
-    ["CapsLock & n", "AltTab"],
-    ["CapsLock & t", SendCtrlTab],
+    ["CapsLock & a", SendAltD], ; Focus Address Bar
+    ["CapsLock & m", SendF6], ; Next Pane
+    ["CapsLock & n", GoToSymbolInEditor], ; Next Window
+    ["CapsLock & t", SendCtrlTab], ; Next Tab
+    ["CapsLock & y", SendCtrlPageDown], ; Right Tab
 
     ; VSCode
     ["CapsLock & p", OpenControlPanel],
-    ["CapsLock & ``", SendCtrlBacktick], ; Toggles between Terminal and Editor in VSCode
-    ["Capslock & '", SendCtrlBacktick], ; Toggles between Terminal and Editor in VSCode
+    ["CapsLock & o", OpenCopilot],
+    ["CapsLock & ``", SendCtrlBacktick],
+    ["Capslock & '", SendCtrlBacktick],
     ["CapsLock & .", SendCtrlL],
-    ["CapsLock & y", OpenCopilot],
 
     ; Misc
     ["CapsLock & c", SendEscape],
     ["CapsLock & f", SendAltSemicolon],
-    ["CapsLock & g", GoToAnything],
+    ["CapsLock & g", SwitchToModeGoto],
     ["CapsLock & r", ReloadCapman],
-    ["CapsLock & w", SwitchToModeWindow],
-    ["CapsLock & Space", SwitchToModeMouse],
     ["CapsLock & F12", ToggleInfoBar],
-    ; ["CapsLock & Enter", SendWinEnter], ; We can not trigger powertoys because its running with admin privileges I think. Maybe in the future we can think about giving capman admin privileges as well.
 
     ; Free
-    ["CapsLock & o", DoNothing],
+    ["CapsLock & b", DoNothing],
     ["CapsLock & q", DoNothing],
     ["CapsLock & s", DoNothing],
-    ["CapsLock & v", DoNothing],
     ["CapsLock & x", DoNothing],
     ["CapsLock & z", DoNothing],
 ]
@@ -140,80 +145,72 @@ Keymaps["Mouse"] := [
 ]
 
 Keymaps["Control"] := [
-    ; Movement
-    ["*i", Up],
-    ["*k", Down],
-    ["*j", Left],
-    ["*l", Right],
-    ["*8", SendPageUp],
-    ["*,", SendPageDown],
-    ["*e", SendEnd],
-    ["*;", SendEnd],
-    ["*h", SendHome],
-
-    ; ModeSwitches
-    ["CapsLock", SwitchToModeInsert],
-    ["w", SwitchToModeWindow],
     ["a", SwitchToModeInsert],
-    ["g", GoToAnything],
-    ["o", SwitchToModeInsert],
-
-    ; Editing
-    ["b", Backspace],
+    ["*b", WordBack],
     ["c", Copy],
     ["d", Delete],
-    ["r", Redo],
+    ["+d", Backspace],
+    ["*e", SendEnd],
+    ; ["f", DoNothing],
+    ["g", SwitchToModeGoto],
+    ["*h", SendHome],
+    ["*i", Up],
+    ["*j", Left],
+    ["*k", Down],
+    ["*l", Right],
+    ; ["m", DoNothing],
+    ; ["n", DoNothing],
+    ; ["o", DoNothing],
     ["p", Paste],
+    ["q", SendEscape],
+    ["r", Redo],
+    ; ["s", DoNothing],
+    ; ["t", DoNothing],
     ["u", Undo],
     ["v", SwitchToModeVisual],
+    ["*w", Word],
     ["x", Cut],
     ["y", Yank],
+    ; ["z", DoNothing],
 
-    ; Window
-    ["n", SendCtrlAltTab],
-    ["+n", SendCtrlShiftAltTab],
-    ["t", SendCtrlTab],
-    ["+t", SendCtrlShiftTab],
-    ["m", SendF6],
-    ["+m", SendShiftF6],
-    ["f", SendAltSemicolon],
+    ["``", SendCtrlBacktick],
+
     ["[", ScrollUp],
     ["]", ScrollDown],
 
-    ; Free
-    ["q", DoNothing],
-    ["s", DoNothing],
+    [";", DoNothing],
+    ["'", SendCtrlBacktick],
+    ["\", DoNothing],
 
-    ; Misc
+    ; [",", DoNothing],
+    [".", SendCtrlL],
     ["/", ShowActiveHotkeys],
-
-    ; VSCode
-    ["'", SendCtrlBacktick], ; Opens Terminal
-    ["``", SendCtrlBacktick], ; Opens Terminal
-    [".", SendCtrlL] ; Selects current
+    ["CapsLock", SwitchToModeInsert],
 ]
 
 Keymaps["Visual"] := [
     ; Movement
-    ["*e", SelectEnd],
-    ["*h", SelectHome],
-    ["*i", SelectUp],
-    ["*j", SelectLeft],
-    ["*k", SelectDown],
-    ["*l", SelectRight],
     ["*Up", SelectUp],
     ["*Down", SelectDown],
     ["*Left", SelectLeft],
     ["*Right", SelectRight],
+    ["*i", SelectUp],
+    ["*j", SelectLeft],
+    ["*k", SelectDown],
+    ["*l", SelectRight],
+    ["*w", SelectWord],
+    ["*b", SelectWordBack],
+    ["*e", SelectEnd],
+    ["*h", SelectHome],
 
     ; ModeSwitches
     ["a", SwitchToModeInsert],
     ["CapsLock", SwitchToModeLast],
     ["o", SwitchToModeInsert],
-    ["w", SwitchToModeWindow],
     ["v", SwitchToModeLast],
 
     ; Editing
+    ["q", SendEscape],
     ["b", BackspaceAndSwitchToModeLast],
     ["c", CopyAndSwitchToModeLast],
     ["d", DeleteAndSwitchToModeLast],
@@ -237,9 +234,37 @@ Keymaps["Visual"] := [
     ["m", DoNothing],
     ["n", DoNothing],
     ["p", DoNothing],
-    ["q", DoNothing],
     ["r", DoNothing],
     ["t", DoNothing],
     ["u", DoNothing],
     ["z", DoNothing],
+]
+
+Keymaps["Goto"] := [
+    ["a", GoToSymbolInWorkspace],
+    ["b", SwitchToModeLast],
+    ["c", SwitchToModeLast],
+    ["d", GoToDefinition],
+    ["e", SwitchToModeLast],
+    ["f", SwitchToModeLast],
+    ["g", SwitchToModeLast],
+    ["h", SwitchToModeLast],
+    ["i", SwitchToModeLast],
+    ["j", SwitchToModeLast],
+    ["k", SwitchToModeLast],
+    ["l", GoToLine],
+    ["m", SwitchToModeLast],
+    ["n", SwitchToModeLast],
+    ["o", SwitchToModeLast],
+    ["p", SwitchToModeLast],
+    ["q", SwitchToModeLast],
+    ["r", SwitchToModeLast],
+    ["s", GoToSymbolInEditor],
+    ["t", SwitchToModeLast],
+    ["u", SwitchToModeLast],
+    ["v", SwitchToModeLast],
+    ["w", SendCtrlAltTab],
+    ["x", SwitchToModeLast],
+    ["y", SwitchToModeLast],
+    ["z", SwitchToModeLast]
 ]
