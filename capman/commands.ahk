@@ -95,11 +95,36 @@ GoogleSelection() {
 GoToLine(Hotkey) {
     SendInput("^g")
     SwitchToModeLast(Hotkey)
+    SendInput("l")
 }
 
 GoToDefinition(Hotkey) {
     SendInput("{F12}")
     SwitchToModeLast(Hotkey)
+}
+
+GoToPrimarySidebar(Hotkey) {
+    SendInput("^g")
+    SwitchToModeLast(Hotkey)
+    SendInput("{Raw}b")
+}
+
+GoToEditorArea(Hotkey) {
+    SendInput("^g")
+    SwitchToModeLast(Hotkey)
+    SendInput("a")
+}
+
+GoToSecondarySidebar(Hotkey) {
+    SendInput("^g")
+    SwitchToModeLast(Hotkey)
+    SendInput("^b")
+}
+
+GoToPanel(Hotkey) {
+    SendInput("^g")
+    SwitchToModeLast(Hotkey)
+    SendInput("p")
 }
 
 GoToSymbolInEditor(Hotkey) {
@@ -112,6 +137,25 @@ GoToSymbolInWorkspace(Hotkey) {
     SwitchToModeLast(Hotkey)
 }
 
+GoToEditorLeft(Hotkey) {
+    SendInput("^k")
+    SendInput("^{Left}")
+}
+
+GoToEditorRight(Hotkey) {
+    SendInput("^k")
+    SendInput("^{Right}")
+}
+
+GoToEditorAbove(Hotkey) {
+    SendInput("^k")
+    SendInput("^{Up}")
+}
+
+GoToEditorBelow(Hotkey) {
+    SendInput("^k")
+    SendInput("^{Down}")
+}
 
 InsertNewLine(Hotkey) {
     SendInput("{End}")

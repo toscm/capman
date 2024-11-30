@@ -131,11 +131,3 @@ Press `Capslock-f` to select any button on screen directly via the keyboard. Lik
 * Press/Release `LButton` by pressing/releasing `f`
 * Press/Release `RButton` by pressing/releasing `d`
 * Press/Release `MButton` by pressing/releasing `s`
-
-## Configuration
-
-The last file included by capman is `%USERPROFILE%/capman/config.ahk`. That means, this file can be used to override anything previously defined. Useful things to configure are:
-
-1. Program options (like the starting mode). For a list of all existing options and their default values see [capman/config.ahk](capman/config.ahk).
-2. Hotkeys (e.g. to use the vim motion keys `hjkl` keys instead of `jikl`). For a list of default bindings see [capman/keymaps.ahk](capman/keymaps.ahk).
-3. New commands

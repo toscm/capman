@@ -3,6 +3,7 @@
 #include keymaps.ahk
 #include mouse.ahk
 
+;; Named Commands
 Backspace(Hotkey) => SendInput("{BackSpace}")
 Copy(Hotkey) => SendInput("^{c}")
 CtrlC(Hotkey) => SendInput("^{c}")
@@ -11,10 +12,6 @@ CtrlRight(hotkey) => SendInput("{Blind}^{Right}")
 Cut(Hotkey) => SendInput("^{x}")
 Delete(Hotkey) => SendInput("{Delete}")
 Down(hotkey) => SendInput("{Blind}{Down}")
-GoToFileEnd(hotkey) => SendInput("^{End}")
-GoToFileStart(hotkey) => SendInput("^{Home}")
-GoToLineEnd(hotkey) => SendInput("{End}")
-GoToLineStart(hotkey) => SendInput("{Home}")
 Left(hotkey) => SendInput("{Blind}{Left}")
 OpenControlPanel(Hotkey) => SendInput("^+p")
 OpenCopilot(Hotkey) => SendInput("^+i")
@@ -22,6 +19,19 @@ Paste(Hotkey) => SendInput("^{v}")
 Redo(Hotkey) => SendInput("^{y}")
 Right(hotkey) => SendInput("{Blind}{Right}")
 Save(Hotkey) => SendInput("^{s}")
+Undo(Hotkey) => SendInput("^{z}")
+Up(hotkey) => SendInput("{Blind}{Up}")
+Word(hotkey) => SendInput("{Blind}^{Right}")
+WordBack(hotkey) => SendInput("{Blind}^{Left}")
+Yank(Hotkey) => SendInput("^{c}")
+
+;; Goto Commands
+GoToFileEnd(hotkey) => SendInput("^{End}")
+GoToFileStart(hotkey) => SendInput("^{Home}")
+GoToLineEnd(hotkey) => SendInput("{End}")
+GoToLineStart(hotkey) => SendInput("{Home}")
+
+;; Select Commands (TODO: replace with Send Commands)
 SelectDown(hotkey) => SendInput("{Blind}+{Down}")
 SelectEnd(hotkey) => SendInput("{Blind}+{End}")
 SelectHome(hotkey) => SendInput("{Blind}+{Home}")
@@ -30,11 +40,47 @@ SelectRight(hotkey) => SendInput("{Blind}+{Right}")
 SelectUp(hotkey) => SendInput("{Blind}+{Up}")
 SelectWord(hotkey) => SendInput("{Blind}+^{Right}")
 SelectWordBack(hotkey) => SendInput("{Blind}+^{Left}")
+
+;; Send Umlaut
 SendAE(hotkey) => SendInput("ä")
 SendAEUpper(hotkey) => SendInput("Ä")
+SendOE(hotkey) => SendInput("ö")
+SendOEUpper(hotkey) => SendInput("Ö")
+SendSS(hotkey) => SendInput("ß")
+SendUE(hotkey) => SendInput("ü")
+SendUEUpper(hotkey) => SendInput("Ü")
+
+;; Send Special Characters
+SendBackspace(hotkey) => SendInput("{Backspace}")
+SendDelete(Hotkey) => Send("{Delete}")
+SendEnd(Hotkey) => SendInput("{Blind}{End}")
+SendEnter(Hotkey) => SendInput("{Enter}")
+SendEscape(hotkey) => SendInput("{Escape}")
+SendMenu(hotkey) => SendInput("{AppsKey}")
+SendHome(Hotkey) => SendInput("{Blind}{Home}")
+SendPageDown(Hotkey) => SendInput("{Blind}{PgDn}")
+SendPageUp(Hotkey) => SendInput("{Blind}{PgUp}")
+SendSpace(Hotkey) => SendInput("{Space}")
+
+;; Send Function Key
+SendF1(Hotkey) => SendInput("{F1}")
+SendF2(Hotkey) => SendInput("{F2}")
+SendF3(Hotkey) => SendInput("{F3}")
+SendF4(Hotkey) => SendInput("{F4}")
+SendF5(Hotkey) => SendInput("{F5}")
+SendF6(Hotkey) => SendInput("{F6}")
+SendF7(Hotkey) => SendInput("{F7}")
+SendF8(Hotkey) => SendInput("{F8}")
+SendF9(Hotkey) => SendInput("{F9}")
+SendF10(Hotkey) => SendInput("{F10}")
+SendF11(Hotkey) => SendInput("{F11}")
+SendF12(Hotkey) => SendInput("{F12}")
+
+;; Send Alt Combination
 SendAltD(Hotkey) => SendInput("!d")
 SendAltSemicolon(Hotkey) => SendInput("!;")
-SendBackspace(hotkey) => SendInput("{Backspace}")
+
+;; Send Ctrl Combination
 SendCtrlAltTab(Hotkey) => SendInput("^!{Tab}")
 SendCtrlBacktick(Hotkey) => SendInput("^``")
 SendCtrlDown(Hotkey) => SendInput("^{Down}")
@@ -47,32 +93,12 @@ SendCtrlShiftTab(Hotkey) => SendInput("^+{Tab}")
 SendCtrlTab(Hotkey) => SendInput("^{Tab}")
 SendCtrlUp(Hotkey) => SendInput("^{Up}")
 SendCtrlW(Hotkey) => SendInput("^w")
-SendDelete(Hotkey) => Send("{Delete}")
-SendEnd(Hotkey) => SendInput("{Blind}{End}")
-SendEnter(Hotkey) => SendInput("{Enter}")
-SendEscape(hotkey) => SendInput("{Escape}")
-SendF1(Hotkey) => SendInput("{F1}")
-SendF10(Hotkey) => SendInput("{F10}")
-SendF11(Hotkey) => SendInput("{F11}")
-SendF12(Hotkey) => SendInput("{F12}")
-SendF2(Hotkey) => SendInput("{F2}")
-SendF3(Hotkey) => SendInput("{F3}")
-SendF4(Hotkey) => SendInput("{F4}")
-SendF5(Hotkey) => SendInput("{F5}")
-SendF6(Hotkey) => SendInput("{F6}")
-SendF7(Hotkey) => SendInput("{F7}")
-SendF8(Hotkey) => SendInput("{F8}")
-SendF9(Hotkey) => SendInput("{F9}")
-SendHome(Hotkey) => SendInput("{Blind}{Home}")
-SendOE(hotkey) => SendInput("ö")
-SendOEUpper(hotkey) => SendInput("Ö")
-SendPageDown(Hotkey) => SendInput("{Blind}{PgDn}")
-SendPageUp(Hotkey) => SendInput("{Blind}{PgUp}")
+
+;; Send Shift Combination
 SendShiftF6(Hotkey) => SendInput("+{F6}")
-SendSpace(Hotkey) => SendInput("{Space}")
-SendSS(hotkey) => SendInput("ß")
-SendUE(hotkey) => SendInput("ü")
-SendUEUpper(hotkey) => SendInput("Ü")
+SendShiftUp(Hotkey) => SendInput("+{Up}")
+
+;; Send Win Combination
 SendWin1(Hotkey) => SendInput("#1")
 SendWin2(Hotkey) => SendInput("#2")
 SendWin3(Hotkey) => SendInput("#3")
@@ -87,11 +113,13 @@ SendWinEnter(Hotkey) => SendInput("#Enter")
 SendWinLeft(Hotkey) => SendInput("#{Left}")
 SendWinRight(Hotkey) => SendInput("#{Right}")
 SendWinUp(Hotkey) => SendInput("#{Up}")
-Undo(Hotkey) => SendInput("^{z}")
-Up(hotkey) => SendInput("{Blind}{Up}")
-Word(hotkey) => SendInput("{Blind}^{Right}")
-WordBack(hotkey) => SendInput("{Blind}^{Left}")
-Yank(Hotkey) => SendInput("^{c}")
+
+;; Complex command
+
+TriggerHuntAndPeck(Hotkey) {
+    SendInput("!;")
+    SwitchToModeInsert(Hotkey)
+}
 
 ToggleCtrl(Hotkey) {
     global CtrlMode

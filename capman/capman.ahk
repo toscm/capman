@@ -12,7 +12,7 @@
 #include keymaps.ahk
 
 ; User config
-#include %A_AppData%/capman/config.ahk
+; #include %A_AppData%/capman/config.ahk
 
 ; App state
 LastMode := "Insert"
