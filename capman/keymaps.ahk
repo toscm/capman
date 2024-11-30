@@ -347,7 +347,7 @@ Keymaps["Goto"] := [
     ["n", SendCtrlAltTab],
     ["+n", SendCtrlShiftAltTab],
     ["o", SwitchToModeLast],
-    ; ["p", GoToPanel],
+    ["p", GoToPanel],
     ["q", SendEscape],
     ["r", SwitchToModeLast],
     ["s", GoToSymbolInEditor],
