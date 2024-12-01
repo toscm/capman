@@ -81,65 +81,65 @@ Keymaps["Caps"] := [
     ;
     ; This is EXPERIMENTAL!
     ;
-    ["vkDC & i", Up],
-    ["vkDC & j", Left],
-    ["vkDC & k", Down],
-    ["vkDC & l", Right],
-    ["vkDC & w", Word],
-    ["vkDC & b", WordBack],
-    ["vkDC & e", SendEnd],
-    ["vkDC & h", SendHome],
+    ; ["vkDC & i", Up],
+;     ["vkDC & j", Left],
+    ; ["vkDC & k", Down],
+    ; ["vkDC & l", Right],
+    ; ["vkDC & w", Word],
+    ; ["vkDC & b", WordBack],
+    ; ["vkDC & e", SendEnd],
+    ; ["vkDC & h", SendHome],
 
     ; Edit
-    ["vkDC & u", Undo],
-    ["vkDC & d", Delete],
-    ["vkDC & s", Backspace],
+    ; ["vkDC & u", Undo],
+    ; ["vkDC & d", Delete],
+    ; ["vkDC & s", Backspace],
 
     ; Window Management
-    ["vkDC & v", SwitchToModeWindow],
-    ["vkDC & [", ScrollUp],
-    ["vkDC & ]", ScrollDown],
-    ["vkDC & a", SendAltD], ; Focus Address Bar
-    ["vkDC & m", SendF6], ; Next Pane
-    ["vkDC & n", "AltTab"], ; Next Window
-    ["vkDC & t", SendCtrlTab], ; Next Tab
-    ["vkDC & ,", SendCtrlPageUp], ; Left Tab
-    ["vkDC & .", SendCtrlPageDown], ; Right Tab
+    ; ["vkDC & v", SwitchToModeWindow],
+    ; ["vkDC & [", ScrollUp],
+    ; ["vkDC & ]", ScrollDown],
+    ; ["vkDC & a", SendAltD], ; Focus Address Bar
+    ; ["vkDC & m", SendF6], ; Next Pane
+    ; ["vkDC & n", "AltTab"], ; Next Window
+    ; ["vkDC & t", SendCtrlTab], ; Next Tab
+    ; ["vkDC & ,", SendCtrlPageUp], ; Left Tab
+    ; ["vkDC & .", SendCtrlPageDown], ; Right Tab
 
     ; VSCode
-    ["vkDC & p", OpenControlPanel],
-    ["vkDC & o", OpenCopilot],
-    ["vkDC & ``", SendCtrlBacktick],
-    ["vkDC & '", SendCtrlBacktick],
-    ["vkDC & `;", SendCtrlL],
+    ; ["vkDC & p", OpenControlPanel],
+    ; ["vkDC & o", OpenCopilot],
+    ; ["vkDC & ``", SendCtrlBacktick],
+    ; ["vkDC & '", SendCtrlBacktick],
+    ; ["vkDC & `;", SendCtrlL],
 
     ; Misc
-    ["vkDC & q", SendEscape],
-    ["vkDC & f", TriggerHuntAndPeck],
-    ["vkDC & g", SwitchToModeGoto],
-    ["vkDC & r", ReloadCapman],
-    ["vkDC & F12", ToggleInfoBar],
-    ["vkDC & Space", SendMenu],
+    ; ["vkDC & q", SendEscape],
+    ; ["vkDC & f", TriggerHuntAndPeck],
+    ; ["vkDC & g", SwitchToModeGoto],
+    ; ["vkDC & r", ReloadCapman],
+    ; ["vkDC & F12", ToggleInfoBar],
+    ; ["vkDC & Space", SendMenu],
 
     ; F Keys
-    ["vkDC & 1", SendF1],
-    ["vkDC & 2", SendF2],
-    ["vkDC & 3", SendF3],
-    ["vkDC & 4", SendF4],
-    ["vkDC & 5", SendF5],
-    ["vkDC & 6", SendF6],
-    ["vkDC & 7", SendF7],
-    ["vkDC & 8", SendF8],
-    ["vkDC & 9", SendF9],
-    ["vkDC & 0", SendF10],
-    ["vkDC & -", SendF11],
-    ["vkDC & =", SendF12],
+    ; ["vkDC & 1", SendF1],
+    ; ["vkDC & 2", SendF2],
+    ; ["vkDC & 3", SendF3],
+    ; ["vkDC & 4", SendF4],
+    ; ["vkDC & 5", SendF5],
+    ; ["vkDC & 6", SendF6],
+    ; ["vkDC & 7", SendF7],
+    ; ["vkDC & 8", SendF8],
+    ; ["vkDC & 9", SendF9],
+    ; ["vkDC & 0", SendF10],
+    ; ["vkDC & -", SendF11],
+    ; ["vkDC & =", SendF12],
 
     ; Free
-    ["vkDC & c", SendEscape],
-    ["vkDC & x", DoNothing],
-    ["vkDC & y", DoNothing],
-    ["vkDC & z", DoNothing],
+    ; ["vkDC & c", SendEscape],
+    ; ["vkDC & x", DoNothing],
+    ; ["vkDC & y", DoNothing],
+    ; ["vkDC & z", DoNothing],
 ]
 
 Keymaps["Insert"] := [
@@ -153,13 +153,13 @@ Keymaps["Insert"] := [
     ["!+u", SendUEUpper],
 
     ["CapsLock", SwitchToModeControl],
-    ["vkDC", SwitchToModeControl],
+    ; ["vkDC", SwitchToModeControl],
 ]
 
 Keymaps["Window"] := [
 
     ["CapsLock", SwitchToModeLast],
-    ["vkDC", SwitchToModeLast],
+    ; ["vkDC", SwitchToModeLast],
 
     ["a", SwitchToModeInsert],
     ["b", DoNothing],
@@ -224,7 +224,7 @@ Keymaps["Mouse"] := [
     ["^l", MouseRight001Px],
 
     ["CapsLock", SwitchToModeControl],
-    ["vkDC", SwitchToModeControl],
+    ; ["vkDC", SwitchToModeControl],
 ]
 
 Keymaps["Control"] := [
@@ -274,7 +274,7 @@ Keymaps["Control"] := [
     [".", SendCtrlPageDown],
     ["/", ShowActiveHotkeys],
     ["CapsLock", SwitchToModeInsert],
-    ["vkDC", SwitchToModeInsert],
+    ; ["vkDC", SwitchToModeInsert],
 ]
 
 Keymaps["Visual"] := [
@@ -295,7 +295,7 @@ Keymaps["Visual"] := [
     ; ModeSwitches
     ["a", SwitchToModeInsert],
     ["CapsLock", SwitchToModeLast],
-    ["vkDC", SwitchToModeLast],
+    ; ["vkDC", SwitchToModeLast],
     ["o", SwitchToModeInsert],
     ["v", SwitchToModeLast],
 
@@ -360,5 +360,5 @@ Keymaps["Goto"] := [
     ["z", SwitchToModeLast],
     ["Enter", EnterAndSwitchToModeLast],
     ["CapsLock", SwitchToModeLast],
-    ["vkDC", SwitchToModeLast],
+    ; ["vkDC", SwitchToModeLast],
 ]
