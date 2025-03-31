@@ -103,22 +103,10 @@ GoToDefinition(Hotkey) {
     SwitchToModeLast(Hotkey)
 }
 
-GoToPrimarySidebar(Hotkey) {
-    SendInput("^g")
-    SwitchToModeLast(Hotkey)
-    SendInput("{Raw}b")
-}
-
 GoToEditorArea(Hotkey) {
     SendInput("^g")
     SwitchToModeLast(Hotkey)
     SendInput("a")
-}
-
-GoToSecondarySidebar(Hotkey) {
-    SendInput("^g")
-    SwitchToModeLast(Hotkey)
-    SendInput("^b")
 }
 
 GoToPanel(Hotkey) {
@@ -127,14 +115,27 @@ GoToPanel(Hotkey) {
     SendInput("p")
 }
 
+GoToPrimarySidebar(Hotkey) {
+    SendInput("^g")
+    SwitchToModeLast(Hotkey)
+    SendInput("b")
+}
+
+GoToSecondarySidebar(Hotkey) {
+    SendInput("^g")
+    SwitchToModeLast(Hotkey)
+    SendInput("^b")
+}
+
+
 GoToSymbolInEditor(Hotkey) {
     SendInput("^+{o}")
-    SwitchToModeLast(Hotkey)
+    SwitchToModeInsert(Hotkey)
 }
 
 GoToSymbolInWorkspace(Hotkey) {
     SendInput("^t")
-    SwitchToModeLast(Hotkey)
+    SwitchToModeInsert(Hotkey)
 }
 
 GoToEditorLeft(Hotkey) {
@@ -330,6 +331,15 @@ DisableKeyMap(Map) {
         Hotkey(Row[1], Row[2], "Off")
     }
 }
+
+ExpandSelection(Hotkey) {
+    Send("+!{Right}")
+}
+
+ShrinkSelection(Hotkey) {
+    Send("+!{Left}")
+}
+
 
 SwitchToMode(NewMode) {
     global Mode, LastMode
