@@ -31,12 +31,12 @@ Keymaps["Caps"] := [
     ["CapsLock & s", Backspace],
 
     ; Window Management
-    ["CapsLock & v", SwitchToModeWindow],
+    ["CapsLock & v", SwitchToModeVisual],
     ["CapsLock & [", ScrollUp],
     ["CapsLock & ]", ScrollDown],
     ["CapsLock & a", SendAltD], ; Focus Address Bar
-    ["CapsLock & m", SendF6], ; Next Pane
     ["CapsLock & n", "AltTab"], ; Next Window
+    ["CapsLock & m", SendF6], ; Next Pane
     ["CapsLock & t", SendCtrlTab], ; Next Tab
     ["CapsLock & ,", SendCtrlPageUp], ; Left Tab
     ["CapsLock & .", SendCtrlPageDown], ; Right Tab
@@ -49,12 +49,13 @@ Keymaps["Caps"] := [
     ["CapsLock & `;", SendCtrlL],
 
     ; Misc
+    ["CapsLock & c", ToggleCapsLock],
     ["CapsLock & q", SendEscape],
     ["CapsLock & f", TriggerHuntAndPeck],
     ["CapsLock & g", SwitchToModeGoto],
     ["CapsLock & r", ReloadCapman],
     ["CapsLock & F12", ToggleInfoBar],
-    ["CapsLock & Space", SendMenu],
+    ["CapsLock & Space", SwitchToModeWindow],
 
     ; F Keys
     ["CapsLock & 1", SendF1],
@@ -71,7 +72,6 @@ Keymaps["Caps"] := [
     ["CapsLock & =", SendF12],
 
     ; Free
-    ["CapsLock & c", SendEscape],
     ["CapsLock & x", SwitchToModeMouse],
     ["CapsLock & y", DoNothing],
     ["CapsLock & z", DoNothing],
@@ -143,14 +143,14 @@ Keymaps["Caps"] := [
 ]
 
 Keymaps["Insert"] := [
-    ["$!a", SendAE],
-    ["$!o", SendOE],
-    ["$!s", SendSS],
-    ["$!u", SendUE],
+    ; ["$!a", SendAE],
+    ; ["$!o", SendOE],
+    ; ["$!s", SendSS],
+    ; ["$!u", SendUE],
 
-    ["$!+o", SendOEUpper],
-    ["$!+a", SendAEUpper],
-    ["$!+u", SendUEUpper],
+    ; ["$!+o", SendOEUpper],
+    ; ["$!+a", SendAEUpper],
+    ; ["$!+u", SendUEUpper],
 
     ["CapsLock", SwitchToModeControl],
     ; ["vkDC", SwitchToModeControl],
@@ -194,9 +194,9 @@ Keymaps["Mouse"] := [
     ["$a", SwitchToModeInsert],
     ["$b", DoNothing],
     ["$c", DoNothing],
-    ["$d", RightClick],
+    ["d", RightClick],
     ["$e", MouseRight120px],
-    ["$f", LeftClick],
+    ["f", LeftClick],
     ["$g", DoNothing],
     ["$h", MouseLeft120px],
     ["$i", MouseUp012Px],
@@ -209,7 +209,7 @@ Keymaps["Mouse"] := [
     ["$p", DoNothing],
     ["$q", DoNothing],
     ["$r", DoNothing],
-    ["$s", MiddleClick],
+    ["s", MiddleClick],
     ["$t", DoNothing],
     ["$u", ScrollUp],
     ["$v", DoNothing],
@@ -260,7 +260,7 @@ Keymaps["Control"] := [
     ["$+w", SelectWord],
     ["$x", Cut],
     ["$y", Yank],
-    ["$z", DoNothing],
+    ["$z", ToggleCapsLock],
 
     ["$``", SendCtrlBacktick],
 
@@ -304,7 +304,7 @@ Keymaps["Visual"] := [
 
     ; Editing
     ["$q", SendEscape],
-    ["$b", BackspaceAndSwitchToModeLast],
+    ["$s", BackspaceAndSwitchToModeLast],
     ["$c", CopyAndSwitchToModeLast],
     ["$d", DeleteAndSwitchToModeLast],
     ["$x", CutAndSwitchToModeLast],

@@ -4,8 +4,24 @@
 #include keymaps.ahk
 #include mouse.ahk
 
+; Global flag for letting native CapsLock behave (passthrough)
+CapsPassthrough := false
+
 DoNothing(Hotkey) {
     ; do nothing
+}
+
+; Toggle whether native CapsLock is allowed to function (turns native CapsLock on/off)
+ToggleCapsLock(Hotkey) {
+    global CapsPassthrough, InfoBar, InfoBarText
+    if (CapsPassthrough) {
+        SetCapsLockState("AlwaysOff")
+        CapsPassthrough := false
+    } else {
+        SetCapsLockState("AlwaysOn")
+        CapsPassthrough := true
+    }
+    UpdateModeBar()
 }
 
 BackspaceAndAndSwitchToModeInsert(Hotkey) {
