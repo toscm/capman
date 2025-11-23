@@ -24,37 +24,37 @@ ToggleCapsLock(Hotkey) {
     UpdateModeBar()
 }
 
-BackspaceAndAndSwitchToModeInsert(Hotkey) {
+BackspaceAndSwitchToModeInsert(Hotkey) {
     Backspace(Hotkey)
     SwitchToModeInsert(Hotkey)
 }
 
-CopyAndAndSwitchToModeInsert(Hotkey) {
+CopyAndSwitchToModeInsert(Hotkey) {
     Copy(Hotkey)
     SwitchToModeInsert(Hotkey)
 }
 
-DeleteAndAndSwitchToModeInsert(Hotkey) {
+DeleteAndSwitchToModeInsert(Hotkey) {
     Delete(Hotkey)
     SwitchToModeInsert(Hotkey)
 }
 
-CutAndAndSwitchToModeInsert(Hotkey) {
+CutAndSwitchToModeInsert(Hotkey) {
     Cut(Hotkey)
     SwitchToModeInsert(Hotkey)
 }
 
-YankAndAndSwitchToModeInsert(Hotkey) {
+YankAndSwitchToModeInsert(Hotkey) {
     Yank(Hotkey)
     SwitchToModeInsert(Hotkey)
 }
 
-EnterAndAndSwitchToModeInsert(Hotkey) {
+EnterAndSwitchToModeInsert(Hotkey) {
     SendEnter(Hotkey)
     SwitchToModeInsert(Hotkey)
 }
 
-SpaceAndAndSwitchToModeInsert(Hotkey) {
+SpaceAndSwitchToModeInsert(Hotkey) {
     SendSpace(Hotkey)
     SwitchToModeInsert(Hotkey)
 }
@@ -142,7 +142,6 @@ GoToSecondarySidebar(Hotkey) {
     SwitchToModeLast(Hotkey)
     SendInput("^b")
 }
-
 
 GoToSymbolInEditor(Hotkey) {
     SendInput("^+{o}")
@@ -355,7 +354,6 @@ ExpandSelection(Hotkey) {
 ShrinkSelection(Hotkey) {
     Send("+!{Left}")
 }
-
 
 SwitchToMode(NewMode) {
     global Mode, LastMode
