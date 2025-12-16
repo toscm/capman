@@ -148,7 +148,7 @@ Keymaps["Control"] := [
     ["$a", SwitchToModeInsert],
     ["$b", WordBack],
     ["$+b", SelectWordBack],
-    ["$c", Copy],
+    ["$c", ToggleCapsLock],
     ["$d", Delete],
     ["$+d", Backspace],
     ["$*e", SendEnd],
@@ -177,7 +177,7 @@ Keymaps["Control"] := [
     ["$+w", SelectWord],
     ["$x", Cut],
     ["$y", Yank],
-    ["$z", ToggleCapsLock],
+    ["$z", DoNothing],
 
     ["$``", SendCtrlBacktick],
 
