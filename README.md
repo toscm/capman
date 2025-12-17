@@ -9,8 +9,8 @@ and Window Mode.
 ## Installation
 
 1. Clone this repo
-2. Windows: install [AutoHotkey](https://www.autohotkey.com/) (AHK)
-3. MacOS: install [Karabiner-Elements](https://karabiner-elements.pqrs.org/)
+2. On Windows: install [AutoHotkey](https://www.autohotkey.com/) (AHK)
+3. On MacOS: install [Karabiner-Elements](https://karabiner-elements.pqrs.org/)
 
 ## Usage (Windows)
 
