@@ -1,0 +1,11 @@
+{
+  "description": "Capman o",
+  "manipulators": [
+    {
+      "conditions": [{"name":"mode","type":"variable_unless","value":0}],
+      "from": {"key_code":"o"},
+      "to": [],
+      "type": "basic"
+    }
+  ]
+}

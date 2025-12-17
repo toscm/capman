@@ -1,0 +1,17 @@
+{
+  "description": "Capman m",
+  "manipulators": [
+    {
+      "conditions": [{"name":"mode","type":"variable_unless","value":0}],
+      "from": {"key_code":"m"},
+      "to": [{"key_code":"f6"}],
+      "type": "basic"
+    },
+    {
+      "conditions": [{"name":"mode","type":"variable_unless","value":0}],
+      "from": {"key_code":"m","modifiers":{"mandatory":["shift"]}},
+      "to": [{"key_code":"f6","modifiers":["shift"]}],
+      "type": "basic"
+    }
+  ]
+}

@@ -1,165 +1,878 @@
 {
-"profiles": [
-{
-"complex_modifications": {
-"rules": [
-{
-"description": "Umlaute via Option",
-"manipulators": [
-{"from": {"key_code": "a","modifiers": {"mandatory": ["option"]}},"to": [{"key_code": "u","modifiers": ["option"]},{"key_code": "a"}],"type": "basic"},
-{"from": {"key_code": "o","modifiers": {"mandatory": ["option"]}},"to": [{"key_code": "u","modifiers": ["option"]},{"key_code": "o"}],"type": "basic"},
-{"from": {"key_code": "u","modifiers": {"mandatory": ["option"]}},"to": [{"key_code": "u","modifiers": ["option"]},{"key_code": "u"}],"type": "basic"},
-{"from": {"key_code": "a","modifiers": {"mandatory": ["shift","option"]}},"to": [{"key_code": "u","modifiers": ["option"]},{"key_code": "a","modifiers": ["shift"]}],"type": "basic"},
-{"from": {"key_code": "o","modifiers": {"mandatory": ["shift","option"]}},"to": [{"key_code": "u","modifiers": ["option"]},{"key_code": "o","modifiers": ["shift"]}],"type": "basic"},
-{"from": {"key_code": "u","modifiers": {"mandatory": ["shift","option"]}},"to": [{"key_code": "u","modifiers": ["option"]},{"key_code": "u","modifiers": ["shift"]}],"type": "basic"},
-{"from": {"key_code": "s","modifiers": {"mandatory": ["shift","option"]}},"to": [{"key_code": "s","modifiers": ["option"]}],"type": "basic"}
-
-]
-},
-{
-"description": "Enable Home End with Shift selection",
-"manipulators": [
-{"from": {"key_code": "home"},"to": [{"key_code": "left_arrow","modifiers": ["command"]}],"type": "basic"},
-{"from": {"key_code": "home","modifiers": {"mandatory": ["shift"]}},"to": [{"key_code": "left_arrow","modifiers": ["command","shift"]}],"type": "basic"},
-{"from": {"key_code": "end"},"to": [{"key_code": "right_arrow","modifiers": ["command"]}],"type": "basic"},
-{"from": {"key_code": "end","modifiers": {"mandatory": ["shift"]}},"to": [{"key_code": "right_arrow","modifiers": ["command","shift"]}],"type": "basic"},
-{"from": {"key_code": "home","modifiers": {"mandatory": ["command"]}},"to": [{"key_code": "up_arrow","modifiers": ["command"]}],"type": "basic"},
-{"from": {"key_code": "home","modifiers": {"mandatory": ["command","shift"]}},"to": [{"key_code": "up_arrow","modifiers": ["command","shift"]}],"type": "basic"},
-{"from": {"key_code": "end","modifiers": {"mandatory": ["command"]}},"to": [{"key_code": "down_arrow","modifiers": ["command"]}],"type": "basic"},
-{"from": {"key_code": "end","modifiers": {"mandatory": ["command","shift"]}},"to": [{"key_code": "down_arrow","modifiers": ["command","shift"]}],"type": "basic"}
-]
-},
-{
-"description": "Capman Modes",
-"manipulators": [
-{"conditions": [{"name": "mode","type": "variable_unless","value": 1},{"name": "mode","type": "variable_unless","value": 0}],"from": {"key_code": "caps_lock"},"to": [{"set_variable": {"name": "mode","value": 1}}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 0}],"from": {"key_code": "caps_lock"},"to": [{"set_variable": {"name": "mode","value": 1}}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 1}],"from": {"key_code": "caps_lock"},"to": [{"set_variable": {"name": "mode","value": 0}}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 0}],"from": {"key_code": "v","modifiers": {"mandatory": ["caps_lock"]}},"to": [{"set_variable": {"name": "mode","value": 2}}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 2}],"from": {"key_code": "v","modifiers": {"mandatory": ["caps_lock"]}},"to": [{"set_variable": {"name": "mode","value": 0}}],"type": "basic"}
-]
-},
-{
-"description": "Capman Capslock Mode",
-"manipulators": [
-{"from": {"key_code": "a","modifiers": {"mandatory": ["caps_lock"]}},"to": [{"set_variable": {"name": "mode","value": 0}}],"type": "basic"},
-{"from": {"key_code": "spacebar","modifiers": {"mandatory": ["caps_lock"]}},"to": [{"set_variable": {"name": "mode","value": 3}}],"type": "basic"},
-{"from": {"key_code": "b","modifiers": {"mandatory": ["caps_lock"]}},"to": [{"key_code": "left_arrow","modifiers": ["option"]}],"type": "basic"},
-{"from": {"key_code": "b","modifiers": {"mandatory": ["caps_lock","shift"]}},"to": [{"key_code": "left_arrow","modifiers": ["shift","option"]}],"type": "basic"},
-{"from": {"key_code": "c","modifiers": {"mandatory": ["caps_lock"]}},"to": [{"key_code": "c","modifiers": ["command"]}],"type": "basic"},
-{"from": {"key_code": "d","modifiers": {"mandatory": ["caps_lock"]}},"to": [{"key_code": "delete_forward"}],"type": "basic"},
-{"from": {"key_code": "d","modifiers": {"mandatory": ["caps_lock","shift"]}},"to": [{"key_code": "delete_or_backspace"}],"type": "basic"},
-{"from": {"key_code": "e","modifiers": {"mandatory": ["caps_lock"]}},"to": [{"key_code": "right_arrow","modifiers": ["command"]}],"type": "basic"},
-{"from": {"key_code": "e","modifiers": {"mandatory": ["caps_lock","command"]}},"to": [{"key_code": "down_arrow","modifiers": ["command"]}],"type": "basic"},
-{"from": {"key_code": "f","modifiers": {"mandatory": ["caps_lock"]}},"to": [{"key_code": "f","modifiers": ["control"]}],"type": "basic"},
-{"from": {"key_code": "f","modifiers": {"mandatory": ["caps_lock","shift"]}},"to": [{"key_code": "f","modifiers": ["control","shift"]}],"type": "basic"},
-{"from": {"key_code": "h","modifiers": {"mandatory": ["caps_lock"]}},"to": [{"key_code": "left_arrow","modifiers": ["command"]}],"type": "basic"},
-{"from": {"key_code": "h","modifiers": {"mandatory": ["caps_lock","command"]}},"to": [{"key_code": "up_arrow","modifiers": ["command"]}],"type": "basic"},
-{"from": {"key_code": "i","modifiers": {"mandatory": ["caps_lock"]}},"to": [{"key_code": "up_arrow"}],"type": "basic"},
-{"from": {"key_code": "j","modifiers": {"mandatory": ["caps_lock"]}},"to": [{"key_code": "left_arrow"}],"type": "basic"},
-{"from": {"key_code": "k","modifiers": {"mandatory": ["caps_lock"]}},"to": [{"key_code": "down_arrow"}],"type": "basic"},
-{"from": {"key_code": "l","modifiers": {"mandatory": ["caps_lock"]}},"to": [{"key_code": "right_arrow"}],"type": "basic"},
-{"from": {"key_code": "w","modifiers": {"mandatory": ["caps_lock"]}},"to": [{"key_code": "right_arrow","modifiers": ["option"]}],"type": "basic"},
-{"from": {"key_code": "w","modifiers": {"mandatory": ["caps_lock","shift"]}},"to": [{"key_code": "right_arrow","modifiers": ["shift","option"]}],"type": "basic"},
-{"from": {"key_code": "x","modifiers": {"mandatory": ["caps_lock"]}},"to": [{"key_code": "x","modifiers": ["command"]}],"type": "basic"},
-{"from": {"key_code": "y","modifiers": {"mandatory": ["caps_lock"]}},"to": [{"key_code": "c","modifiers": ["command"]}],"type": "basic"},
-{"from": {"key_code": "z","modifiers": {"mandatory": ["caps_lock"]}},"to": [{"key_code": "caps_lock"}],"type": "basic"}
-]
-},
-{
-"description": "Capman Control Mode",
-"manipulators": [
-{"conditions": [{"name": "mode","type": "variable_if","value": 1}],"from": {"key_code": "a"},"to": [{"set_variable": {"name": "mode","value": 0}}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 1}],"from": {"key_code": "b"},"to": [{"key_code": "left_arrow","modifiers": ["option"]}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 1}],"from": {"key_code": "b","modifiers": {"mandatory": ["shift"]}},"to": [{"key_code": "left_arrow","modifiers": ["shift","option"]}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 1}],"from": {"key_code": "c"},"to": [{"key_code": "c","modifiers": ["command"]}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 1}],"from": {"key_code": "d"},"to": [{"key_code": "delete_forward"}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 1}],"from": {"key_code": "d","modifiers": {"mandatory": ["shift"]}},"to": [{"key_code": "delete_or_backspace"}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 1}],"from": {"key_code": "e"},"to": [{"key_code": "right_arrow","modifiers": ["command"]}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 1}],"from": {"key_code": "e","modifiers": {"mandatory": ["command"]}},"to": [{"key_code": "down_arrow","modifiers": ["command"]}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 1}],"from": {"key_code": "f"},"to": [{"key_code": "f","modifiers": ["control"]}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 1}],"from": {"key_code": "f","modifiers": {"mandatory": ["shift"]}},"to": [{"key_code": "f","modifiers": ["control","shift"]}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 1}],"from": {"key_code": "h"},"to": [{"key_code": "left_arrow","modifiers": ["command"]}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 1}],"from": {"key_code": "h","modifiers": {"mandatory": ["command"]}},"to": [{"key_code": "up_arrow","modifiers": ["command"]}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 1}],"from": {"key_code": "i"},"to": [{"key_code": "up_arrow"}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 1}],"from": {"key_code": "j"},"to": [{"key_code": "left_arrow"}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 1}],"from": {"key_code": "k"},"to": [{"key_code": "down_arrow"}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 1}],"from": {"key_code": "l"},"to": [{"key_code": "right_arrow"}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 1}],"from": {"key_code": "m"},"to": [{"key_code": "f6"}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 1}],"from": {"key_code": "m","modifiers": {"mandatory": ["shift"]}},"to": [{"key_code": "f6","modifiers": ["shift"]}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 1}],"from": {"key_code": "n"},"to": [{"key_code": "tab","modifiers": ["control","option"]}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 1}],"from": {"key_code": "n","modifiers": {"mandatory": ["shift"]}},"to": [{"key_code": "tab","modifiers": ["control","option","shift"]}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 1}],"from": {"key_code": "o"},"to": [],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 1}],"from": {"key_code": "p"},"to": [{"key_code": "v","modifiers": ["command"]}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 1}],"from": {"key_code": "q"},"to": [{"key_code": "escape"}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 1}],"from": {"key_code": "r"},"to": [{"key_code": "z","modifiers": ["command","shift"]}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 1}],"from": {"key_code": "s"},"to": [{"key_code": "delete_or_backspace"}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 1}],"from": {"key_code": "t"},"to": [{"key_code": "tab","modifiers": ["control"]}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 1}],"from": {"key_code": "t","modifiers": {"mandatory": ["shift"]}},"to": [{"key_code": "tab","modifiers": ["control","shift"]}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 1}],"from": {"key_code": "u"},"to": [{"key_code": "z","modifiers": ["command"]}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 1}],"from": {"key_code": "v"},"to": [{"set_variable": {"name": "mode","value": 2}}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 1}],"from": {"key_code": "w"},"to": [{"key_code": "right_arrow","modifiers": ["option"]}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 1}],"from": {"key_code": "w","modifiers": {"mandatory": ["shift"]}},"to": [{"key_code": "right_arrow","modifiers": ["shift","option"]}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 1}],"from": {"key_code": "x"},"to": [{"key_code": "x","modifiers": ["command"]}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 1}],"from": {"key_code": "y"},"to": [{"key_code": "c","modifiers": ["command"]}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 1}],"from": {"key_code": "z"},"to": [{"key_code": "caps_lock"}],"type": "basic"}
-]
-},
-{
-"description": "Capman Visual Mode",
-"manipulators": [
-{"conditions": [{"name": "mode","type": "variable_if","value": 2}],"from": {"key_code": "a"},"to": [{"set_variable": {"name": "mode","value": 0}}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 2}],"from": {"key_code": "b"},"to": [{"key_code": "left_arrow","modifiers": ["option","shift"]}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 2}],"from": {"key_code": "b","modifiers": {"mandatory": ["shift"]}},"to": [{"key_code": "left_arrow","modifiers": ["shift","option"]}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 2}],"from": {"key_code": "c"},"to": [{"key_code": "c","modifiers": ["command"]}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 2}],"from": {"key_code": "d"},"to": [{"key_code": "delete_forward"}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 2}],"from": {"key_code": "d","modifiers": {"mandatory": ["shift"]}},"to": [{"key_code": "delete_or_backspace"}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 2}],"from": {"key_code": "e"},"to": [{"key_code": "right_arrow","modifiers": ["command","shift"]}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 2}],"from": {"key_code": "e","modifiers": {"mandatory": ["command"]}},"to": [{"key_code": "down_arrow","modifiers": ["command","shift"]}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 2}],"from": {"key_code": "f"},"to": [{"key_code": "f","modifiers": ["control"]}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 2}],"from": {"key_code": "f","modifiers": {"mandatory": ["shift"]}},"to": [{"key_code": "f","modifiers": ["control","shift"]}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 2}],"from": {"key_code": "h"},"to": [{"key_code": "left_arrow","modifiers": ["command","shift"]}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 2}],"from": {"key_code": "h","modifiers": {"mandatory": ["command"]}},"to": [{"key_code": "up_arrow","modifiers": ["command","shift"]}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 2}],"from": {"key_code": "i"},"to": [{"key_code": "up_arrow","modifiers": ["shift"]}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 2}],"from": {"key_code": "j"},"to": [{"key_code": "left_arrow","modifiers": ["shift"]}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 2}],"from": {"key_code": "k"},"to": [{"key_code": "down_arrow","modifiers": ["shift"]}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 2}],"from": {"key_code": "l"},"to": [{"key_code": "right_arrow","modifiers": ["shift"]}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 2}],"from": {"key_code": "m"},"to": [{"key_code": "f6"}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 2}],"from": {"key_code": "m","modifiers": {"mandatory": ["shift"]}},"to": [{"key_code": "f6","modifiers": ["shift"]}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 2}],"from": {"key_code": "n"},"to": [{"key_code": "tab","modifiers": ["control","option"]}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 2}],"from": {"key_code": "n","modifiers": {"mandatory": ["shift"]}},"to": [{"key_code": "tab","modifiers": ["control","option","shift"]}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 2}],"from": {"key_code": "o"},"to": [],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 2}],"from": {"key_code": "p"},"to": [{"key_code": "v","modifiers": ["command"]}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 2}],"from": {"key_code": "q"},"to": [{"key_code": "escape"}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 2}],"from": {"key_code": "r"},"to": [{"key_code": "z","modifiers": ["command","shift"]}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 2}],"from": {"key_code": "s"},"to": [{"key_code": "delete_or_backspace"}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 2}],"from": {"key_code": "t"},"to": [{"key_code": "tab","modifiers": ["control"]}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 2}],"from": {"key_code": "t","modifiers": {"mandatory": ["shift"]}},"to": [{"key_code": "tab","modifiers": ["control","shift"]}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 2}],"from": {"key_code": "u"},"to": [{"key_code": "z","modifiers": ["command"]}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 2}],"from": {"key_code": "v"},"to": [{"set_variable": {"name": "mode","value": 2}}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 2}],"from": {"key_code": "w"},"to": [{"key_code": "right_arrow","modifiers": ["option","shift"]}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 2}],"from": {"key_code": "w","modifiers": {"mandatory": ["shift"]}},"to": [{"key_code": "right_arrow","modifiers": ["shift","option"]}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 2}],"from": {"key_code": "x"},"to": [{"key_code": "x","modifiers": ["command"]}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 2}],"from": {"key_code": "y"},"to": [{"key_code": "c","modifiers": ["command"]}],"type": "basic"},
-{"conditions": [{"name": "mode","type": "variable_if","value": 2}],"from": {"key_code": "z"},"to": [{"key_code": "caps_lock"}],"type": "basic"}
-]
-},
-{
-"description": "Swap Cmd+Arrow with Option+Arrow",
-"manipulators": [
-{"from": {"key_code": "left_arrow","modifiers": {"mandatory": ["left_command"],"optional": ["any"]}},"to": [{"key_code": "left_arrow","modifiers": ["left_option"]}],"type": "basic"},
-{"from": {"key_code": "right_arrow","modifiers": {"mandatory": ["left_command"],"optional": ["any"]}},"to": [{"key_code": "right_arrow","modifiers": ["left_option"]}],"type": "basic"},
-{"from": {"key_code": "left_arrow","modifiers": {"mandatory": ["left_option"],"optional": ["any"]}},"to": [{"key_code": "left_arrow","modifiers": ["left_command"]}],"type": "basic"},
-{"from": {"key_code": "right_arrow","modifiers": {"mandatory": ["left_option"],"optional": ["any"]}},"to": [{"key_code": "right_arrow","modifiers": ["left_command"]}],"type": "basic"}
-]
-}
-]
-},
-"name": "Default profile",
-"selected": true,
-"virtual_hid_keyboard": {
-"keyboard_type_v2": "ansi"
-}
-}
-]
+  "profiles": [
+    {
+      "name": "Default profile",
+      "selected": true,
+      "virtual_hid_keyboard": {"keyboard_type_v2":"ansi"},
+      "complex_modifications": {
+        "rules": [
+          {
+            "description": "Capman a",
+            "manipulators": [
+              {
+                "from": {"key_code":"a"},
+                "to": [{"set_variable":{"name":"mode","value":0}}],
+                "type": "basic",
+                "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}]
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_unless","value":0}],
+                "from": {"key_code":"a"},
+                "to": [{"set_variable":{"name":"mode","value":0}}],
+                "type": "basic"
+              }
+            ]
+          },
+          {
+            "description": "Capman b",
+            "manipulators": [
+              {
+                "from": {"key_code":"b","modifiers":{"mandatory":["shift"]}},
+                "to": [{"key_code":"left_arrow","modifiers":["shift","option"]}],
+                "type": "basic",
+                "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}]
+              },
+              {
+                "from": {"key_code":"b"},
+                "to": [{"key_code":"left_arrow","modifiers":["option"]}],
+                "type": "basic",
+                "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}]
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_if","value":2}],
+                "from": {"key_code":"b"},
+                "to": [{"key_code":"left_arrow","modifiers":["option","shift"]}],
+                "type": "basic"
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_if","value":1}],
+                "from": {"key_code":"b","modifiers":{"mandatory":["shift"]}},
+                "to": [{"key_code":"left_arrow","modifiers":["shift","option"]}],
+                "type": "basic"
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_if","value":1}],
+                "from": {"key_code":"b"},
+                "to": [{"key_code":"left_arrow","modifiers":["option"]}],
+                "type": "basic"
+              }
+            ]
+          },
+          {
+            "description": "Capman c",
+            "manipulators": [
+              {
+                "from": {"key_code":"c"},
+                "to": [{"key_code":"c","modifiers":["command"]}],
+                "type": "basic",
+                "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}]
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_unless","value":0}],
+                "from": {"key_code":"c"},
+                "to": [{"key_code":"c","modifiers":["command"]}],
+                "type": "basic"
+              }
+            ]
+          },
+          {
+            "description": "Capman caps_lock",
+            "manipulators": [
+              {
+                "conditions": [{"name":"mode","type":"variable_unless","value":1}],
+                "from": {"key_code":"caps_lock","modifiers":{"optional":["any"]}},
+                "to": [{"set_variable":{"name":"capslock_pressed","value":1}}],
+                "to_after_key_up": [{"set_variable":{"name":"capslock_pressed","value":0}}],
+                "to_if_alone": [{"set_variable":{"name":"mode","value":1}}],
+                "type": "basic"
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_if","value":1}],
+                "from": {"key_code":"caps_lock","modifiers":{"optional":["any"]}},
+                "to": [{"set_variable":{"name":"capslock_pressed","value":1}}],
+                "to_after_key_up": [{"set_variable":{"name":"capslock_pressed","value":0}}],
+                "to_if_alone": [{"set_variable":{"name":"mode","value":0}}],
+                "type": "basic"
+              }
+            ]
+          },
+          {
+            "description": "Capman d",
+            "manipulators": [
+              {
+                "from": {"key_code":"d"},
+                "to": [{"key_code":"delete_forward"}],
+                "type": "basic",
+                "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}]
+              },
+              {
+                "from": {"key_code":"d","modifiers":{"mandatory":["shift"]}},
+                "to": [{"key_code":"delete_or_backspace"}],
+                "type": "basic",
+                "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}]
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_unless","value":0}],
+                "from": {"key_code":"d"},
+                "to": [{"key_code":"delete_forward"}],
+                "type": "basic"
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_unless","value":0}],
+                "from": {"key_code":"d","modifiers":{"mandatory":["shift"]}},
+                "to": [{"key_code":"delete_or_backspace"}],
+                "type": "basic"
+              }
+            ]
+          },
+          {
+            "description": "Capman e",
+            "manipulators": [
+              {
+                "from": {"key_code":"e","modifiers":{"mandatory":["shift"]}},
+                "to": [{"key_code":"right_arrow","modifiers":["command","shift"]}],
+                "type": "basic",
+                "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}]
+              },
+              {
+                "from": {"key_code":"e"},
+                "to": [{"key_code":"right_arrow","modifiers":["command"]}],
+                "type": "basic",
+                "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}]
+              },
+              {
+                "from": {"key_code":"e","modifiers":{"mandatory":["command","shift"]}},
+                "to": [{"key_code":"down_arrow","modifiers":["command","shift"]}],
+                "type": "basic",
+                "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}]
+              },
+              {
+                "from": {"key_code":"e","modifiers":{"mandatory":["command"]}},
+                "to": [{"key_code":"down_arrow","modifiers":["command"]}],
+                "type": "basic",
+                "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}]
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_if","value":1}],
+                "from": {"key_code":"e","modifiers":{"mandatory":["shift"]}},
+                "to": [{"key_code":"right_arrow","modifiers":["command","shift"]}],
+                "type": "basic"
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_if","value":1}],
+                "from": {"key_code":"e"},
+                "to": [{"key_code":"right_arrow","modifiers":["command"]}],
+                "type": "basic"
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_if","value":1}],
+                "from": {"key_code":"e","modifiers":{"mandatory":["command","shift"]}},
+                "to": [{"key_code":"down_arrow","modifiers":["command","shift"]}],
+                "type": "basic"
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_if","value":1}],
+                "from": {"key_code":"e","modifiers":{"mandatory":["command"]}},
+                "to": [{"key_code":"down_arrow","modifiers":["command"]}],
+                "type": "basic"
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_if","value":2}],
+                "from": {"key_code":"e"},
+                "to": [{"key_code":"right_arrow","modifiers":["command","shift"]}],
+                "type": "basic"
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_if","value":2}],
+                "from": {"key_code":"e","modifiers":{"mandatory":["command"]}},
+                "to": [{"key_code":"down_arrow","modifiers":["command","shift"]}],
+                "type": "basic"
+              }
+            ]
+          },
+          {
+            "description": "Capman f",
+            "manipulators": [
+              {
+                "from": {"key_code":"f"},
+                "to": [{"key_code":"f","modifiers":["control"]}],
+                "type": "basic",
+                "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}]
+              },
+              {
+                "from": {"key_code":"f","modifiers":{"mandatory":["shift"]}},
+                "to": [{"key_code":"f","modifiers":["control","shift"]}],
+                "type": "basic",
+                "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}]
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_unless","value":0}],
+                "from": {"key_code":"f"},
+                "to": [{"key_code":"f","modifiers":["control"]}],
+                "type": "basic"
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_unless","value":0}],
+                "from": {"key_code":"f","modifiers":{"mandatory":["shift"]}},
+                "to": [{"key_code":"f","modifiers":["control","shift"]}],
+                "type": "basic"
+              }
+            ]
+          },
+          {
+            "description": "Capman h",
+            "manipulators": [
+              {
+                "from": {"key_code":"h","modifiers":{"mandatory":["shift"]}},
+                "to": [{"key_code":"left_arrow","modifiers":["command","shift"]}],
+                "type": "basic",
+                "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}]
+              },
+              {
+                "from": {"key_code":"h"},
+                "to": [{"key_code":"left_arrow","modifiers":["command"]}],
+                "type": "basic",
+                "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}]
+              },
+              {
+                "from": {"key_code":"h","modifiers":{"mandatory":["command","shift"]}},
+                "to": [{"key_code":"up_arrow","modifiers":["command","shift"]}],
+                "type": "basic",
+                "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}]
+              },
+              {
+                "from": {"key_code":"h","modifiers":{"mandatory":["command"]}},
+                "to": [{"key_code":"up_arrow","modifiers":["command"]}],
+                "type": "basic",
+                "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}]
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_if","value":1}],
+                "from": {"key_code":"h","modifiers":{"mandatory":["shift"]}},
+                "to": [{"key_code":"left_arrow","modifiers":["command","shift"]}],
+                "type": "basic"
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_if","value":1}],
+                "from": {"key_code":"h"},
+                "to": [{"key_code":"left_arrow","modifiers":["command"]}],
+                "type": "basic"
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_if","value":1}],
+                "from": {"key_code":"h","modifiers":{"mandatory":["command","shift"]}},
+                "to": [{"key_code":"up_arrow","modifiers":["command","shift"]}],
+                "type": "basic"
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_if","value":1}],
+                "from": {"key_code":"h","modifiers":{"mandatory":["command"]}},
+                "to": [{"key_code":"up_arrow","modifiers":["command"]}],
+                "type": "basic"
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_if","value":2}],
+                "from": {"key_code":"h"},
+                "to": [{"key_code":"left_arrow","modifiers":["command","shift"]}],
+                "type": "basic"
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_if","value":2}],
+                "from": {"key_code":"h","modifiers":{"mandatory":["command"]}},
+                "to": [{"key_code":"up_arrow","modifiers":["command","shift"]}],
+                "type": "basic"
+              }
+            ]
+          },
+          {
+            "description": "Capman i",
+            "manipulators": [
+              {
+                "from": {"key_code":"i","modifiers":{"mandatory":["shift"]}},
+                "to": [{"key_code":"up_arrow","modifiers":["shift"]}],
+                "type": "basic",
+                "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}]
+              },
+              {
+                "from": {"key_code":"i"},
+                "to": [{"key_code":"up_arrow"}],
+                "type": "basic",
+                "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}]
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_if","value":1}],
+                "from": {"key_code":"i","modifiers":{"mandatory":["shift"]}},
+                "to": [{"key_code":"up_arrow","modifiers":["shift"]}],
+                "type": "basic"
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_if","value":1}],
+                "from": {"key_code":"i"},
+                "to": [{"key_code":"up_arrow"}],
+                "type": "basic"
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_if","value":2}],
+                "from": {"key_code":"i"},
+                "to": [{"key_code":"up_arrow","modifiers":["shift"]}],
+                "type": "basic"
+              }
+            ]
+          },
+          {
+            "description": "Capman j",
+            "manipulators": [
+              {
+                "from": {"key_code":"j","modifiers":{"mandatory":["shift"]}},
+                "to": [{"key_code":"left_arrow","modifiers":["shift"]}],
+                "type": "basic",
+                "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}]
+              },
+              {
+                "from": {"key_code":"j"},
+                "to": [{"key_code":"left_arrow"}],
+                "type": "basic",
+                "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}]
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_if","value":1}],
+                "from": {"key_code":"j","modifiers":{"mandatory":["shift"]}},
+                "to": [{"key_code":"left_arrow","modifiers":["shift"]}],
+                "type": "basic"
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_if","value":1}],
+                "from": {"key_code":"j"},
+                "to": [{"key_code":"left_arrow"}],
+                "type": "basic"
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_if","value":2}],
+                "from": {"key_code":"j"},
+                "to": [{"key_code":"left_arrow","modifiers":["shift"]}],
+                "type": "basic"
+              }
+            ]
+          },
+          {
+            "description": "Capman k",
+            "manipulators": [
+              {
+                "from": {"key_code":"k","modifiers":{"mandatory":["shift"]}},
+                "to": [{"key_code":"down_arrow","modifiers":["shift"]}],
+                "type": "basic",
+                "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}]
+              },
+              {
+                "from": {"key_code":"k"},
+                "to": [{"key_code":"down_arrow"}],
+                "type": "basic",
+                "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}]
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_if","value":1}],
+                "from": {"key_code":"k","modifiers":{"mandatory":["shift"]}},
+                "to": [{"key_code":"down_arrow","modifiers":["shift"]}],
+                "type": "basic"
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_if","value":1}],
+                "from": {"key_code":"k"},
+                "to": [{"key_code":"down_arrow"}],
+                "type": "basic"
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_if","value":2}],
+                "from": {"key_code":"k"},
+                "to": [{"key_code":"down_arrow","modifiers":["shift"]}],
+                "type": "basic"
+              }
+            ]
+          },
+          {
+            "description": "Capman l",
+            "manipulators": [
+              {
+                "from": {"key_code":"l","modifiers":{"mandatory":["shift"]}},
+                "to": [{"key_code":"right_arrow","modifiers":["shift"]}],
+                "type": "basic",
+                "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}]
+              },
+              {
+                "from": {"key_code":"l"},
+                "to": [{"key_code":"right_arrow"}],
+                "type": "basic",
+                "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}]
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_if","value":1}],
+                "from": {"key_code":"l","modifiers":{"mandatory":["shift"]}},
+                "to": [{"key_code":"right_arrow","modifiers":["shift"]}],
+                "type": "basic"
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_if","value":1}],
+                "from": {"key_code":"l"},
+                "to": [{"key_code":"right_arrow"}],
+                "type": "basic"
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_if","value":2}],
+                "from": {"key_code":"l"},
+                "to": [{"key_code":"right_arrow","modifiers":["shift"]}],
+                "type": "basic"
+              }
+            ]
+          },
+          {
+            "description": "Capman m",
+            "manipulators": [
+              {
+                "conditions": [{"name":"mode","type":"variable_unless","value":0}],
+                "from": {"key_code":"m"},
+                "to": [{"key_code":"f6"}],
+                "type": "basic"
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_unless","value":0}],
+                "from": {"key_code":"m","modifiers":{"mandatory":["shift"]}},
+                "to": [{"key_code":"f6","modifiers":["shift"]}],
+                "type": "basic"
+              }
+            ]
+          },
+          {
+            "description": "Capman n",
+            "manipulators": [
+              {
+                "conditions": [{"name":"mode","type":"variable_unless","value":0}],
+                "from": {"key_code":"n"},
+                "to": [{"key_code":"tab","modifiers":["control","option"]}],
+                "type": "basic"
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_unless","value":0}],
+                "from": {"key_code":"n","modifiers":{"mandatory":["shift"]}},
+                "to": [{"key_code":"tab","modifiers":["control","option","shift"]}],
+                "type": "basic"
+              }
+            ]
+          },
+          {
+            "description": "Capman o",
+            "manipulators": [
+              {
+                "conditions": [{"name":"mode","type":"variable_unless","value":0}],
+                "from": {"key_code":"o"},
+                "to": [],
+                "type": "basic"
+              }
+            ]
+          },
+          {
+            "description": "Capman p",
+            "manipulators": [
+              {
+                "from": {"key_code":"p"},
+                "to": [{"key_code":"v","modifiers":["command"]}],
+                "conditions": [{"name":"mode","type":"variable_unless","value":0}],
+                "type": "basic"
+              }
+            ]
+          },
+          {
+            "description": "Capman q",
+            "manipulators": [
+              {
+                "conditions": [{"name":"mode","type":"variable_unless","value":0}],
+                "from": {"key_code":"q"},
+                "to": [{"key_code":"escape"}],
+                "type": "basic"
+              },
+              {
+                "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}],
+                "from": {"key_code":"q"},
+                "to": [{"key_code":"escape"}],
+                "type": "basic"
+              }
+            ]
+          },
+          {
+            "description": "Capman r",
+            "manipulators": [
+              {
+                "conditions": [{"name":"mode","type":"variable_unless","value":0}],
+                "from": {"key_code":"r"},
+                "to": [{"key_code":"z","modifiers":["command","shift"]}],
+                "type": "basic"
+              }
+            ]
+          },
+          {
+            "description": "Capman s",
+            "manipulators": [
+              {
+                "conditions": [{"name":"mode","type":"variable_unless","value":0}],
+                "from": {"key_code":"s"},
+                "to": [{"key_code":"delete_or_backspace"}],
+                "type": "basic"
+              }
+            ]
+          },
+          {
+            "description": "Capman t",
+            "manipulators": [
+              {
+                "conditions": [{"name":"mode","type":"variable_unless","value":0}],
+                "from": {"key_code":"t"},
+                "to": [{"key_code":"tab","modifiers":["control"]}],
+                "type": "basic"
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_unless","value":0}],
+                "from": {"key_code":"t","modifiers":{"mandatory":["shift"]}},
+                "to": [{"key_code":"tab","modifiers":["control","shift"]}],
+                "type": "basic"
+              }
+            ]
+          },
+          {
+            "description": "Capman u",
+            "manipulators": [
+              {
+                "conditions": [{"name":"mode","type":"variable_unless","value":0}],
+                "from": {"key_code":"u"},
+                "to": [{"key_code":"z","modifiers":["command"]}],
+                "type": "basic"
+              }
+            ]
+          },
+          {
+            "description": "Capman v",
+            "manipulators": [
+              {
+                "from": {"key_code":"v"},
+                "to": [{"set_variable":{"name":"mode","value":2}}],
+                "conditions": [{"name":"mode","type":"variable_unless","value":2},{"name":"capslock_pressed","type":"variable_if","value":1}],
+                "type": "basic"
+              },
+              {
+                "from": {"key_code":"v"},
+                "to": [{"set_variable":{"name":"mode","value":0}}],
+                "conditions": [{"name":"mode","type":"variable_if","value":2},{"name":"capslock_pressed","type":"variable_if","value":1}],
+                "type": "basic"
+              },
+              {
+                "from": {"key_code":"v"},
+                "to": [{"set_variable":{"name":"mode","value":2}}],
+                "conditions": [{"name":"mode","type":"variable_if","value":1}],
+                "type": "basic"
+              },
+              {
+                "from": {"key_code":"v"},
+                "to": [{"set_variable":{"name":"mode","value":1}}],
+                "conditions": [{"name":"mode","type":"variable_if","value":2}],
+                "type": "basic"
+              }
+            ]
+          },
+          {
+            "description": "Capman w",
+            "manipulators": [
+              {
+                "from": {"key_code":"w","modifiers":{"mandatory":["shift"]}},
+                "to": [{"key_code":"right_arrow","modifiers":["shift","option"]}],
+                "type": "basic",
+                "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}]
+              },
+              {
+                "from": {"key_code":"w"},
+                "to": [{"key_code":"right_arrow","modifiers":["option"]}],
+                "type": "basic",
+                "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}]
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_if","value":1}],
+                "from": {"key_code":"w","modifiers":{"mandatory":["shift"]}},
+                "to": [{"key_code":"right_arrow","modifiers":["shift","option"]}],
+                "type": "basic"
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_if","value":1}],
+                "from": {"key_code":"w"},
+                "to": [{"key_code":"right_arrow","modifiers":["option"]}],
+                "type": "basic"
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_if","value":2}],
+                "from": {"key_code":"w"},
+                "to": [{"key_code":"right_arrow","modifiers":["option","shift"]}],
+                "type": "basic"
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_if","value":2}],
+                "from": {"key_code":"w","modifiers":{"mandatory":["shift"]}},
+                "to": [{"key_code":"right_arrow","modifiers":["shift","option"]}],
+                "type": "basic"
+              }
+            ]
+          },
+          {
+            "description": "Capman x",
+            "manipulators": [
+              {
+                "from": {"key_code":"x"},
+                "to": [{"key_code":"x","modifiers":["command"]}],
+                "type": "basic",
+                "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}]
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_unless","value":0}],
+                "from": {"key_code":"x"},
+                "to": [{"key_code":"x","modifiers":["command"]}],
+                "type": "basic"
+              }
+            ]
+          },
+          {
+            "description": "Capman y",
+            "manipulators": [
+              {
+                "from": {"key_code":"y"},
+                "to": [{"key_code":"c","modifiers":["command"]}],
+                "type": "basic",
+                "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}]
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_unless","value":0}],
+                "from": {"key_code":"y"},
+                "to": [{"key_code":"c","modifiers":["command"]}],
+                "type": "basic"
+              }
+            ]
+          },
+          {
+            "description": "Capman z",
+            "manipulators": [
+              {
+                "from": {"key_code":"z"},
+                "to": [{"key_code":"caps_lock"}],
+                "type": "basic",
+                "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}]
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_unless","value":0}],
+                "from": {"key_code":"z"},
+                "to": [{"key_code":"caps_lock"}],
+                "type": "basic"
+              }
+            ]
+          },
+          {
+            "description": "Redo via Cmd+Y",
+            "manipulators": [
+              {
+                "type": "basic",
+                "from": {"key_code":"y","modifiers":{"mandatory":["command"]}},
+                "to": [{"key_code":"z","modifiers":["command","shift"]}]
+              }
+            ]
+          },
+          {
+            "description": "Enable Windows Navigation",
+            "manipulators": [
+              {
+                "from": {"key_code":"left_arrow","modifiers":{"mandatory":["command"]}},
+                "to": [{"key_code":"left_arrow","modifiers":["option"]}],
+                "type": "basic"
+              },
+              {
+                "from": {"key_code":"left_arrow","modifiers":{"mandatory":["command","shift"]}},
+                "to": [{"key_code":"left_arrow","modifiers":["option","shift"]}],
+                "type": "basic"
+              },
+              {
+                "from": {"key_code":"left_arrow","modifiers":{"mandatory":["option"]}},
+                "to": [{"key_code":"hyphen","modifiers":["control"]}],
+                "conditions": [{"type":"frontmost_application_if","bundle_identifiers":["^com\\.microsoft\\.VSCode$","^com\\.microsoft\\.VSCodeInsiders$"]}],
+                "type": "basic"
+              },
+              {
+                "from": {"key_code":"left_arrow","modifiers":{"mandatory":["option"]}},
+                "to": [{"key_code":"open_bracket","modifiers":["command"]}],
+                "conditions": [{"type":"frontmost_application_unless","bundle_identifiers":["^com\\.microsoft\\.VSCode$","^com\\.microsoft\\.VSCodeInsiders$"]}],
+                "type": "basic"
+              },
+              {
+                "from": {"key_code":"right_arrow","modifiers":{"mandatory":["command"]}},
+                "to": [{"key_code":"right_arrow","modifiers":["option"]}],
+                "type": "basic"
+              },
+              {
+                "from": {"key_code":"right_arrow","modifiers":{"mandatory":["command","shift"]}},
+                "to": [{"key_code":"right_arrow","modifiers":["option","shift"]}],
+                "type": "basic"
+              },
+              {
+                "from": {"key_code":"right_arrow","modifiers":{"mandatory":["option"]}},
+                "to": [{"key_code":"hyphen","modifiers":["control","shift"]}],
+                "conditions": [{"type":"frontmost_application_if","bundle_identifiers":["^com\\.microsoft\\.VSCode$","^com\\.microsoft\\.VSCodeInsiders$"]}],
+                "type": "basic"
+              },
+              {
+                "from": {"key_code":"right_arrow","modifiers":{"mandatory":["option"]}},
+                "to": [{"key_code":"close_bracket","modifiers":["command"]}],
+                "conditions": [{"type":"frontmost_application_unless","bundle_identifiers":["^com\\.microsoft\\.VSCode$","^com\\.microsoft\\.VSCodeInsiders$"]}],
+                "type": "basic"
+              },
+              {
+                "from": {"key_code":"up_arrow","modifiers":{"mandatory":["command"]}},
+                "to": [{"key_code":"up_arrow","modifiers":["control","fn"]}],
+                "type": "basic"
+              },
+              {
+                "from": {"key_code":"down_arrow","modifiers":{"mandatory":["command"]}},
+                "to": [{"key_code":"down_arrow","modifiers":["control","fn"]}],
+                "type": "basic"
+              }
+            ]
+          },
+          {
+            "description": "Home/End Support",
+            "manipulators": [
+              {
+                "from": {"key_code":"home"},
+                "to": [{"key_code":"left_arrow","modifiers":["command"]}],
+                "type": "basic"
+              },
+              {
+                "from": {"key_code":"home","modifiers":{"mandatory":["command"]}},
+                "to": [{"key_code":"up_arrow","modifiers":["command"]}],
+                "type": "basic"
+              },
+              {
+                "from": {"key_code":"home","modifiers":{"mandatory":["shift"]}},
+                "to": [{"key_code":"left_arrow","modifiers":["command","shift"]}],
+                "type": "basic"
+              },
+              {
+                "from": {"key_code":"home","modifiers":{"mandatory":["command","shift"]}},
+                "to": [{"key_code":"up_arrow","modifiers":["command","shift"]}],
+                "type": "basic"
+              },
+              {
+                "from": {"key_code":"end"},
+                "to": [{"key_code":"right_arrow","modifiers":["command"]}],
+                "type": "basic"
+              },
+              {
+                "from": {"key_code":"end","modifiers":{"mandatory":["shift"]}},
+                "to": [{"key_code":"right_arrow","modifiers":["command","shift"]}],
+                "type": "basic"
+              },
+              {
+                "from": {"key_code":"end","modifiers":{"mandatory":["command"]}},
+                "to": [{"key_code":"down_arrow","modifiers":["command"]}],
+                "type": "basic"
+              },
+              {
+                "from": {"key_code":"end","modifiers":{"mandatory":["command","shift"]}},
+                "to": [{"key_code":"down_arrow","modifiers":["command","shift"]}],
+                "type": "basic"
+              }
+            ]
+          },
+          {
+            "description": "Umlaute via Option",
+            "manipulators": [
+              {
+                "from": {"key_code":"a","modifiers":{"mandatory":["option"]}},
+                "to": [{"key_code":"u","modifiers":["option"]},{"key_code":"a"}],
+                "type": "basic"
+              },
+              {
+                "from": {"key_code":"o","modifiers":{"mandatory":["option"]}},
+                "to": [{"key_code":"u","modifiers":["option"]},{"key_code":"o"}],
+                "type": "basic"
+              },
+              {
+                "from": {"key_code":"u","modifiers":{"mandatory":["option"]}},
+                "to": [{"key_code":"u","modifiers":["option"]},{"key_code":"u"}],
+                "type": "basic"
+              },
+              {
+                "from": {"key_code":"a","modifiers":{"mandatory":["shift","option"]}},
+                "to": [{"key_code":"u","modifiers":["option"]},{"key_code":"a","modifiers":["shift"]}],
+                "type": "basic"
+              },
+              {
+                "from": {"key_code":"o","modifiers":{"mandatory":["shift","option"]}},
+                "to": [{"key_code":"u","modifiers":["option"]},{"key_code":"o","modifiers":["shift"]}],
+                "type": "basic"
+              },
+              {
+                "from": {"key_code":"u","modifiers":{"mandatory":["shift","option"]}},
+                "to": [{"key_code":"u","modifiers":["option"]},{"key_code":"u","modifiers":["shift"]}],
+                "type": "basic"
+              },
+              {
+                "from": {"key_code":"s","modifiers":{"mandatory":["shift","option"]}},
+                "to": [{"key_code":"s","modifiers":["option"]}],
+                "type": "basic"
+              }
+            ]
+          },
+          {
+            "description": "Enable Windows Navigation",
+            "manipulators": [
+              {
+                "from": {"key_code":"left_arrow","modifiers":{"mandatory":["command"]}},
+                "to": [{"key_code":"left_arrow","modifiers":["option"]}],
+                "type": "basic"
+              },
+              {
+                "from": {"key_code":"left_arrow","modifiers":{"mandatory":["option"]}},
+                "to": [{"key_code":"hyphen","modifiers":["control"]}],
+                "type": "basic",
+                "conditions": [{"type":"frontmost_application_if","bundle_identifiers":["^com\\.microsoft\\.VSCode$","^com\\.microsoft\\.VSCodeInsiders$"]}]
+              },
+              {
+                "from": {"key_code":"left_arrow","modifiers":{"mandatory":["option"]}},
+                "to": [{"key_code":"open_bracket","modifiers":["command"]}],
+                "type": "basic",
+                "conditions": [{"type":"frontmost_application_unless","bundle_identifiers":["^com\\.microsoft\\.VSCode$","^com\\.microsoft\\.VSCodeInsiders$"]}]
+              },
+              {
+                "from": {"key_code":"right_arrow","modifiers":{"mandatory":["command"]}},
+                "to": [{"key_code":"right_arrow","modifiers":["option"]}],
+                "type": "basic"
+              },
+              {
+                "from": {"key_code":"right_arrow","modifiers":{"mandatory":["option"]}},
+                "to": [{"key_code":"hyphen","modifiers":["control","shift"]}],
+                "type": "basic",
+                "conditions": [{"type":"frontmost_application_if","bundle_identifiers":["^com\\.microsoft\\.VSCode$","^com\\.microsoft\\.VSCodeInsiders$"]}]
+              },
+              {
+                "from": {"key_code":"right_arrow","modifiers":{"mandatory":["option"]}},
+                "to": [{"key_code":"close_bracket","modifiers":["command"]}],
+                "type": "basic",
+                "conditions": [{"type":"frontmost_application_unless","bundle_identifiers":["^com\\.microsoft\\.VSCode$","^com\\.microsoft\\.VSCodeInsiders$"]}]
+              },
+              {
+                "from": {"key_code":"up_arrow","modifiers":{"mandatory":["command"]}},
+                "to": [{"key_code":"up_arrow","modifiers":["control","fn"]}],
+                "type": "basic"
+              },
+              {
+                "from": {"key_code":"down_arrow","modifiers":{"mandatory":["command"]}},
+                "to": [{"key_code":"down_arrow","modifiers":["control","fn"]}],
+                "type": "basic"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
 }

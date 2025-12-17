@@ -1,0 +1,11 @@
+{
+  "description": "Capman p",
+  "manipulators": [
+    {
+      "from": {"key_code":"p"},
+      "to": [{"key_code":"v","modifiers":["command"]}],
+      "conditions": [{"name":"mode","type":"variable_unless","value":0}],
+      "type": "basic"
+    }
+  ]
+}

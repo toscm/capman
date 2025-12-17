@@ -1,0 +1,11 @@
+{
+  "description": "Capman u",
+  "manipulators": [
+    {
+      "conditions": [{"name":"mode","type":"variable_unless","value":0}],
+      "from": {"key_code":"u"},
+      "to": [{"key_code":"z","modifiers":["command"]}],
+      "type": "basic"
+    }
+  ]
+}

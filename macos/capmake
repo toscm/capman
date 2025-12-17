@@ -1,0 +1,290 @@
+#!/usr/bin/env python3
+"""Utility entry point for formatting, building, testing, and installing Capman configs."""
+
+from __future__ import annotations
+
+import argparse
+import json
+import shutil
+import subprocess
+import sys
+import tempfile
+from datetime import datetime, timezone
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent
+FRAGMENTS_DIR = ROOT / "capman"
+OTHERS_DIR = ROOT / "others"
+CONFIG_DIR = Path.home() / ".config" / "karabiner"
+CONFIG_FILE = CONFIG_DIR / "karabiner.json"
+BACKUP_DIR = CONFIG_DIR / "backup"
+TEST_PROFILE_NAMES = ("Capman Test Profile A", "Capman Test Profile B")
+MINI_CONFIG = {
+    "profiles": [
+        {
+            "name": "Capman Test Profile A",
+            "selected": True,
+            "complex_modifications": {"rules": []},
+            "virtual_hid_keyboard": {"keyboard_type_v2": "ansi"},
+        },
+        {
+            "name": "Capman Test Profile B",
+            "selected": False,
+            "complex_modifications": {"rules": []},
+            "virtual_hid_keyboard": {"keyboard_type_v2": "ansi"},
+        },
+    ]
+}
+BASE_PROFILE = {
+    "name": "Default profile",
+    "selected": True,
+    "virtual_hid_keyboard": {"keyboard_type_v2": "ansi"},
+    "complex_modifications": {"rules": []},
+}
+
+
+def format_manipulators(manipulators: list[dict]) -> list[str]:
+    """Return pretty-printed manipulator lines with single-line key/value pairs."""
+    lines: list[str] = []
+    for idx, manip in enumerate(manipulators):
+        lines.append("    {")
+        keys = list(manip.keys())
+        for i, key in enumerate(keys):
+            value = json.dumps(manip[key], separators=(",", ":"))
+            suffix = "," if i < len(keys) - 1 else ""
+            lines.append(f'      "{key}": {value}{suffix}')
+        suffix = "," if idx < len(manipulators) - 1 else ""
+        lines.append(f"    }}{suffix}")
+    return lines
+
+
+def _inline_json(value: object) -> str:
+    return json.dumps(value, separators=(",", ":"))
+
+
+def _indent_lines(text: str, spaces: int) -> list[str]:
+    prefix = " " * spaces
+    return [prefix + line if line else prefix for line in text.splitlines()]
+
+
+def _load_fragment_texts(directory: Path) -> list[str]:
+    if not directory.exists():
+        msg = f"Fragment directory not found: {directory}"
+        raise FileNotFoundError(msg)
+
+    fragments: list[str] = []
+    for path in sorted(directory.glob("*.json")):
+        text = path.read_text().strip()
+        if not text:
+            print(f"Skipping empty fragment: {path}")
+            continue
+        json.loads(text)
+        fragments.append(text)
+    return fragments
+
+
+def cmd_format() -> None:
+    if not FRAGMENTS_DIR.exists():
+        msg = f"Fragment directory not found: {FRAGMENTS_DIR}"
+        raise FileNotFoundError(msg)
+
+    directories = [FRAGMENTS_DIR]
+    if OTHERS_DIR.exists():
+        directories.append(OTHERS_DIR)
+
+    for directory in directories:
+        for path in sorted(directory.glob("*.json")):
+            data = json.loads(path.read_text())
+            description = json.dumps(data.get("description", ""))
+            lines = [
+                "{",
+                f"  \"description\": {description},",
+                "  \"manipulators\": [",
+            ]
+            lines.extend(format_manipulators(data.get("manipulators", [])))
+            lines.append("  ]")
+            lines.append("}")
+            path.write_text("\n".join(lines) + "\n")
+
+
+def cmd_build() -> None:
+    fragments = _load_fragment_texts(FRAGMENTS_DIR)
+    if OTHERS_DIR.exists():
+        fragments.extend(_load_fragment_texts(OTHERS_DIR))
+
+    lines = [
+        "{",
+        '  "profiles": [',
+        "    {",
+    ]
+
+    for key, value in BASE_PROFILE.items():
+        if key == "complex_modifications":
+            continue
+        lines.append(f'      "{key}": {_inline_json(value)},')
+
+    lines.append('      "complex_modifications": {')
+    if fragments:
+        lines.append('        "rules": [')
+        for idx, fragment in enumerate(fragments):
+            block_lines = _indent_lines(fragment, 10)
+            if idx < len(fragments) - 1:
+                block_lines[-1] += ","
+            lines.extend(block_lines)
+        lines.append("        ]")
+    else:
+        lines.append('        "rules": []')
+    lines.extend([
+        "      }",
+        "    }",
+        "  ]",
+        "}",
+    ])
+
+    output_path = ROOT / "karabiner.json"
+    output_path.write_text("\n".join(lines) + "\n")
+    print(f"Wrote {output_path}")
+
+
+def _read_repo_config() -> tuple[Path, dict]:
+    source = ROOT / "karabiner.json"
+    data = json.loads(source.read_text())
+    return source, data
+
+
+def _write_json(path: Path, payload: dict) -> None:
+    path.write_text(json.dumps(payload, indent=2) + "\n")
+
+
+def _ensure_profiles_listed(output: str, expected_names: list[str] | tuple[str, ...]) -> None:
+    for name in expected_names:
+        if name not in output:
+            msg = (
+                "karabiner_cli output did not contain expected profile "
+                f"'{name}'. Full output was:\n{output}"
+            )
+            raise RuntimeError(msg)
+
+
+def _karabiner_cli_available() -> bool:
+    return shutil.which("karabiner_cli") is not None
+
+
+def _list_profile_names_from_cli() -> str:
+    result = subprocess.run(
+        ["karabiner_cli", "--list-profile-names"],
+        check=True,
+        stdout=subprocess.PIPE,
+        text=True,
+    )
+    return result.stdout
+
+
+def cmd_test() -> None:
+    source_path, config = _read_repo_config()
+    print(f"Validating repo config syntax: {source_path}")
+
+    profiles = [
+        profile.get("name")
+        for profile in config.get("profiles", [])
+        if profile.get("name")
+    ]
+    if not profiles:
+        raise RuntimeError(f"No profiles defined in {source_path}; cannot run tests.")
+
+    print("JSON syntax looks good.")
+
+    if not _karabiner_cli_available():
+        print("karabiner_cli not found; skipping runtime validation.")
+        return
+
+    CONFIG_DIR.mkdir(parents=True, exist_ok=True)
+
+    backup_path: Path | None = None
+    if CONFIG_FILE.exists():
+        with tempfile.NamedTemporaryFile(
+            delete=False,
+            dir=CONFIG_DIR,
+            prefix="karabiner.test.backup.",
+            suffix=".json",
+        ) as tmp:
+            backup_path = Path(tmp.name)
+        shutil.copy2(CONFIG_FILE, backup_path)
+        print(f"Backed up existing config to {backup_path}.")
+    else:
+        print("No existing config found; test will temporarily install the repo config.")
+
+    try:
+        _write_json(CONFIG_FILE, MINI_CONFIG)
+        print("Installed minimal test configuration; verifying karabiner_cli output...")
+        mini_output = _list_profile_names_from_cli()
+        _ensure_profiles_listed(mini_output, TEST_PROFILE_NAMES)
+        print("karabiner_cli listed the expected test profiles.")
+
+        shutil.copy2(source_path, CONFIG_FILE)
+        print(f"Installed repo config from {source_path} to {CONFIG_FILE}.")
+        repo_output = _list_profile_names_from_cli()
+        _ensure_profiles_listed(repo_output, profiles)
+        print("karabiner_cli successfully listed all repo profiles.")
+    finally:
+        if backup_path and backup_path.exists():
+            shutil.move(backup_path, CONFIG_FILE)
+            print(f"Restored previous Karabiner configuration from {backup_path}.")
+        else:
+            CONFIG_FILE.unlink(missing_ok=True)
+            print(f"Removed temporary test configuration at {CONFIG_FILE}.")
+
+
+def cmd_install() -> None:
+    # Always rebuild before installing so the installed config reflects
+    # the latest fragment edits.
+    cmd_build()
+    source_path, _ = _read_repo_config()
+    CONFIG_DIR.mkdir(parents=True, exist_ok=True)
+
+    if CONFIG_FILE.exists():
+        BACKUP_DIR.mkdir(parents=True, exist_ok=True)
+        timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H-%M-%SZ")
+        backup_path = BACKUP_DIR / f"karabiner-{timestamp}.json"
+        shutil.move(CONFIG_FILE, backup_path)
+        print(f"Existing karabiner.json backed up to {backup_path}")
+
+    shutil.copy2(source_path, CONFIG_FILE)
+    print(f"Installed {source_path} to {CONFIG_FILE}")
+
+
+def _print_verdict(command: str, success: bool) -> None:
+    status = "SUCCESS" if success else "FAILURE"
+    message = f"Final verdict: {command} {status}"
+    if sys.stdout.isatty():
+        color = "\033[32m" if success else "\033[31m"
+        message = f"{color}{message}\033[0m"
+    print(message)
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Capman build helper")
+    parser.add_argument(
+        "command",
+        choices=("format", "build", "test", "install"),
+        help="Action to perform",
+    )
+    args = parser.parse_args()
+
+    dispatch = {
+        "format": cmd_format,
+        "build": cmd_build,
+        "test": cmd_test,
+        "install": cmd_install,
+    }
+    try:
+        dispatch[args.command]()
+    except Exception:
+        _print_verdict(args.command, False)
+        raise
+    else:
+        _print_verdict(args.command, True)
+
+
+if __name__ == "__main__":
+    main()

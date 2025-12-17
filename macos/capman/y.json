@@ -1,0 +1,17 @@
+{
+  "description": "Capman y",
+  "manipulators": [
+    {
+      "from": {"key_code":"y"},
+      "to": [{"key_code":"c","modifiers":["command"]}],
+      "type": "basic",
+      "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}]
+    },
+    {
+      "conditions": [{"name":"mode","type":"variable_unless","value":0}],
+      "from": {"key_code":"y"},
+      "to": [{"key_code":"c","modifiers":["command"]}],
+      "type": "basic"
+    }
+  ]
+}

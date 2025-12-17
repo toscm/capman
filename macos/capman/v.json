@@ -1,0 +1,29 @@
+{
+  "description": "Capman v",
+  "manipulators": [
+    {
+      "from": {"key_code":"v"},
+      "to": [{"set_variable":{"name":"mode","value":2}}],
+      "conditions": [{"name":"mode","type":"variable_unless","value":2},{"name":"capslock_pressed","type":"variable_if","value":1}],
+      "type": "basic"
+    },
+    {
+      "from": {"key_code":"v"},
+      "to": [{"set_variable":{"name":"mode","value":0}}],
+      "conditions": [{"name":"mode","type":"variable_if","value":2},{"name":"capslock_pressed","type":"variable_if","value":1}],
+      "type": "basic"
+    },
+    {
+      "from": {"key_code":"v"},
+      "to": [{"set_variable":{"name":"mode","value":2}}],
+      "conditions": [{"name":"mode","type":"variable_if","value":1}],
+      "type": "basic"
+    },
+    {
+      "from": {"key_code":"v"},
+      "to": [{"set_variable":{"name":"mode","value":1}}],
+      "conditions": [{"name":"mode","type":"variable_if","value":2}],
+      "type": "basic"
+    }
+  ]
+}
