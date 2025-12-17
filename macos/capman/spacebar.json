@@ -1,0 +1,53 @@
+{
+  "description": "Capman spacebar",
+  "manipulators": [
+    {
+      "conditions": [
+        {"name":"capslock_pressed","type":"variable_if","value":1},
+        {"name":"mode","type":"variable_if","value":0}
+      ],
+      "from": {"key_code":"spacebar"},
+      "to": [
+        {"set_variable":{"name":"mode","value":3}},
+        {"shell_command":"\"/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_cli\" --show_notification_window"},
+        {"set_notification_message":{"id":"capman.mode","text":"WINDOW"}}
+      ],
+      "to_after_key_up": [
+        {"set_variable":{"name":"mode","value":0}},
+        {"shell_command":"\"/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_cli\" --hide_notification_window"},
+        {"set_notification_message":{"id":"capman.mode","text":""}}
+      ],
+      "type": "basic"
+    },
+    {
+      "conditions": [{"name":"mode","type":"variable_if","value":1}],
+      "from": {"key_code":"spacebar"},
+      "to": [
+        {"set_variable":{"name":"mode","value":3}},
+        {"shell_command":"\"/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_cli\" --show_notification_window"},
+        {"set_notification_message":{"id":"capman.mode","text":"WINDOW"}}
+      ],
+      "to_after_key_up": [
+        {"set_variable":{"name":"mode","value":1}},
+        {"shell_command":"\"/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_cli\" --show_notification_window"},
+        {"set_notification_message":{"id":"capman.mode","text":"NORMAL"}}
+      ],
+      "type": "basic"
+    },
+    {
+      "conditions": [{"name":"mode","type":"variable_if","value":2}],
+      "from": {"key_code":"spacebar"},
+      "to": [
+        {"set_variable":{"name":"mode","value":3}},
+        {"shell_command":"\"/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_cli\" --show_notification_window"},
+        {"set_notification_message":{"id":"capman.mode","text":"WINDOW"}}
+      ],
+      "to_after_key_up": [
+        {"set_variable":{"name":"mode","value":2}},
+        {"shell_command":"\"/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_cli\" --show_notification_window"},
+        {"set_notification_message":{"id":"capman.mode","text":"VISUAL"}}
+      ],
+      "type": "basic"
+    }
+  ]
+}

@@ -3,25 +3,41 @@
   "manipulators": [
     {
       "from": {"key_code":"v"},
-      "to": [{"set_variable":{"name":"mode","value":2}}],
+      "to": [
+        {"set_variable":{"name":"mode","value":2}},
+        {"shell_command":"\"/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_cli\" --show_notification_window"},
+        {"set_notification_message":{"id":"capman.mode","text":"VISUAL"}}
+      ],
       "conditions": [{"name":"mode","type":"variable_unless","value":2},{"name":"capslock_pressed","type":"variable_if","value":1}],
       "type": "basic"
     },
     {
       "from": {"key_code":"v"},
-      "to": [{"set_variable":{"name":"mode","value":0}}],
+      "to": [
+        {"set_variable":{"name":"mode","value":0}},
+        {"shell_command":"\"/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_cli\" --hide_notification_window"},
+        {"set_notification_message":{"id":"capman.mode","text":""}}
+      ],
       "conditions": [{"name":"mode","type":"variable_if","value":2},{"name":"capslock_pressed","type":"variable_if","value":1}],
       "type": "basic"
     },
     {
       "from": {"key_code":"v"},
-      "to": [{"set_variable":{"name":"mode","value":2}}],
+      "to": [
+        {"set_variable":{"name":"mode","value":2}},
+        {"shell_command":"\"/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_cli\" --show_notification_window"},
+        {"set_notification_message":{"id":"capman.mode","text":"VISUAL"}}
+      ],
       "conditions": [{"name":"mode","type":"variable_if","value":1}],
       "type": "basic"
     },
     {
       "from": {"key_code":"v"},
-      "to": [{"set_variable":{"name":"mode","value":1}}],
+      "to": [
+        {"set_variable":{"name":"mode","value":1}},
+        {"shell_command":"\"/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_cli\" --show_notification_window"},
+        {"set_notification_message":{"id":"capman.mode","text":"NORMAL"}}
+      ],
       "conditions": [{"name":"mode","type":"variable_if","value":2}],
       "type": "basic"
     }

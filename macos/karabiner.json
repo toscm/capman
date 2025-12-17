@@ -11,14 +11,22 @@
             "manipulators": [
               {
                 "from": {"key_code":"a"},
-                "to": [{"set_variable":{"name":"mode","value":0}}],
+                "to": [
+                  {"set_variable":{"name":"mode","value":0}},
+                  {"shell_command":"\"/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_cli\" --hide_notification_window"},
+                  {"set_notification_message":{"id":"capman.mode","text":""}}
+                ],
                 "type": "basic",
                 "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}]
               },
               {
                 "conditions": [{"name":"mode","type":"variable_unless","value":0}],
                 "from": {"key_code":"a"},
-                "to": [{"set_variable":{"name":"mode","value":0}}],
+                "to": [
+                  {"set_variable":{"name":"mode","value":0}},
+                  {"shell_command":"\"/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_cli\" --hide_notification_window"},
+                  {"set_notification_message":{"id":"capman.mode","text":""}}
+                ],
                 "type": "basic"
               }
             ]
@@ -83,7 +91,11 @@
                 "from": {"key_code":"caps_lock","modifiers":{"optional":["any"]}},
                 "to": [{"set_variable":{"name":"capslock_pressed","value":1}}],
                 "to_after_key_up": [{"set_variable":{"name":"capslock_pressed","value":0}}],
-                "to_if_alone": [{"set_variable":{"name":"mode","value":1}}],
+                "to_if_alone": [
+                  {"set_variable":{"name":"mode","value":1}},
+                  {"shell_command":"\"/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_cli\" --show_notification_window"},
+                  {"set_notification_message":{"id":"capman.mode","text":"NORMAL"}}
+                ],
                 "type": "basic"
               },
               {
@@ -91,7 +103,11 @@
                 "from": {"key_code":"caps_lock","modifiers":{"optional":["any"]}},
                 "to": [{"set_variable":{"name":"capslock_pressed","value":1}}],
                 "to_after_key_up": [{"set_variable":{"name":"capslock_pressed","value":0}}],
-                "to_if_alone": [{"set_variable":{"name":"mode","value":0}}],
+                "to_if_alone": [
+                  {"set_variable":{"name":"mode","value":0}},
+                  {"shell_command":"\"/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_cli\" --hide_notification_window"},
+                  {"set_notification_message":{"id":"capman.mode","text":""}}
+                ],
                 "type": "basic"
               }
             ]
@@ -428,15 +444,15 @@
             "description": "Capman m",
             "manipulators": [
               {
-                "conditions": [{"name":"mode","type":"variable_unless","value":0}],
+                "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}],
                 "from": {"key_code":"m"},
-                "to": [{"key_code":"f6"}],
+                "to": [],
                 "type": "basic"
               },
               {
                 "conditions": [{"name":"mode","type":"variable_unless","value":0}],
-                "from": {"key_code":"m","modifiers":{"mandatory":["shift"]}},
-                "to": [{"key_code":"f6","modifiers":["shift"]}],
+                "from": {"key_code":"m"},
+                "to": [],
                 "type": "basic"
               }
             ]
@@ -445,15 +461,27 @@
             "description": "Capman n",
             "manipulators": [
               {
-                "conditions": [{"name":"mode","type":"variable_unless","value":0}],
+                "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}],
+                "from": {"key_code":"n","modifiers":{"mandatory":["shift"]}},
+                "to": [{"key_code":"tab","modifiers":["command","shift"]}],
+                "type": "basic"
+              },
+              {
+                "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}],
                 "from": {"key_code":"n"},
-                "to": [{"key_code":"tab","modifiers":["control","option"]}],
+                "to": [{"key_code":"tab","modifiers":["command"]}],
                 "type": "basic"
               },
               {
                 "conditions": [{"name":"mode","type":"variable_unless","value":0}],
                 "from": {"key_code":"n","modifiers":{"mandatory":["shift"]}},
-                "to": [{"key_code":"tab","modifiers":["control","option","shift"]}],
+                "to": [{"key_code":"tab","modifiers":["command","shift"]}],
+                "type": "basic"
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_unless","value":0}],
+                "from": {"key_code":"n"},
+                "to": [{"key_code":"tab","modifiers":["command"]}],
                 "type": "basic"
               }
             ]
@@ -461,6 +489,12 @@
           {
             "description": "Capman o",
             "manipulators": [
+              {
+                "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}],
+                "from": {"key_code":"o"},
+                "to": [],
+                "type": "basic"
+              },
               {
                 "conditions": [{"name":"mode","type":"variable_unless","value":0}],
                 "from": {"key_code":"o"},
@@ -472,6 +506,12 @@
           {
             "description": "Capman p",
             "manipulators": [
+              {
+                "from": {"key_code":"p"},
+                "to": [{"key_code":"v","modifiers":["command"]}],
+                "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}],
+                "type": "basic"
+              },
               {
                 "from": {"key_code":"p"},
                 "to": [{"key_code":"v","modifiers":["command"]}],
@@ -501,6 +541,12 @@
             "description": "Capman r",
             "manipulators": [
               {
+                "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}],
+                "from": {"key_code":"r"},
+                "to": [{"key_code":"z","modifiers":["command","shift"]}],
+                "type": "basic"
+              },
+              {
                 "conditions": [{"name":"mode","type":"variable_unless","value":0}],
                 "from": {"key_code":"r"},
                 "to": [{"key_code":"z","modifiers":["command","shift"]}],
@@ -512,6 +558,12 @@
             "description": "Capman s",
             "manipulators": [
               {
+                "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}],
+                "from": {"key_code":"s"},
+                "to": [{"key_code":"delete_or_backspace"}],
+                "type": "basic"
+              },
+              {
                 "conditions": [{"name":"mode","type":"variable_unless","value":0}],
                 "from": {"key_code":"s"},
                 "to": [{"key_code":"delete_or_backspace"}],
@@ -520,8 +572,73 @@
             ]
           },
           {
+            "description": "Capman spacebar",
+            "manipulators": [
+              {
+                "conditions": [
+                  {"name":"capslock_pressed","type":"variable_if","value":1},
+                  {"name":"mode","type":"variable_if","value":0}
+                ],
+                "from": {"key_code":"spacebar"},
+                "to": [
+                  {"set_variable":{"name":"mode","value":3}},
+                  {"shell_command":"\"/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_cli\" --show_notification_window"},
+                  {"set_notification_message":{"id":"capman.mode","text":"WINDOW"}}
+                ],
+                "to_after_key_up": [
+                  {"set_variable":{"name":"mode","value":0}},
+                  {"shell_command":"\"/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_cli\" --hide_notification_window"},
+                  {"set_notification_message":{"id":"capman.mode","text":""}}
+                ],
+                "type": "basic"
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_if","value":1}],
+                "from": {"key_code":"spacebar"},
+                "to": [
+                  {"set_variable":{"name":"mode","value":3}},
+                  {"shell_command":"\"/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_cli\" --show_notification_window"},
+                  {"set_notification_message":{"id":"capman.mode","text":"WINDOW"}}
+                ],
+                "to_after_key_up": [
+                  {"set_variable":{"name":"mode","value":1}},
+                  {"shell_command":"\"/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_cli\" --show_notification_window"},
+                  {"set_notification_message":{"id":"capman.mode","text":"NORMAL"}}
+                ],
+                "type": "basic"
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_if","value":2}],
+                "from": {"key_code":"spacebar"},
+                "to": [
+                  {"set_variable":{"name":"mode","value":3}},
+                  {"shell_command":"\"/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_cli\" --show_notification_window"},
+                  {"set_notification_message":{"id":"capman.mode","text":"WINDOW"}}
+                ],
+                "to_after_key_up": [
+                  {"set_variable":{"name":"mode","value":2}},
+                  {"shell_command":"\"/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_cli\" --show_notification_window"},
+                  {"set_notification_message":{"id":"capman.mode","text":"VISUAL"}}
+                ],
+                "type": "basic"
+              }
+            ]
+          },
+          {
             "description": "Capman t",
             "manipulators": [
+              {
+                "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}],
+                "from": {"key_code":"t","modifiers":{"mandatory":["shift"]}},
+                "to": [{"key_code":"tab","modifiers":["control","shift"]}],
+                "type": "basic"
+              },
+              {
+                "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}],
+                "from": {"key_code":"t"},
+                "to": [{"key_code":"tab","modifiers":["control"]}],
+                "type": "basic"
+              },
               {
                 "conditions": [{"name":"mode","type":"variable_unless","value":0}],
                 "from": {"key_code":"t"},
@@ -540,6 +657,12 @@
             "description": "Capman u",
             "manipulators": [
               {
+                "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}],
+                "from": {"key_code":"u"},
+                "to": [{"key_code":"z","modifiers":["command"]}],
+                "type": "basic"
+              },
+              {
                 "conditions": [{"name":"mode","type":"variable_unless","value":0}],
                 "from": {"key_code":"u"},
                 "to": [{"key_code":"z","modifiers":["command"]}],
@@ -552,25 +675,41 @@
             "manipulators": [
               {
                 "from": {"key_code":"v"},
-                "to": [{"set_variable":{"name":"mode","value":2}}],
+                "to": [
+                  {"set_variable":{"name":"mode","value":2}},
+                  {"shell_command":"\"/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_cli\" --show_notification_window"},
+                  {"set_notification_message":{"id":"capman.mode","text":"VISUAL"}}
+                ],
                 "conditions": [{"name":"mode","type":"variable_unless","value":2},{"name":"capslock_pressed","type":"variable_if","value":1}],
                 "type": "basic"
               },
               {
                 "from": {"key_code":"v"},
-                "to": [{"set_variable":{"name":"mode","value":0}}],
+                "to": [
+                  {"set_variable":{"name":"mode","value":0}},
+                  {"shell_command":"\"/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_cli\" --hide_notification_window"},
+                  {"set_notification_message":{"id":"capman.mode","text":""}}
+                ],
                 "conditions": [{"name":"mode","type":"variable_if","value":2},{"name":"capslock_pressed","type":"variable_if","value":1}],
                 "type": "basic"
               },
               {
                 "from": {"key_code":"v"},
-                "to": [{"set_variable":{"name":"mode","value":2}}],
+                "to": [
+                  {"set_variable":{"name":"mode","value":2}},
+                  {"shell_command":"\"/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_cli\" --show_notification_window"},
+                  {"set_notification_message":{"id":"capman.mode","text":"VISUAL"}}
+                ],
                 "conditions": [{"name":"mode","type":"variable_if","value":1}],
                 "type": "basic"
               },
               {
                 "from": {"key_code":"v"},
-                "to": [{"set_variable":{"name":"mode","value":1}}],
+                "to": [
+                  {"set_variable":{"name":"mode","value":1}},
+                  {"shell_command":"\"/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_cli\" --show_notification_window"},
+                  {"set_notification_message":{"id":"capman.mode","text":"NORMAL"}}
+                ],
                 "conditions": [{"name":"mode","type":"variable_if","value":2}],
                 "type": "basic"
               }

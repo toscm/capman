@@ -39,8 +39,8 @@ Visual Mode works similarly, but every movement becomes a selection (as pressing
   - `p`: Paste (via `v+cmd`).
 + Search & App Control
   - `f`: Find (via `f+ctrl`); `f+shift` expands to `f+shift+ctrl`.
-  - `m`: Trigger the app's F6 action (via `f6` / `f6+shift`).
-  - `n`: macOS app switcher forward/back (via `tab+ctrl+opt` / `tab+ctrl+opt+shift`).
+  - `m`: Reserved placeholder (no output).
+  - `n`: macOS app switcher forward/back (via `tab+cmd` / `tab+cmd+shift`).
   - `t`: Tab switcher forward/back (via `tab+ctrl` / `tab+ctrl+shift`).
   - `q`: Escape (via `escape`).
   - `o`: Reserved placeholder (no output).
