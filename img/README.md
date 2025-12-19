@@ -1,5 +1,9 @@
 This file describes where and how the used images were obtained.
 
+# capsmap.png
+
+Upload `capsmap.json` to <https://editor.keyboard-tools.xyz/> and export the image.
+
 # capman_dalle.png
 
 Created 2023-11-28 using [Coloring Book Hero](https://chat.openai.com/g/g-DerYxX7rA-coloring-book-hero) Plugin from ChatGPT.
@@ -20,7 +24,7 @@ Let's create this image!
 
 Here is the coloring book page featuring Capman, the computer-savvy superhero. He's ready for action on his caps lock key, equipped with an arrow and a pipe, and his cape resembling a window frame. This page should be a delightful and creative coloring activity for children. Enjoy bringing Capman to life with colors!
 
-# capman_edited.png
+## capman_edited.png
 
 Created by modifying [capman_dalle.png](capman_dalle.png) in Paint.
 

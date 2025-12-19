@@ -7,16 +7,21 @@
       "type": "basic"
     },
     {
+      "from": {"key_code":"left_arrow","modifiers":{"mandatory":["command","shift"]}},
+      "to": [{"key_code":"left_arrow","modifiers":["option","shift"]}],
+      "type": "basic"
+    },
+    {
       "from": {"key_code":"left_arrow","modifiers":{"mandatory":["option"]}},
       "to": [{"key_code":"hyphen","modifiers":["control"]}],
-      "type": "basic",
-      "conditions": [{"type":"frontmost_application_if","bundle_identifiers":["^com\\.microsoft\\.VSCode$","^com\\.microsoft\\.VSCodeInsiders$"]}]
+      "conditions": [{"type":"frontmost_application_if","bundle_identifiers":["^com\\.microsoft\\.VSCode$","^com\\.microsoft\\.VSCodeInsiders$"]}],
+      "type": "basic"
     },
     {
       "from": {"key_code":"left_arrow","modifiers":{"mandatory":["option"]}},
       "to": [{"key_code":"open_bracket","modifiers":["command"]}],
-      "type": "basic",
-      "conditions": [{"type":"frontmost_application_unless","bundle_identifiers":["^com\\.microsoft\\.VSCode$","^com\\.microsoft\\.VSCodeInsiders$"]}]
+      "conditions": [{"type":"frontmost_application_unless","bundle_identifiers":["^com\\.microsoft\\.VSCode$","^com\\.microsoft\\.VSCodeInsiders$"]}],
+      "type": "basic"
     },
     {
       "from": {"key_code":"right_arrow","modifiers":{"mandatory":["command"]}},
@@ -24,16 +29,21 @@
       "type": "basic"
     },
     {
+      "from": {"key_code":"right_arrow","modifiers":{"mandatory":["command","shift"]}},
+      "to": [{"key_code":"right_arrow","modifiers":["option","shift"]}],
+      "type": "basic"
+    },
+    {
       "from": {"key_code":"right_arrow","modifiers":{"mandatory":["option"]}},
       "to": [{"key_code":"hyphen","modifiers":["control","shift"]}],
-      "type": "basic",
-      "conditions": [{"type":"frontmost_application_if","bundle_identifiers":["^com\\.microsoft\\.VSCode$","^com\\.microsoft\\.VSCodeInsiders$"]}]
+      "conditions": [{"type":"frontmost_application_if","bundle_identifiers":["^com\\.microsoft\\.VSCode$","^com\\.microsoft\\.VSCodeInsiders$"]}],
+      "type": "basic"
     },
     {
       "from": {"key_code":"right_arrow","modifiers":{"mandatory":["option"]}},
       "to": [{"key_code":"close_bracket","modifiers":["command"]}],
-      "type": "basic",
-      "conditions": [{"type":"frontmost_application_unless","bundle_identifiers":["^com\\.microsoft\\.VSCode$","^com\\.microsoft\\.VSCodeInsiders$"]}]
+      "conditions": [{"type":"frontmost_application_unless","bundle_identifiers":["^com\\.microsoft\\.VSCode$","^com\\.microsoft\\.VSCodeInsiders$"]}],
+      "type": "basic"
     },
     {
       "from": {"key_code":"up_arrow","modifiers":{"mandatory":["command"]}},
