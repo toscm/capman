@@ -1,0 +1,11 @@
+{
+  "description": "Capman window fallback",
+  "manipulators": [
+    {
+      "conditions": [{"name":"mode","type":"variable_if","value":3}],
+      "from": {"any":"key_code"},
+      "to": [],
+      "type": "basic"
+    }
+  ]
+}

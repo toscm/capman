@@ -65,6 +65,18 @@
             "description": "Capman caps_lock",
             "manipulators": [
               {
+                "conditions": [{"name":"mode","type":"variable_if","value":3}],
+                "from": {"key_code":"caps_lock","modifiers":{"optional":["any"]}},
+                "to": [{"set_variable":{"name":"capslock_pressed","value":1}}],
+                "to_after_key_up": [{"set_variable":{"name":"capslock_pressed","value":0}}],
+                "to_if_alone": [
+                  {"set_variable":{"name":"mode","value":0}},
+                  {"shell_command":"\"/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_cli\" --hide_notification_window"},
+                  {"set_notification_message":{"id":"capman.mode","text":""}}
+                ],
+                "type": "basic"
+              },
+              {
                 "conditions": [{"name":"mode","type":"variable_unless","value":1}],
                 "from": {"key_code":"caps_lock","modifiers":{"optional":["any"]}},
                 "to": [{"set_variable":{"name":"capslock_pressed","value":1}}],
@@ -115,6 +127,35 @@
                 "conditions": [{"name":"mode","type":"variable_unless","value":0}],
                 "from": {"key_code":"d"},
                 "to": [{"key_code":"delete_or_backspace"}],
+                "type": "basic"
+              }
+            ]
+          },
+          {
+            "description": "Capman down",
+            "manipulators": [
+              {
+                "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}],
+                "from": {"key_code":"down_arrow","modifiers":{"optional":["any"]}},
+                "to": [{"key_code":"down_arrow"}],
+                "type": "basic"
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_if","value":3}],
+                "from": {"key_code":"down_arrow","modifiers":{"optional":["any"]}},
+                "to": [{"key_code":"down_arrow","modifiers":["control","option"]}],
+                "type": "basic"
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_if","value":2}],
+                "from": {"key_code":"down_arrow","modifiers":{"optional":["any"]}},
+                "to": [{"key_code":"down_arrow","modifiers":["shift"]}],
+                "type": "basic"
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_if","value":1}],
+                "from": {"key_code":"down_arrow","modifiers":{"optional":["any"]}},
+                "to": [{"key_code":"down_arrow"}],
                 "type": "basic"
               }
             ]
@@ -355,6 +396,35 @@
             ]
           },
           {
+            "description": "Capman left",
+            "manipulators": [
+              {
+                "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}],
+                "from": {"key_code":"left_arrow","modifiers":{"optional":["any"]}},
+                "to": [{"key_code":"left_arrow"}],
+                "type": "basic"
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_if","value":3}],
+                "from": {"key_code":"left_arrow","modifiers":{"optional":["any"]}},
+                "to": [{"key_code":"left_arrow","modifiers":["control","option"]}],
+                "type": "basic"
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_if","value":2}],
+                "from": {"key_code":"left_arrow","modifiers":{"optional":["any"]}},
+                "to": [{"key_code":"left_arrow","modifiers":["shift"]}],
+                "type": "basic"
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_if","value":1}],
+                "from": {"key_code":"left_arrow","modifiers":{"optional":["any"]}},
+                "to": [{"key_code":"left_arrow"}],
+                "type": "basic"
+              }
+            ]
+          },
+          {
             "description": "Capman m",
             "manipulators": [
               {
@@ -457,6 +527,35 @@
             ]
           },
           {
+            "description": "Capman right",
+            "manipulators": [
+              {
+                "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}],
+                "from": {"key_code":"right_arrow","modifiers":{"optional":["any"]}},
+                "to": [{"key_code":"right_arrow"}],
+                "type": "basic"
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_if","value":3}],
+                "from": {"key_code":"right_arrow","modifiers":{"optional":["any"]}},
+                "to": [{"key_code":"right_arrow","modifiers":["control","option"]}],
+                "type": "basic"
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_if","value":2}],
+                "from": {"key_code":"right_arrow","modifiers":{"optional":["any"]}},
+                "to": [{"key_code":"right_arrow","modifiers":["shift"]}],
+                "type": "basic"
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_if","value":1}],
+                "from": {"key_code":"right_arrow","modifiers":{"optional":["any"]}},
+                "to": [{"key_code":"right_arrow"}],
+                "type": "basic"
+              }
+            ]
+          },
+          {
             "description": "Capman s",
             "manipulators": [
               {
@@ -489,7 +588,11 @@
               {
                 "conditions": [{"name":"mode","type":"variable_if","value":3}],
                 "from": {"key_code":"spacebar"},
-                "to": [{"set_variable":{"name":"mode","value":0}}],
+                "to": [
+                  {"set_variable":{"name":"mode","value":0}},
+                  {"shell_command":"\"/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_cli\" --hide_notification_window"},
+                  {"set_notification_message":{"id":"capman.mode","text":""}}
+                ],
                 "type": "basic"
               }
             ]
@@ -564,6 +667,35 @@
               {
                 "from": {"key_code":"s","modifiers":{"mandatory":["shift","option"]}},
                 "to": [{"key_code":"s","modifiers":["option"]}],
+                "type": "basic"
+              }
+            ]
+          },
+          {
+            "description": "Capman up",
+            "manipulators": [
+              {
+                "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}],
+                "from": {"key_code":"up_arrow","modifiers":{"optional":["any"]}},
+                "to": [{"key_code":"up_arrow"}],
+                "type": "basic"
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_if","value":3}],
+                "from": {"key_code":"up_arrow","modifiers":{"optional":["any"]}},
+                "to": [{"key_code":"up_arrow","modifiers":["control","option"]}],
+                "type": "basic"
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_if","value":2}],
+                "from": {"key_code":"up_arrow","modifiers":{"optional":["any"]}},
+                "to": [{"key_code":"up_arrow","modifiers":["shift"]}],
+                "type": "basic"
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_if","value":1}],
+                "from": {"key_code":"up_arrow","modifiers":{"optional":["any"]}},
+                "to": [{"key_code":"up_arrow"}],
                 "type": "basic"
               }
             ]
@@ -678,6 +810,17 @@
                 "conditions": [{"name":"mode","type":"variable_unless","value":0}],
                 "from": {"key_code":"z","modifiers":{"optional":["any"]}},
                 "to": [{"key_code":"vk_none"}],
+                "type": "basic"
+              }
+            ]
+          },
+          {
+            "description": "Capman window fallback",
+            "manipulators": [
+              {
+                "conditions": [{"name":"mode","type":"variable_if","value":3}],
+                "from": {"any":"key_code"},
+                "to": [],
                 "type": "basic"
               }
             ]

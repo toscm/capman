@@ -14,7 +14,11 @@
     {
       "conditions": [{"name":"mode","type":"variable_if","value":3}],
       "from": {"key_code":"spacebar"},
-      "to": [{"set_variable":{"name":"mode","value":0}}],
+      "to": [
+        {"set_variable":{"name":"mode","value":0}},
+        {"shell_command":"\"/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_cli\" --hide_notification_window"},
+        {"set_notification_message":{"id":"capman.mode","text":""}}
+      ],
       "type": "basic"
     }
   ]
