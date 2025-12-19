@@ -2,6 +2,12 @@
   "description": "Capman i",
   "manipulators": [
     {
+      "conditions": [{"name":"mode","type":"variable_if","value":3}],
+      "from": {"key_code":"i"},
+      "to": [{"key_code":"up_arrow","modifiers":["control","option"]}],
+      "type": "basic"
+    },
+    {
       "from": {"key_code":"i","modifiers":{"mandatory":["shift"]}},
       "to": [{"key_code":"up_arrow","modifiers":["shift"]}],
       "type": "basic",

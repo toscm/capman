@@ -2,6 +2,12 @@
   "description": "Capman j",
   "manipulators": [
     {
+      "conditions": [{"name":"mode","type":"variable_if","value":3}],
+      "from": {"key_code":"j"},
+      "to": [{"key_code":"left_arrow","modifiers":["control","option"]}],
+      "type": "basic"
+    },
+    {
       "from": {"key_code":"j","modifiers":{"mandatory":["shift"]}},
       "to": [{"key_code":"left_arrow","modifiers":["shift"]}],
       "type": "basic",

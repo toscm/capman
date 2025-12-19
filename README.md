@@ -84,26 +84,25 @@ is only visibly in special modes, such as [control-mode](#control-mode),
 Enabling Control Mode changes your Keybindings as follows:
 
 - Movement:
-  - `i`, `j`, `k`, `l` move the cursor
-  - `w`, `b` jump by word
-  - `h`, `e` go Home/End
+  - `i`, `j`, `k`, `l` Move cursor
+  - `w`, `b` Jump by word
+  - `h`, `e` Go Home/End
   - `[`, `]` Page Up/Down
-  - `,`, `.` Ctrl+Page Up/Down
+  - `,`, `.` Ctrl + Page Up/Down
 - Editing:
   - `p`, `x`, `y` = Paste/Cut/Copy (Yank)
   - `d`, `s` = Delete/Backspace
   - `u`, `r` = Undo/Redo
   - `c` = Toggle CapsLock
-  - `/` displays available hotkeys
+  - `/` = Display available hotkeys
 - Windowing:
   - `n`, `+n` = Switch App (Ctrl+Alt+Tab)
   - `t`, `+t` = Switch Tab (Ctrl+Tab)
   - `m`, `+m` = Switch Pane (F6/Shift+F6)
-- Mode switches:
+- Misc:
   - `v` toggles Visual mode.
   - `a` or `CapsLock` returns to Insert
   - `g` enters GoTo
-- Misc:
   - `q` = Escape
 
 ### Visual Mode
@@ -124,7 +123,7 @@ keybindings are available:
   - `CapsLock`, `a`, `o`, or `v` return to the previous mode
   - `q` cancels selection
 
-### Window Mode
+### Window Mode (Windows only)
 
 - Enter via: `CapsLock & Space`
 - Window movement:

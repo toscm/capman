@@ -13,7 +13,7 @@ Visual Mode works similarly, but every movement becomes a selection (as pressing
   - `caps_lock (tap)`: Toggle Normal Mode on/off (via `mode 1 ↔ 0`).
   - `a`: Exit any Capman mode (via `mode 0`).
   - `v`: Toggle Visual Mode so nav keys add `shift` (via `mode 1 ↔ 2`).
-  - `spacebar`: Enter the mouse mode while Capman is held (via `mode 3`).
+  - `spacebar+capslock`: Enter window mode (via `mode 3`).
   - `z`: Send a literal Caps Lock press to macOS (via `caps_lock`).
 + Arrow Navigation
   - `i`: Move up (via `up`)
