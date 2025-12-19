@@ -2,15 +2,15 @@
   "description": "Capman p",
   "manipulators": [
     {
-      "from": {"key_code":"p"},
-      "to": [{"key_code":"v","modifiers":["command"]}],
       "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}],
+      "from": {"key_code":"p", "modifiers":{"optional":["any"]}},
+      "to": [{"key_code":"v","modifiers":["command"]}],
       "type": "basic"
     },
     {
-      "from": {"key_code":"p"},
-      "to": [{"key_code":"v","modifiers":["command"]}],
       "conditions": [{"name":"mode","type":"variable_unless","value":0}],
+      "from": {"key_code":"p", "modifiers":{"optional":["any"]}},
+      "to": [{"key_code":"v","modifiers":["command"]}],
       "type": "basic"
     }
   ]

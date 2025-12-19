@@ -14,7 +14,6 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 FRAGMENTS_DIR = ROOT / "capman"
-OTHERS_DIR = ROOT / "others"
 CONFIG_DIR = Path.home() / ".config" / "karabiner"
 CONFIG_FILE = CONFIG_DIR / "karabiner.json"
 BACKUP_DIR = CONFIG_DIR / "backup"
@@ -88,12 +87,7 @@ def cmd_format() -> None:
         msg = f"Fragment directory not found: {FRAGMENTS_DIR}"
         raise FileNotFoundError(msg)
 
-    directories = [FRAGMENTS_DIR]
-    if OTHERS_DIR.exists():
-        directories.append(OTHERS_DIR)
-
-    for directory in directories:
-        for path in sorted(directory.glob("*.json")):
+    for path in sorted(FRAGMENTS_DIR.glob("*.json")):
             data = json.loads(path.read_text())
             description = json.dumps(data.get("description", ""))
             lines = [
@@ -109,8 +103,6 @@ def cmd_format() -> None:
 
 def cmd_build() -> None:
     fragments = _load_fragment_texts(FRAGMENTS_DIR)
-    if OTHERS_DIR.exists():
-        fragments.extend(_load_fragment_texts(OTHERS_DIR))
 
     lines = [
         "{",

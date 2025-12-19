@@ -1,9 +1,5 @@
 # Contributing to Capman
 
-Thanks for helping improve Capman! This guide starts with a quick overview for
-new contributors and then dives into the technical details you need for daily
-development on Windows (AutoHotkey) and macOS (Karabiner).
-
 ## Quick Overview
 
 - **Goal:** Turn CapsLock into a modal workflow for navigation, editing, window,
@@ -14,9 +10,6 @@ development on Windows (AutoHotkey) and macOS (Karabiner).
 - **How to test quickly:** run `capman.ahk`, press `CapsLock + r` to reload after
   editing, and exercise the bindings you touched.
 
-If that sounds good, keep reading for setup, repo layout, and contribution
-expectations.
-
 ## Environment Setup
 
 ### Windows (AutoHotkey)
@@ -25,11 +18,9 @@ expectations.
 2. Clone this repository and open it in your editor.
 3. Launch Capman via:
    ```powershell
-   . 'C:/Program Files/Autohotkey/v2/AutoHotkey64_UIA.exe' /ErrorStdOut=utf-8 'C:/path/to/capman/capman.ahk'
+   . 'C:/Program Files/Autohotkey/v2/AutoHotkey64_UIA.exe' 'C:/path/to/capman/capman.ahk'
    ```
-4. Keep that shell handy so you can stop and restart the script while testing.
-5. Use `CapsLock + r` whenever you change the scripts—this reloads Capman
-   without restarting AutoHotkey.
+4. Use `CapsLock + r` to reload Capman without restarting AutoHotkey.
 
 ### macOS (Karabiner)
 
@@ -100,4 +91,4 @@ expectations.
 - For documentation updates, build/preview Markdown (VS Code preview is fine) to
   ensure formatting is correct.
 
-Thanks again for contributing—happy hacking!
+Thanks for contributing and happy hacking!

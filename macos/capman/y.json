@@ -2,16 +2,21 @@
   "description": "Capman y",
   "manipulators": [
     {
-      "from": {"key_code":"y"},
+      "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}],
+      "from": {"key_code":"y","modifiers":{"optional":["any"]}},
       "to": [{"key_code":"c","modifiers":["command"]}],
-      "type": "basic",
-      "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}]
+      "type": "basic"
     },
     {
       "conditions": [{"name":"mode","type":"variable_unless","value":0}],
-      "from": {"key_code":"y"},
+      "from": {"key_code":"y","modifiers":{"optional":["any"]}},
       "to": [{"key_code":"c","modifiers":["command"]}],
       "type": "basic"
+    },
+    {
+      "type": "basic",
+      "from": {"key_code":"y","modifiers":{"mandatory":["command"]}},
+      "to": [{"key_code":"z","modifiers":["command","shift"]}]
     }
   ]
 }

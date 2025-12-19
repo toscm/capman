@@ -2,26 +2,6 @@
   "description": "Home/End Support",
   "manipulators": [
     {
-      "from": {"key_code":"home"},
-      "to": [{"key_code":"left_arrow","modifiers":["command"]}],
-      "type": "basic"
-    },
-    {
-      "from": {"key_code":"home","modifiers":{"mandatory":["command"]}},
-      "to": [{"key_code":"up_arrow","modifiers":["command"]}],
-      "type": "basic"
-    },
-    {
-      "from": {"key_code":"home","modifiers":{"mandatory":["shift"]}},
-      "to": [{"key_code":"left_arrow","modifiers":["command","shift"]}],
-      "type": "basic"
-    },
-    {
-      "from": {"key_code":"home","modifiers":{"mandatory":["command","shift"]}},
-      "to": [{"key_code":"up_arrow","modifiers":["command","shift"]}],
-      "type": "basic"
-    },
-    {
       "from": {"key_code":"end"},
       "to": [{"key_code":"right_arrow","modifiers":["command"]}],
       "type": "basic"

@@ -2,16 +2,16 @@
   "description": "Capman d",
   "manipulators": [
     {
+      "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}],
       "from": {"key_code":"d"},
       "to": [{"key_code":"delete_forward"}],
-      "type": "basic",
-      "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}]
+      "type": "basic"
     },
     {
-      "from": {"key_code":"d","modifiers":{"mandatory":["shift"]}},
+      "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}],
+      "from": {"key_code":"d"},
       "to": [{"key_code":"delete_or_backspace"}],
-      "type": "basic",
-      "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}]
+      "type": "basic"
     },
     {
       "conditions": [{"name":"mode","type":"variable_unless","value":0}],
@@ -21,7 +21,7 @@
     },
     {
       "conditions": [{"name":"mode","type":"variable_unless","value":0}],
-      "from": {"key_code":"d","modifiers":{"mandatory":["shift"]}},
+      "from": {"key_code":"d"},
       "to": [{"key_code":"delete_or_backspace"}],
       "type": "basic"
     }

@@ -2,16 +2,6 @@
   "description": "Capman a",
   "manipulators": [
     {
-      "conditions": [{"type":"variable_if","name":"capslock_pressed","value":1}],
-      "from": {"key_code":"a"},
-      "to": [
-        {"set_variable":{"name":"mode","value":0}},
-        {"shell_command":"\"/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_cli\" --hide_notification_window"},
-        {"set_notification_message":{"id":"capman.mode","text":""}}
-      ],
-      "type": "basic"
-    },
-    {
       "conditions": [{"type":"variable_unless","name":"mode","value":0}],
       "from": {"key_code":"a"},
       "to": [

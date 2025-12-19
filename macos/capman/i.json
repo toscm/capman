@@ -2,39 +2,27 @@
   "description": "Capman i",
   "manipulators": [
     {
+      "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}],
+      "from": {"key_code":"i","modifiers":{"optional":["any"]}},
+      "to": [{"key_code":"up_arrow"}],
+      "type": "basic"
+    },
+    {
       "conditions": [{"name":"mode","type":"variable_if","value":3}],
-      "from": {"key_code":"i"},
+      "from": {"key_code":"i","modifiers":{"optional":["any"]}},
       "to": [{"key_code":"up_arrow","modifiers":["control","option"]}],
       "type": "basic"
     },
     {
-      "from": {"key_code":"i","modifiers":{"mandatory":["shift"]}},
-      "to": [{"key_code":"up_arrow","modifiers":["shift"]}],
-      "type": "basic",
-      "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}]
-    },
-    {
-      "from": {"key_code":"i"},
-      "to": [{"key_code":"up_arrow"}],
-      "type": "basic",
-      "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}]
-    },
-    {
-      "conditions": [{"name":"mode","type":"variable_if","value":1}],
-      "from": {"key_code":"i","modifiers":{"mandatory":["shift"]}},
-      "to": [{"key_code":"up_arrow","modifiers":["shift"]}],
-      "type": "basic"
-    },
-    {
-      "conditions": [{"name":"mode","type":"variable_if","value":1}],
-      "from": {"key_code":"i"},
-      "to": [{"key_code":"up_arrow"}],
-      "type": "basic"
-    },
-    {
       "conditions": [{"name":"mode","type":"variable_if","value":2}],
-      "from": {"key_code":"i"},
+      "from": {"key_code":"i","modifiers":{"optional":["any"]}},
       "to": [{"key_code":"up_arrow","modifiers":["shift"]}],
+      "type": "basic"
+    },
+    {
+      "conditions": [{"name":"mode","type":"variable_if","value":1}],
+      "from": {"key_code":"i","modifiers":{"optional":["any"]}},
+      "to": [{"key_code":"up_arrow"}],
       "type": "basic"
     }
   ]
