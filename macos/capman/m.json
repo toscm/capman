@@ -3,8 +3,8 @@
   "manipulators": [
     {
       "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}],
-      "from": {"key_code":"m"},
-      "to": [],
+      "from": {"key_code":"m","modifiers":{"optional":["any"]}},
+      "to": [{"key_code":"j","modifiers":["shift","control","option","command"]}],
       "type": "basic"
     },
     {

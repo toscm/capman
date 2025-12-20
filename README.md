@@ -21,7 +21,7 @@ and Window Mode.
 3. Copy the contents of [karabiner.json](capman/karabiner.json) into your
    Karabiner configuration file located at `~/.config/karabiner/karabiner.json`
 4. If you already have other complex modifications, make sure to merge the rules
-   properly
+   properly.
 
 ## Features
 
@@ -29,38 +29,43 @@ and Window Mode.
 
 As soon as you start Capman, the native functionality of your `Capslock` key is
 disabled and the key behaves like an additional modifier. Holding CapsLock
-temporarily engages the same bindings that are described in
-[Control Mode](#control-mode), so you can navigate without toggling a
-mode first.
+temporarily enables the same bindings as [Control Mode](#control-mode), so you
+can navigate without toggling a mode first.
 
 ### Control Mode
 
 To enable Control Mode, press `CapsLock` once without any other keys. Your
 current mode is indicated by a status line at the top right of your primary
-monitor. By default, the status bar is only visible in special modes, such as
-[Control Mode](#control-mode), [Visual Mode](#visual-mode) or [Window
-Mode](#window-mode). Control Mode enables the following bindings:
+monitor (bottom right on MacOS). By default, the status bar is only visible in
+special modes, such as [Control Mode](#control-mode), [Visual
+Mode](#visual-mode) or [Window Mode](#window-mode). Control Mode enables the
+following bindings:
 
-- Movement:
+- Text Movement:
   - `i`, `j`, `k`, `l` Move cursor
   - `w`, `b` Jump by word
   - `e`, `h` Go to End/Start (Home) of Line
   - `t`, `o` Go to Top/Bottom of Document
   - `[`, `]` Page Up/Down
   - `,`, `.` Ctrl Page Up/Down
-- Editing:a
+- Editing:
   - `p`, `x`, `y` Paste/Cut/Copy (Yank)
   - `d`, `s` Delete/Backspace
   - `u`, `r` Undo/Redo
+- Window Movement:
+  - `n` Next Window[^next-window]
+  - `m` Next Pane[^homerow]
+  - `f` Find Anything[^homerow]
 - Misc:
   - `c` Toggle CapsLock
   - `/` Display available hotkeys
   - `a` Exit Control Mode
-  - `f` Focus anything (via Hunt-and-Peck/Homerow)
   - `v` Enter Visual Mode
-  - `g` Go to anything (reserved for future use)
   - `q` Escape
   - `CapsLock` Toggle Control Mode
+- Reserved for Future Use:
+  - `z` Maybe zoom
+  - `g` Maybe go to anything
 
 ### Visual Mode
 
@@ -86,11 +91,11 @@ keybindings are available:
   - `CapsLock + Space` Enter Window Mode
   - `CapsLock`, `a`, `Space` Exit Window Mode
 - Move Windows:
-  - `i`, `j`, `k`, `l` Tile Up/Left/Down/Right
+  - `i`, `j`, `k`, `l` Tile Up/Left/Down/Right[^tile-windows]
 - Select Windows:
-  - `n` Focus next window
+  - `n` Focus next window[^next-window]
 - Resize Windows:
-  - `Enter`, `f` Maximize active window
+  - `Enter`, `f` Maximize active window[^tile-windows]
   - `m` Minimize active window
 - Close Windows:
   - `q` Quit current app
@@ -100,3 +105,13 @@ keybindings are available:
 
 Want to add a feature or port a binding? See [CONTRIBUTING.md](CONTRIBUTING.md)
 for setup instructions, repository layout, and submission guidelines.
+
+[^next-window]: `Next Window` sends `Alt+Tab`, which is unbound by default on
+  MacOS. To enable `AltTab` functionality on MacOS as well, please install.
+  [alt-tab-macos](https://github.com/lwouis/alt-tab-macos).
+[^homerow]: `CapsLock+m` (Next Pane) and `CapsLock+f` (Find Anything) send the
+  default shortcuts for triggering [Homerow](https://homerow.app/). I.e., they
+  will only work, if you have Homerow installed and running.
+[^tile-windows]: On macOS, window tiling and maximizing is achieved by sending
+  the default [Rectangle](https://rectangleapp.com/) shortcuts. I.e., these
+  bindings will only work, if you have Rectangle installed and running.
