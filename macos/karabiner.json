@@ -221,22 +221,26 @@
             "description": "Home/End Support",
             "manipulators": [
               {
-                "from": {"key_code":"end"},
+                "conditions": [{"name":"mode","type":"variable_unless","value":2}],
+                "from": {"key_code":"end","modifiers":{"optional":["shift"]}},
                 "to": [{"key_code":"right_arrow","modifiers":["command"]}],
                 "type": "basic"
               },
               {
-                "from": {"key_code":"end","modifiers":{"mandatory":["shift"]}},
-                "to": [{"key_code":"right_arrow","modifiers":["command","shift"]}],
-                "type": "basic"
-              },
-              {
-                "from": {"key_code":"end","modifiers":{"mandatory":["command"]}},
+                "conditions": [{"name":"mode","type":"variable_unless","value":2}],
+                "from": {"key_code":"end","modifiers":{"mandatory":["command"],"optional":["shift"]}},
                 "to": [{"key_code":"down_arrow","modifiers":["command"]}],
                 "type": "basic"
               },
               {
-                "from": {"key_code":"end","modifiers":{"mandatory":["command","shift"]}},
+                "conditions": [{"name":"mode","type":"variable_if","value":2}],
+                "from": {"key_code":"end"},
+                "to": [{"key_code":"right_arrow","modifiers":["command","shift"]}],
+                "type": "basic"
+              },
+              {
+                "conditions": [{"name":"mode","type":"variable_if","value":2}],
+                "from": {"key_code":"end","modifiers":{"mandatory":["command"]}},
                 "to": [{"key_code":"down_arrow","modifiers":["command","shift"]}],
                 "type": "basic"
               }
@@ -297,22 +301,26 @@
             "description": "Home/End Support",
             "manipulators": [
               {
-                "from": {"key_code":"home"},
+                "conditions": [{"name":"mode","type":"variable_unless","value":2}],
+                "from": {"key_code":"home", "modifiers":{"optional":["shift"]}},
                 "to": [{"key_code":"left_arrow","modifiers":["command"]}],
                 "type": "basic"
               },
               {
-                "from": {"key_code":"home","modifiers":{"mandatory":["command"]}},
+                "conditions": [{"name":"mode","type":"variable_unless","value":2}],
+                "from": {"key_code":"home","modifiers":{"mandatory":["command"],"optional":["shift"]}},
                 "to": [{"key_code":"up_arrow","modifiers":["command"]}],
                 "type": "basic"
               },
               {
-                "from": {"key_code":"home","modifiers":{"mandatory":["shift"]}},
+                "conditions": [{"name":"mode","type":"variable_if","value":2}],
+                "from": {"key_code":"home"},
                 "to": [{"key_code":"left_arrow","modifiers":["command","shift"]}],
                 "type": "basic"
               },
               {
-                "from": {"key_code":"home","modifiers":{"mandatory":["command","shift"]}},
+                "conditions": [{"name":"mode","type":"variable_if","value":2}],
+                "from": {"key_code":"home","modifiers":{"mandatory":["command"]}},
                 "to": [{"key_code":"up_arrow","modifiers":["command","shift"]}],
                 "type": "basic"
               }
@@ -875,6 +883,17 @@
                 "type": "basic"
               },
               {
+                "conditions": [{"name":"mode","type":"variable_if","value":2}],
+                "from": {"key_code":"y"},
+                "to": [
+                  {"key_code":"c","modifiers":["command"]},
+                  {"set_variable":{"name":"mode","value":1}},
+                  {"shell_command":"\"/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_cli\" --show_notification_window"},
+                  {"set_notification_message":{"id":"capman.mode","text":"NORMAL"}}
+                ],
+                "type": "basic"
+              },
+              {
                 "conditions": [{"name":"mode","type":"variable_unless","value":0}],
                 "from": {"key_code":"y"},
                 "to": [{"key_code":"c","modifiers":["command"]}],
@@ -908,6 +927,7 @@
             "description": "Capman window fallback",
             "manipulators": [
               {
+                "key_code": "caps_lock",
                 "conditions": [{"name":"mode","type":"variable_if","value":3}],
                 "from": {"any":"key_code"},
                 "to": [],

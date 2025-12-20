@@ -2,6 +2,7 @@
   "description": "Capman window fallback",
   "manipulators": [
     {
+      "key_code": "caps_lock",
       "conditions": [{"name":"mode","type":"variable_if","value":3}],
       "from": {"any":"key_code"},
       "to": [],
