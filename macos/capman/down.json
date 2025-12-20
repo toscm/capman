@@ -3,25 +3,25 @@
   "manipulators": [
     {
       "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}],
-      "from": {"key_code":"down_arrow","modifiers":{"optional":["any"]}},
+      "from": {"key_code":"down_arrow","modifiers":{"optional":["shift","control","option"]}},
       "to": [{"key_code":"down_arrow"}],
       "type": "basic"
     },
     {
       "conditions": [{"name":"mode","type":"variable_if","value":3}],
-      "from": {"key_code":"down_arrow","modifiers":{"optional":["any"]}},
+      "from": {"key_code":"down_arrow","modifiers":{"optional":["shift","control","option"]}},
       "to": [{"key_code":"down_arrow","modifiers":["control","option"]}],
       "type": "basic"
     },
     {
       "conditions": [{"name":"mode","type":"variable_if","value":2}],
-      "from": {"key_code":"down_arrow","modifiers":{"optional":["any"]}},
+      "from": {"key_code":"down_arrow","modifiers":{"optional":["shift","control","option"]}},
       "to": [{"key_code":"down_arrow","modifiers":["shift"]}],
       "type": "basic"
     },
     {
       "conditions": [{"name":"mode","type":"variable_if","value":1}],
-      "from": {"key_code":"down_arrow","modifiers":{"optional":["any"]}},
+      "from": {"key_code":"down_arrow","modifiers":{"optional":["shift","control","option"]}},
       "to": [{"key_code":"down_arrow"}],
       "type": "basic"
     }

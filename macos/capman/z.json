@@ -3,7 +3,7 @@
   "manipulators": [
     {
       "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}],
-      "from": {"key_code":"z","modifiers":{"optional":["any"]}},
+      "from": {"key_code":"z"},
       "to": [{"key_code":"vk_none"}],
       "type": "basic"
     },

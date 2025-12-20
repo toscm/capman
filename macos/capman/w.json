@@ -3,19 +3,19 @@
   "manipulators": [
     {
       "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}],
-      "from": {"key_code":"w","modifiers":{"optional":["any"]}},
+      "from": {"key_code":"w","modifiers":{"optional":["shift"]}},
       "to": [{"key_code":"right_arrow","modifiers":["option"]}],
       "type": "basic"
     },
     {
       "conditions": [{"name":"mode","type":"variable_if","value":2}],
-      "from": {"key_code":"w","modifiers":{"optional":["any"]}},
+      "from": {"key_code":"w","modifiers":{"optional":["shift"]}},
       "to": [{"key_code":"right_arrow","modifiers":["option","shift"]}],
       "type": "basic"
     },
     {
       "conditions": [{"name":"mode","type":"variable_if","value":1}],
-      "from": {"key_code":"w","modifiers":{"optional":["any"]}},
+      "from": {"key_code":"w","modifiers":{"optional":["shift"]}},
       "to": [{"key_code":"right_arrow","modifiers":["option"]}],
       "type": "basic"
     }

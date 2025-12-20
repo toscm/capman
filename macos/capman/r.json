@@ -3,13 +3,13 @@
   "manipulators": [
     {
       "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}],
-      "from": {"key_code":"r", "modifiers":{"optional":["any"]}},
+      "from": {"key_code":"r"},
       "to": [{"key_code":"z","modifiers":["command","shift"]}],
       "type": "basic"
     },
     {
       "conditions": [{"name":"mode","type":"variable_unless","value":0}],
-      "from": {"key_code":"r", "modifiers":{"optional":["any"]}},
+      "from": {"key_code":"r"},
       "to": [{"key_code":"z","modifiers":["command","shift"]}],
       "type": "basic"
     }
