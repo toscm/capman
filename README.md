@@ -11,7 +11,7 @@ and Window Mode.
 1. Clone this repo
 2. Install [AutoHotkey](https://www.autohotkey.com/) (AHK)
 3. Start `capman.ahk` via command
-   `. 'C:/Program Files/Autohotkey/v2/AutoHotkey64_UIA.exe' 'c:/Users/tobi/capman/capman.ahk' `
+   `. 'C:/Program Files/Autohotkey/v2/AutoHotkey64_UIA.exe' 'capman/capman.ahk' `
    (replace the paths with your own paths)
 
 ## Installation (MacOS)
