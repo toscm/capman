@@ -1,0 +1,8 @@
+[
+  {
+    "from": {"key_code":"caps_lock"},
+    "conditions": [{"name":"mode","type":"variable_if","value":3}],
+    "to": [],
+    "type": "basic"
+  }
+]

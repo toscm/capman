@@ -1,0 +1,370 @@
+#!/usr/bin/env python3
+"""Utility entry point for formatting, building, testing, and installing Capman configs."""
+
+from __future__ import annotations
+
+import argparse
+import json
+import re
+import shutil
+import subprocess
+import sys
+from copy import deepcopy
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent
+FRAGMENTS_DIR = ROOT / "capman"
+CONFIG_DIR = Path.home() / ".config" / "karabiner"
+CONFIG_FILE = CONFIG_DIR / "karabiner.json"
+COMPLEX_MODS_DIR = CONFIG_DIR / "assets" / "complex_modifications"
+CAPMAN_VERSION = "0.2.0"
+CAPMAN_BUNDLE_NAME = f"capman-v{CAPMAN_VERSION}.json"
+CAPMAN_RULE_DESCRIPTION = f"Capman (v{CAPMAN_VERSION})"
+CAPMAN_DESCRIPTION_REGEX = re.compile(
+    r"^Capman(?: \(v(?P<version>[0-9]+(?:\.[0-9]+)*)\))?$"
+)
+BASE_PROFILE = {
+    "name": "Default profile",
+    "selected": True,
+    "virtual_hid_keyboard": {"keyboard_type_v2": "ansi"},
+    "complex_modifications": {"rules": []},
+}
+CAPMAN_COMPLEX_METADATA = {
+    "title": f"Capman (v{CAPMAN_VERSION})",
+    "maintainers": ["toscm"],
+    "homepage": "https://github.com/toscm/capman",
+    "import_url": (
+        f"https://github.com/toscm/capman/blob/main/macos/{CAPMAN_BUNDLE_NAME}"
+    ),
+}
+
+
+def _inline_json(value: object) -> str:
+    return json.dumps(value, separators=(",", ":"))
+
+
+def _extract_manipulators(payload: object, source: Path) -> list[dict]:
+    if isinstance(payload, dict):
+        manipulators = payload.get("manipulators")
+        if manipulators is None:
+            msg = f"File {source} is missing 'manipulators' list."
+            raise ValueError(msg)
+    elif isinstance(payload, list):
+        manipulators = payload
+    else:
+        msg = f"Unsupported JSON structure in {source}"
+        raise TypeError(msg)
+
+    if not isinstance(manipulators, list):
+        msg = f"Manipulators in {source} must be a list."
+        raise TypeError(msg)
+
+    for manip in manipulators:
+        if not isinstance(manip, dict):
+            msg = f"Manipulator entries in {source} must be objects."
+            raise TypeError(msg)
+
+    return manipulators
+
+
+def _load_manipulator_sets(directory: Path) -> list[list[dict]]:
+    if not directory.exists():
+        msg = f"Fragment directory not found: {directory}"
+        raise FileNotFoundError(msg)
+
+    fragments: list[list[dict]] = []
+    for path in sorted(directory.glob("*.json")):
+        text = path.read_text().strip()
+        if not text:
+            print(f"Skipping empty fragment: {path}")
+            continue
+        data = json.loads(text)
+        fragments.append(_extract_manipulators(data, path))
+    return fragments
+
+
+def _output_path() -> Path:
+    return ROOT / CAPMAN_BUNDLE_NAME
+
+
+def _format_manipulator_block(manipulators: list[dict]) -> str:
+    lines = ["["]
+    for idx, manip in enumerate(manipulators):
+        lines.append("  {")
+        keys = list(manip.keys())
+        for key_idx, key in enumerate(keys):
+            value = _inline_json(manip[key])
+            suffix = "," if key_idx < len(keys) - 1 else ""
+            lines.append(f'    "{key}": {value}{suffix}')
+        block_suffix = "," if idx < len(manipulators) - 1 else ""
+        lines.append(f"  }}{block_suffix}")
+    lines.append("]")
+    return "\n".join(lines) + "\n"
+
+
+def _is_capman_description(value: object) -> bool:
+    return isinstance(value, str) and CAPMAN_DESCRIPTION_REGEX.match(value) is not None
+
+
+def cmd_format() -> None:
+    if not FRAGMENTS_DIR.exists():
+        msg = f"Fragment directory not found: {FRAGMENTS_DIR}"
+        raise FileNotFoundError(msg)
+
+    for path in sorted(FRAGMENTS_DIR.glob("*.json")):
+        raw_text = path.read_text()
+        text = raw_text.strip()
+        payload = json.loads(text) if text else []
+        manipulators = _extract_manipulators(payload, path)
+        formatted = _format_manipulator_block(manipulators)
+        path.write_text(formatted)
+
+
+def cmd_build() -> Path:
+    fragments = _load_manipulator_sets(FRAGMENTS_DIR)
+    manipulators: list[dict] = [manip for block in fragments for manip in block]
+    rule = {"description": CAPMAN_RULE_DESCRIPTION, "manipulators": manipulators}
+    rules_payload = [rule]
+
+    output_path = _output_path()
+
+    payload = {**CAPMAN_COMPLEX_METADATA, "rules": rules_payload}
+    _write_capman_bundle(output_path, payload)
+
+    print(f"Wrote {output_path}")
+    return output_path
+
+
+def _write_json(path: Path, payload: dict) -> None:
+    path.write_text(json.dumps(payload, indent=2) + "\n")
+
+
+def _append_json_key_value(
+    lines: list[str], key: str, value: object, indent_spaces: int, suffix: str
+) -> None:
+    prefix = " " * indent_spaces
+    if isinstance(value, (dict, list)):
+        value_text = json.dumps(value, indent=2)
+        value_lines = value_text.splitlines()
+        first_line = value_lines[0]
+        lines.append(f'{prefix}"{key}": {first_line}')
+        for extra_line in value_lines[1:]:
+            lines.append(f"{prefix}{extra_line}")
+        lines[-1] = f"{lines[-1]}{suffix}"
+    else:
+        value_text = json.dumps(value, separators=(",", ":"))
+        lines.append(f'{prefix}"{key}": {value_text}{suffix}')
+
+
+def _write_capman_bundle(path: Path, payload: dict) -> None:
+    lines: list[str] = ["{"]
+    items = list(payload.items())
+    for idx, (key, value) in enumerate(items):
+        suffix = "," if idx < len(items) - 1 else ""
+        if key == "rules" and isinstance(value, list):
+            lines.append('  "rules": [')
+            for rule_idx, rule in enumerate(value):
+                rule_suffix = "," if rule_idx < len(value) - 1 else ""
+                if not isinstance(rule, dict):
+                    raise TypeError("Each rule must be an object.")
+                lines.append("    {")
+                rule_items = list(rule.items())
+                for inner_idx, (rule_key, rule_value) in enumerate(rule_items):
+                    inner_suffix = "," if inner_idx < len(rule_items) - 1 else ""
+                    if rule_key == "manipulators":
+                        block_text = _format_manipulator_block(rule_value).rstrip()
+                        block_lines = block_text.splitlines()
+                        if not block_lines:
+                            block_lines = ["[]"]
+                        lines.append(f'      "manipulators": {block_lines[0]}')
+                        for extra_line in block_lines[1:]:
+                            lines.append(f"      {extra_line}")
+                        lines[-1] = f"{lines[-1]}{inner_suffix}"
+                    else:
+                        _append_json_key_value(
+                            lines,
+                            rule_key,
+                            rule_value,
+                            indent_spaces=6,
+                            suffix=inner_suffix,
+                        )
+                lines.append(f"    }}{rule_suffix}")
+            lines.append(f"  ]{suffix}")
+        else:
+            _append_json_key_value(lines, key, value, indent_spaces=2, suffix=suffix)
+    lines.append("}")
+    path.write_text("\n".join(lines) + "\n")
+
+
+def _load_capman_rule_from_bundle(path: Path) -> dict:
+    data = json.loads(path.read_text())
+    rules = data.get("rules")
+    if not isinstance(rules, list):
+        msg = f"capman bundle at {path} does not contain a 'rules' list."
+        raise ValueError(msg)
+
+    for rule in rules:
+        if not isinstance(rule, dict):
+            continue
+        description = rule.get("description")
+        if not _is_capman_description(description):
+            continue
+        manipulators = rule.get("manipulators")
+        if not isinstance(manipulators, list):
+            msg = "Capman rule inside bundle must expose a 'manipulators' list."
+            raise ValueError(msg)
+        rule_copy = deepcopy(rule)
+        rule_copy["description"] = CAPMAN_RULE_DESCRIPTION
+        return rule_copy
+
+    raise ValueError(f"Capman rule not found in bundle at {path}.")
+
+
+def _upsert_capman_rule(config_path: Path, capman_rule: dict) -> str:
+    if not config_path.exists():
+        msg = (
+            f"Karabiner configuration not found at {config_path}; "
+            "cannot update Capman rule."
+        )
+        raise FileNotFoundError(msg)
+
+    payload = json.loads(config_path.read_text())
+    profiles = payload.get("profiles")
+    if not isinstance(profiles, list):
+        msg = f"Profiles list missing or invalid in {config_path}."
+        raise ValueError(msg)
+
+    default_profile = next(
+        (profile for profile in profiles if profile.get("name") == BASE_PROFILE["name"]),
+        None,
+    )
+    if default_profile is None:
+        msg = (
+            f"Default profile '{BASE_PROFILE['name']}' not found in {config_path}."
+        )
+        raise ValueError(msg)
+
+    complex_mods = default_profile.setdefault("complex_modifications", {})
+    if not isinstance(complex_mods, dict):
+        msg = "'complex_modifications' must be an object on the Default profile."
+        raise TypeError(msg)
+
+    rules = complex_mods.setdefault("rules", [])
+    if not isinstance(rules, list):
+        msg = "'rules' within complex_modifications must be a list."
+        raise TypeError(msg)
+
+    existing_rule = next(
+        (rule for rule in rules if _is_capman_description(rule.get("description"))),
+        None,
+    )
+
+    if existing_rule:
+        existing_rule["manipulators"] = deepcopy(capman_rule["manipulators"])
+        existing_rule["description"] = CAPMAN_RULE_DESCRIPTION
+        action = "updated"
+    else:
+        rules.append(deepcopy(capman_rule))
+        action = "created"
+
+    _write_json(config_path, payload)
+    return action
+
+
+def _karabiner_cli_available() -> bool:
+    return shutil.which("karabiner_cli") is not None
+
+
+def _lint_complex_modifications(path: Path) -> None:
+    if not _karabiner_cli_available():
+        print("karabiner_cli not found; skipping runtime validation.")
+        return
+    print(f"Running karabiner_cli --lint-complex-modifications on {path}...")
+    result = subprocess.run(
+        ["karabiner_cli", "--lint-complex-modifications", str(path)],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+    if result.returncode != 0:
+        error_output = result.stdout.strip()
+        if error_output:
+            if sys.stderr.isatty():
+                error_output = f"\033[31m{error_output}\033[0m"
+            print(error_output, file=sys.stderr)
+        raise RuntimeError("karabiner_cli lint failed.")
+    print("karabiner_cli lint completed successfully.")
+
+
+def cmd_test() -> None:
+    output_path = cmd_build()
+    print(f"Validating repo config syntax: {output_path}")
+
+    config = json.loads(output_path.read_text())
+    print("JSON syntax looks good.")
+
+    _lint_complex_modifications(output_path)
+
+
+def cmd_install() -> None:
+    # Always rebuild before installing so the installed config reflects
+    # the latest fragment edits.
+    output_path = cmd_build()
+
+    COMPLEX_MODS_DIR.mkdir(parents=True, exist_ok=True)
+    destination = COMPLEX_MODS_DIR / output_path.name
+    shutil.copy2(output_path, destination)
+    print(f"Installed {output_path} to {destination}")
+
+    capman_rule = _load_capman_rule_from_bundle(output_path)
+    print(f"Loaded Capman rule definition from {output_path}")
+
+    print(f"Reading existing configuration from {CONFIG_FILE}")
+    action = _upsert_capman_rule(CONFIG_FILE, capman_rule)
+    if action == "updated":
+        print("Replaced existing 'Capman' manipulators in Default profile.")
+    else:
+        print("Created 'Capman' rule in Default profile.")
+    print(f"Saved updated Karabiner configuration to {CONFIG_FILE}")
+
+
+def _print_verdict(command: str, success: bool) -> None:
+    status = "SUCCESS" if success else "FAILURE"
+    message = f"Final verdict: {command} {status}"
+    if sys.stdout.isatty():
+        color = "\033[32m" if success else "\033[31m"
+        message = f"{color}{message}\033[0m"
+    print(message)
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Capman build helper")
+    parser.add_argument(
+        "command",
+        choices=("format", "build", "test", "install"),
+        help="Action to perform",
+    )
+    args = parser.parse_args()
+
+    try:
+        if args.command == "format":
+            cmd_format()
+        elif args.command == "build":
+            cmd_build()
+        elif args.command == "test":
+            cmd_test()
+        elif args.command == "install":
+            cmd_install()
+    except Exception:
+        _print_verdict(args.command, False)
+        raise
+    else:
+        _print_verdict(args.command, True)
+
+
+if __name__ == "__main__":
+    try:
+        main()
+        sys.exit(0)
+    except Exception as exc:
+        sys.exit(1)

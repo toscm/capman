@@ -1,0 +1,26 @@
+[
+  {
+    "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}],
+    "from": {"key_code":"l","modifiers":{"optional":["shift","option","control"]}},
+    "to": [{"key_code":"right_arrow"}],
+    "type": "basic"
+  },
+  {
+    "conditions": [{"name":"mode","type":"variable_if","value":3}],
+    "from": {"key_code":"l","modifiers":{"optional":["shift","option","control"]}},
+    "to": [{"key_code":"right_arrow","modifiers":["control","option"]}],
+    "type": "basic"
+  },
+  {
+    "conditions": [{"name":"mode","type":"variable_if","value":2}],
+    "from": {"key_code":"l","modifiers":{"optional":["shift","option","control"]}},
+    "to": [{"key_code":"right_arrow","modifiers":["shift"]}],
+    "type": "basic"
+  },
+  {
+    "conditions": [{"name":"mode","type":"variable_if","value":1}],
+    "from": {"key_code":"l","modifiers":{"optional":["shift","option","control"]}},
+    "to": [{"key_code":"right_arrow"}],
+    "type": "basic"
+  }
+]

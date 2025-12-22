@@ -1,0 +1,20 @@
+[
+  {
+    "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}],
+    "from": {"key_code":"e","modifiers":{"optional":["shift","control","option"]}},
+    "to": [{"key_code":"right_arrow","modifiers":["command"]}],
+    "type": "basic"
+  },
+  {
+    "conditions": [{"name":"mode","type":"variable_if","value":2}],
+    "from": {"key_code":"e","modifiers":{"optional":["shift","control","option"]}},
+    "to": [{"key_code":"right_arrow","modifiers":["command","shift"]}],
+    "type": "basic"
+  },
+  {
+    "conditions": [{"name":"mode","type":"variable_if","value":1}],
+    "from": {"key_code":"e","modifiers":{"optional":["shift","control","option"]}},
+    "to": [{"key_code":"right_arrow","modifiers":["command"]}],
+    "type": "basic"
+  }
+]

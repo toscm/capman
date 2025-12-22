@@ -1,0 +1,26 @@
+[
+  {
+    "conditions": [{"name":"mode","type":"variable_if","value":3}],
+    "from": {"key_code":"caps_lock","modifiers":{"optional":["any"]}},
+    "to": [{"set_variable":{"name":"capslock_pressed","value":1}}],
+    "to_after_key_up": [{"set_variable":{"name":"capslock_pressed","value":0}}],
+    "to_if_alone": [{"set_variable":{"name":"mode","value":0}},{"shell_command":"\"/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_cli\" --hide_notification_window"},{"set_notification_message":{"id":"capman.mode","text":""}}],
+    "type": "basic"
+  },
+  {
+    "conditions": [{"name":"mode","type":"variable_unless","value":1}],
+    "from": {"key_code":"caps_lock","modifiers":{"optional":["any"]}},
+    "to": [{"set_variable":{"name":"capslock_pressed","value":1}}],
+    "to_after_key_up": [{"set_variable":{"name":"capslock_pressed","value":0}}],
+    "to_if_alone": [{"set_variable":{"name":"mode","value":1}},{"shell_command":"\"/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_cli\" --show_notification_window"},{"set_notification_message":{"id":"capman.mode","text":"NORMAL"}}],
+    "type": "basic"
+  },
+  {
+    "conditions": [{"name":"mode","type":"variable_if","value":1}],
+    "from": {"key_code":"caps_lock","modifiers":{"optional":["any"]}},
+    "to": [{"set_variable":{"name":"capslock_pressed","value":1}}],
+    "to_after_key_up": [{"set_variable":{"name":"capslock_pressed","value":0}}],
+    "to_if_alone": [{"set_variable":{"name":"mode","value":0}},{"shell_command":"\"/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_cli\" --hide_notification_window"},{"set_notification_message":{"id":"capman.mode","text":""}}],
+    "type": "basic"
+  }
+]

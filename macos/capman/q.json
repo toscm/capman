@@ -1,0 +1,14 @@
+[
+  {
+    "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}],
+    "from": {"key_code":"q"},
+    "to": [{"key_code":"escape"}],
+    "type": "basic"
+  },
+  {
+    "conditions": [{"name":"mode","type":"variable_unless","value":0}],
+    "from": {"key_code":"q"},
+    "to": [{"key_code":"escape"}],
+    "type": "basic"
+  }
+]

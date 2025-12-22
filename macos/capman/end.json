@@ -1,0 +1,26 @@
+[
+  {
+    "conditions": [{"name":"mode","type":"variable_unless","value":2}],
+    "from": {"key_code":"end","modifiers":{"optional":["shift"]}},
+    "to": [{"key_code":"right_arrow","modifiers":["command"]}],
+    "type": "basic"
+  },
+  {
+    "conditions": [{"name":"mode","type":"variable_unless","value":2}],
+    "from": {"key_code":"end","modifiers":{"mandatory":["command"],"optional":["shift"]}},
+    "to": [{"key_code":"down_arrow","modifiers":["command"]}],
+    "type": "basic"
+  },
+  {
+    "conditions": [{"name":"mode","type":"variable_if","value":2}],
+    "from": {"key_code":"end"},
+    "to": [{"key_code":"right_arrow","modifiers":["command","shift"]}],
+    "type": "basic"
+  },
+  {
+    "conditions": [{"name":"mode","type":"variable_if","value":2}],
+    "from": {"key_code":"end","modifiers":{"mandatory":["command"]}},
+    "to": [{"key_code":"down_arrow","modifiers":["command","shift"]}],
+    "type": "basic"
+  }
+]

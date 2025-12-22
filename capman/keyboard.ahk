@@ -116,6 +116,23 @@ SendWinLeft(Hotkey) => SendInput("#{Left}")
 SendWinRight(Hotkey) => SendInput("#{Right}")
 SendWinUp(Hotkey) => SendInput("#{Up}")
 
+MaximizeWindow(Hotkey) {
+    winId := WinExist("A")
+    if (winId) {
+        WinMaximize("ahk_id " winId)
+    }
+}
+
+MinimizeWindow(Hotkey) {
+    winId := WinExist("A")
+    if (winId) {
+        WinMinimize("ahk_id " winId)
+    }
+}
+
+QuitApplication(Hotkey) => SendInput("!{F4}")
+CloseWindow(Hotkey) => SendInput("^{F4}")
+
 ;; Complex command
 
 TriggerHuntAndPeck(Hotkey) {

@@ -1,0 +1,25 @@
+[
+  {
+    "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}],
+    "from": {"key_code":"y"},
+    "to": [{"key_code":"c","modifiers":["command"]}],
+    "type": "basic"
+  },
+  {
+    "conditions": [{"name":"mode","type":"variable_if","value":2}],
+    "from": {"key_code":"y"},
+    "to": [{"key_code":"c","modifiers":["command"]},{"set_variable":{"name":"mode","value":1}},{"shell_command":"\"/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_cli\" --show_notification_window"},{"set_notification_message":{"id":"capman.mode","text":"NORMAL"}}],
+    "type": "basic"
+  },
+  {
+    "conditions": [{"name":"mode","type":"variable_unless","value":0}],
+    "from": {"key_code":"y"},
+    "to": [{"key_code":"c","modifiers":["command"]}],
+    "type": "basic"
+  },
+  {
+    "type": "basic",
+    "from": {"key_code":"y","modifiers":{"mandatory":["command"]}},
+    "to": [{"key_code":"z","modifiers":["command","shift"]}]
+  }
+]

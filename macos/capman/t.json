@@ -1,0 +1,14 @@
+[
+  {
+    "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}],
+    "from": {"key_code":"t","modifiers":{"optional":["shift"]}},
+    "to": [{"key_code":"up_arrow","modifiers":["command"]}],
+    "type": "basic"
+  },
+  {
+    "conditions": [{"name":"mode","type":"variable_unless","value":0}],
+    "from": {"key_code":"t","modifiers":{"optional":["shift"]}},
+    "to": [{"key_code":"up_arrow","modifiers":["command"]}],
+    "type": "basic"
+  }
+]
