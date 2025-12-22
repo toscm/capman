@@ -19,7 +19,7 @@ and Window Mode.
 1. On MacOS: install [Karabiner-Elements](https://karabiner-elements.pqrs.org/)
 2. Start 'Karabiner-Elements', give it all required permissions and open the
    'Complex Modifications' tab
-3. Download [capman-v0.2.0.json](macos/capman-v0.2.0.json) and store it as
+3. Download [capman-v0.2.0.json](https://github.com/toscm/capman/releases/download/v0.2.0/capman-v0.2.0.json) and store it as
     `~/.config/karabiner/assets/complex_modifications/capman-v0.2.0.json`
 
      ```bash
