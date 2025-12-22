@@ -28,11 +28,11 @@
 2. Add the repo's `macos/` directory to your `PATH` so the `capmake` helper is
    discoverable, or call it via `./macos/capmake`.
 3. Use `capmake format` to format json files inside `macos/`
-   - `capmake build` – compose the fragments into `macos/capman-v0.2.0.json`
+   - `capmake build` – compose the fragments into `macos/capman-v0.2.1.json`
      (bump the version constant in `macos/capmake` when creating a new release).
    - `capmake test` – (optional) validate the generated file with Karabiner CLI.
    - `capmake install`
-     - rebuild the bundle `macos/capman-v0.2.0.json`,
+     - rebuild the bundle `macos/capman-v0.2.1.json`,
      - copy bundle to  `~/.config/karabiner/assets/complex_modifications`
      - upsert rules inside `~/.config/karabiner/karabiner.json`.
 
@@ -57,7 +57,7 @@
    helper in `commands.ahk`.
 3. Reload Capman (`CapsLock + r`) and test the updated bindings.
 4. If you touch macOS rules, run `capmake format && capmake build` to refresh
-   `macos/capman-v0.2.0.json`, then `capmake install` to update your local
+   `macos/capman-v0.2.1.json`, then `capmake install` to update your local
    Karabiner config before testing.
 5. Update documentation:
    - `README.md` for user-facing behaviour changes.
