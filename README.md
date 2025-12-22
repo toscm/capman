@@ -24,7 +24,7 @@ and Window Mode.
 
      ```bash
      curl -o ~/.config/karabiner/assets/complex_modifications/capman-v0.2.0.json \
-     https://github.com/toscm/capman/blob/main/macos/capman-v0.2.0.json
+     https://github.com/toscm/capman/releases/download/v0.2.0/capman-v0.2.0.json
      ```
 4. In 'Karabiner-Elements', click 'Add predefined rule' and enable 'Capman'
 
