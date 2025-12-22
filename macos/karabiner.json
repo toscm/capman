@@ -48,15 +48,24 @@
             "description": "Capman c",
             "manipulators": [
               {
-                "from": {"key_code":"c"},
+                "from": {"key_code":"c", "modifiers":{"optional":["caps_lock"]}},
                 "to": [{"key_code":"caps_lock"}],
                 "type": "basic",
                 "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}]
               },
               {
-                "conditions": [{"name":"mode","type":"variable_unless","value":0}],
-                "from": {"key_code":"c"},
+                "conditions": [{"name":"mode","type":"variable_if","value":1}],
+                "from": {"key_code":"c", "modifiers":{"optional":["caps_lock"]}},
                 "to": [{"key_code":"caps_lock"}],
+                "type": "basic"
+              },
+              {
+                "conditions": [
+                  {"name":"mode","type":"variable_unless","value":0},
+                  {"name":"mode","type":"variable_unless","value":1}
+                ],
+                "from": {"key_code":"c"},
+                "to": [{"key_code":"vk_none"}],
                 "type": "basic"
               }
             ]
@@ -331,25 +340,25 @@
             "manipulators": [
               {
                 "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}],
-                "from": {"key_code":"i","modifiers":{"optional":["shift"]}},
+                "from": {"key_code":"i","modifiers":{"optional":["shift", "option", "control"]}},
                 "to": [{"key_code":"up_arrow"}],
                 "type": "basic"
               },
               {
                 "conditions": [{"name":"mode","type":"variable_if","value":3}],
-                "from": {"key_code":"i","modifiers":{"optional":["shift"]}},
+                "from": {"key_code":"i","modifiers":{"optional":["shift", "option", "control"]}},
                 "to": [{"key_code":"up_arrow","modifiers":["control","option"]}],
                 "type": "basic"
               },
               {
                 "conditions": [{"name":"mode","type":"variable_if","value":2}],
-                "from": {"key_code":"i","modifiers":{"optional":["shift"]}},
+                "from": {"key_code":"i","modifiers":{"optional":["shift", "option", "control"]}},
                 "to": [{"key_code":"up_arrow","modifiers":["shift"]}],
                 "type": "basic"
               },
               {
                 "conditions": [{"name":"mode","type":"variable_if","value":1}],
-                "from": {"key_code":"i","modifiers":{"optional":["shift"]}},
+                "from": {"key_code":"i","modifiers":{"optional":["shift", "option", "control"]}},
                 "to": [{"key_code":"up_arrow"}],
                 "type": "basic"
               },
@@ -371,25 +380,25 @@
             "manipulators": [
               {
                 "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}],
-                "from": {"key_code":"j","modifiers":{"optional":["shift"]}},
+                "from": {"key_code":"j","modifiers":{"optional":["shift", "option", "control"]}},
                 "to": [{"key_code":"left_arrow"}],
                 "type": "basic"
               },
               {
                 "conditions": [{"name":"mode","type":"variable_if","value":3}],
-                "from": {"key_code":"j","modifiers":{"optional":["shift"]}},
+                "from": {"key_code":"j","modifiers":{"optional":["shift", "option", "control"]}},
                 "to": [{"key_code":"left_arrow","modifiers":["control","option"]}],
                 "type": "basic"
               },
               {
                 "conditions": [{"name":"mode","type":"variable_if","value":2}],
-                "from": {"key_code":"j","modifiers":{"optional":["shift"]}},
+                "from": {"key_code":"j","modifiers":{"optional":["shift", "option", "control"]}},
                 "to": [{"key_code":"left_arrow","modifiers":["shift"]}],
                 "type": "basic"
               },
               {
                 "conditions": [{"name":"mode","type":"variable_if","value":1}],
-                "from": {"key_code":"j","modifiers":{"optional":["shift"]}},
+                "from": {"key_code":"j","modifiers":{"optional":["shift", "option", "control"]}},
                 "to": [{"key_code":"left_arrow"}],
                 "type": "basic"
               }
@@ -400,25 +409,25 @@
             "manipulators": [
               {
                 "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}],
-                "from": {"key_code":"k","modifiers":{"optional":["shift"]}},
+                "from": {"key_code":"k","modifiers":{"optional":["shift", "option", "control"]}},
                 "to": [{"key_code":"down_arrow"}],
                 "type": "basic"
               },
               {
                 "conditions": [{"name":"mode","type":"variable_if","value":3}],
-                "from": {"key_code":"k","modifiers":{"optional":["shift"]}},
+                "from": {"key_code":"k","modifiers":{"optional":["shift", "option", "control"]}},
                 "to": [{"key_code":"down_arrow","modifiers":["control","option"]}],
                 "type": "basic"
               },
               {
                 "conditions": [{"name":"mode","type":"variable_if","value":2}],
-                "from": {"key_code":"k","modifiers":{"optional":["shift"]}},
+                "from": {"key_code":"k","modifiers":{"optional":["shift", "option", "control"]}},
                 "to": [{"key_code":"down_arrow","modifiers":["shift"]}],
                 "type": "basic"
               },
               {
                 "conditions": [{"name":"mode","type":"variable_if","value":1}],
-                "from": {"key_code":"k","modifiers":{"optional":["shift"]}},
+                "from": {"key_code":"k","modifiers":{"optional":["shift", "option", "control"]}},
                 "to": [{"key_code":"down_arrow"}],
                 "type": "basic"
               }
@@ -429,25 +438,25 @@
             "manipulators": [
               {
                 "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}],
-                "from": {"key_code":"l","modifiers":{"optional":["shift"]}},
+                "from": {"key_code":"l","modifiers":{"optional":["shift", "option", "control"]}},
                 "to": [{"key_code":"right_arrow"}],
                 "type": "basic"
               },
               {
                 "conditions": [{"name":"mode","type":"variable_if","value":3}],
-                "from": {"key_code":"l","modifiers":{"optional":["shift"]}},
+                "from": {"key_code":"l","modifiers":{"optional":["shift", "option", "control"]}},
                 "to": [{"key_code":"right_arrow","modifiers":["control","option"]}],
                 "type": "basic"
               },
               {
                 "conditions": [{"name":"mode","type":"variable_if","value":2}],
-                "from": {"key_code":"l","modifiers":{"optional":["shift"]}},
+                "from": {"key_code":"l","modifiers":{"optional":["shift", "option", "control"]}},
                 "to": [{"key_code":"right_arrow","modifiers":["shift"]}],
                 "type": "basic"
               },
               {
                 "conditions": [{"name":"mode","type":"variable_if","value":1}],
-                "from": {"key_code":"l","modifiers":{"optional":["shift"]}},
+                "from": {"key_code":"l","modifiers":{"optional":["shift", "option", "control"]}},
                 "to": [{"key_code":"right_arrow"}],
                 "type": "basic"
               }
@@ -927,9 +936,8 @@
             "description": "Capman window fallback",
             "manipulators": [
               {
-                "key_code": "caps_lock",
+                "from": {"key_code": "caps_lock"},
                 "conditions": [{"name":"mode","type":"variable_if","value":3}],
-                "from": {"any":"key_code"},
                 "to": [],
                 "type": "basic"
               }

@@ -2,15 +2,24 @@
   "description": "Capman c",
   "manipulators": [
     {
-      "from": {"key_code":"c"},
+      "from": {"key_code":"c", "modifiers":{"optional":["caps_lock"]}},
       "to": [{"key_code":"caps_lock"}],
       "type": "basic",
       "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}]
     },
     {
-      "conditions": [{"name":"mode","type":"variable_unless","value":0}],
-      "from": {"key_code":"c"},
+      "conditions": [{"name":"mode","type":"variable_if","value":1}],
+      "from": {"key_code":"c", "modifiers":{"optional":["caps_lock"]}},
       "to": [{"key_code":"caps_lock"}],
+      "type": "basic"
+    },
+    {
+      "conditions": [
+        {"name":"mode","type":"variable_unless","value":0},
+        {"name":"mode","type":"variable_unless","value":1}
+      ],
+      "from": {"key_code":"c"},
+      "to": [{"key_code":"vk_none"}],
       "type": "basic"
     }
   ]
