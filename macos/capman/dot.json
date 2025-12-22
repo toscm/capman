@@ -1,17 +1,14 @@
-{
-  "description": "Capman Dot",
-  "manipulators": [
-    {
-      "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}],
-      "from": {"key_code":"period"},
-      "to": [{"key_code":"right_arrow", "modifiers":["option", "command"]}],
-      "type": "basic"
-    },
-    {
-      "conditions": [{"name":"mode","type":"variable_if","value":1}],
-      "from": {"key_code":"period"},
-      "to": [{"key_code":"right_arrow", "modifiers":["option", "command"]}],
-      "type": "basic"
-    }
-  ]
-}
+[
+  {
+    "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}],
+    "from": {"key_code":"period"},
+    "to": [{"key_code":"right_arrow","modifiers":["option","command"]}],
+    "type": "basic"
+  },
+  {
+    "conditions": [{"name":"mode","type":"variable_if","value":1}],
+    "from": {"key_code":"period"},
+    "to": [{"key_code":"right_arrow","modifiers":["option","command"]}],
+    "type": "basic"
+  }
+]

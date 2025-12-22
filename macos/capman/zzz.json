@@ -1,11 +1,8 @@
-{
-  "description": "Capman window fallback",
-  "manipulators": [
-    {
-      "from": {"key_code": "caps_lock"},
-      "conditions": [{"name":"mode","type":"variable_if","value":3}],
-      "to": [],
-      "type": "basic"
-    }
-  ]
-}
+[
+  {
+    "from": {"key_code":"caps_lock"},
+    "conditions": [{"name":"mode","type":"variable_if","value":3}],
+    "to": [],
+    "type": "basic"
+  }
+]

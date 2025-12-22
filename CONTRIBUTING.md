@@ -27,31 +27,28 @@
 1. Install [Karabiner-Elements](https://karabiner-elements.pqrs.org/).
 2. Add the repo's `macos/` directory to your `PATH` so the `capmake` helper is
    discoverable, or call it via `./macos/capmake`.
-3. Use the helper commands:
-   - `capmake format` – format the JSON fragments for consistent diffs.
-   - `capmake build` – compose the fragments into `macos/karabiner.json`.
+3. Use `capmake format` to format json files inside `macos/`
+   - `capmake build` – compose the fragments into `macos/capman-v0.2.0.json`
+     (bump the version constant in `macos/capmake` when creating a new release).
    - `capmake test` – (optional) validate the generated file with Karabiner CLI.
-   - `capmake install` – back up and replace your `~/.config/karabiner/karabiner.json`.
-4. After installing, enable the "Capman" complex modification in Karabiner.
-5. Run `capmake build` whenever you touch the JSON fragments.
+   - `capmake install`
+     - rebuild the bundle `macos/capman-v0.2.0.json`,
+     - copy bundle to  `~/.config/karabiner/assets/complex_modifications`
+     - upsert rules inside `~/.config/karabiner/karabiner.json`.
 
 ## Repository Layout & Key Files
 
-- `capman/capman.ahk` – entrypoint; sets up the GUI elements, loads config, and
-  imports the keymaps.
-- `capman/keymaps.ahk` – declarative mapping of every mode. Update this for new
-  bindings or tweaks.
-- `capman/commands.ahk` – higher-level actions (Copy, MoveWindow, etc.). Add new
-  behaviour here before wiring it into the keymaps.
-- `capman/keyboard.ahk` – runtime helpers for enabling/disabling keymaps and
-  updating the mode/infobar state.
-- `capman/mouse.ahk` – mouse helpers used by Mouse mode.
-- `capman/config.ahk` – version and startup configuration knobs.
-- `macos/capman/*.json` – individual Karabiner rule fragments. Edit these when
-  porting bindings to macOS.
-- `macos/others/*.json` – optional extras (Windows navigation, umlauts, etc.).
-- `macos/karabiner.json` – the generated profile (do not edit by hand; use
-  `capmake build`).
+- `capman` Main codebase for Windows (AutoHotkey).
+  - `capman.ahk` Entrypoint; inits GUI, loads config and imports keymaps.
+  - `keymaps.ahk` Key bindings
+  - `commands.ahk` Public actions (Copy, MoveWindow, etc.)
+  - `keyboard.ahk` Internal helpers for enabling/disabling keymaps.
+  - `mouse.ahk` Actions for mouse mode.
+  - `config.ahk` Global constants and settings.
+- `macos` MacOS codebase (Karabiner).
+  - `capmake` Helper script to build, format, and install Karabiner rules.
+  - `capman/*.json` Individual Karabiner rule fragments.
+  - `macos/capman-v*.json` Bundles created by `capmake build`.
 
 ## Development Workflow
 
@@ -59,8 +56,9 @@
 2. Update or add bindings in `keymaps.ahk` and, if necessary, add the matching
    helper in `commands.ahk`.
 3. Reload Capman (`CapsLock + r`) and test the updated bindings.
-4. If you touch macOS rules, run `capmake format && capmake build` and ensure
-   Karabiner loads without errors.
+4. If you touch macOS rules, run `capmake format && capmake build` to refresh
+   `macos/capman-v0.2.0.json`, then `capmake install` to update your local
+   Karabiner config before testing.
 5. Update documentation:
    - `README.md` for user-facing behaviour changes.
    - JSON fragment comments or `CONTRIBUTING.md` if process details change.

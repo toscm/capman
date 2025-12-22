@@ -17,11 +17,19 @@ and Window Mode.
 ## Installation (MacOS)
 
 1. On MacOS: install [Karabiner-Elements](https://karabiner-elements.pqrs.org/)
-2. Start 'Karabiner-Elements' and open the 'Complex Modifications' tab
-3. Copy the contents of [karabiner.json](capman/karabiner.json) into your
-   Karabiner configuration file located at `~/.config/karabiner/karabiner.json`
-4. If you already have other complex modifications, make sure to merge the rules
-   properly.
+2. Start 'Karabiner-Elements', give it all required permissions and open the
+   'Complex Modifications' tab
+3. Download [capman-v0.2.0.json](macos/capman-v0.2.0.json) and store it as
+    `~/.config/karabiner/assets/complex_modifications/capman-v0.2.0.json`
+
+     ```bash
+     curl -o ~/.config/karabiner/assets/complex_modifications/capman-v0.2.0.json \
+     https://github.com/toscm/capman/blob/main/macos/capman-v0.2.0.json
+     ```
+4. In 'Karabiner-Elements', click 'Add predefined rule' and enable 'Capman'
+
+   <img src="img/karabiner-edited.png" style="height: 12em;"/>
+   <img src="img/karabiner-import-edited.png" style="height: 12em;"/>
 
 ## Features
 

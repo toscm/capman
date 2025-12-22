@@ -1,40 +1,32 @@
-{
-  "description": "Capman i",
-  "manipulators": [
-    {
-      "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}],
-      "from": {"key_code":"i","modifiers":{"optional":["shift", "option", "control"]}},
-      "to": [{"key_code":"up_arrow"}],
-      "type": "basic"
-    },
-    {
-      "conditions": [{"name":"mode","type":"variable_if","value":3}],
-      "from": {"key_code":"i","modifiers":{"optional":["shift", "option", "control"]}},
-      "to": [{"key_code":"up_arrow","modifiers":["control","option"]}],
-      "type": "basic"
-    },
-    {
-      "conditions": [{"name":"mode","type":"variable_if","value":2}],
-      "from": {"key_code":"i","modifiers":{"optional":["shift", "option", "control"]}},
-      "to": [{"key_code":"up_arrow","modifiers":["shift"]}],
-      "type": "basic"
-    },
-    {
-      "conditions": [{"name":"mode","type":"variable_if","value":1}],
-      "from": {"key_code":"i","modifiers":{"optional":["shift", "option", "control"]}},
-      "to": [{"key_code":"up_arrow"}],
-      "type": "basic"
-    },
-    {
-      "conditions": [{"name":"mode","type":"variable_if","value":1}],
-      "from": {"key_code":"i","modifiers":{"mandatory":["command"]}},
-      "to": [
-        {"set_variable":{"name":"mode","value":0}},
-        {"shell_command":"\"/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_cli\" --hide_notification_window"},
-        {"set_notification_message":{"id":"capman.mode","text":""}},
-        {"key_code":"i","modifiers":["command"]}
-      ],
-      "type": "basic"
-    }
-  ]
-}
+[
+  {
+    "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}],
+    "from": {"key_code":"i","modifiers":{"optional":["shift","option","control"]}},
+    "to": [{"key_code":"up_arrow"}],
+    "type": "basic"
+  },
+  {
+    "conditions": [{"name":"mode","type":"variable_if","value":3}],
+    "from": {"key_code":"i","modifiers":{"optional":["shift","option","control"]}},
+    "to": [{"key_code":"up_arrow","modifiers":["control","option"]}],
+    "type": "basic"
+  },
+  {
+    "conditions": [{"name":"mode","type":"variable_if","value":2}],
+    "from": {"key_code":"i","modifiers":{"optional":["shift","option","control"]}},
+    "to": [{"key_code":"up_arrow","modifiers":["shift"]}],
+    "type": "basic"
+  },
+  {
+    "conditions": [{"name":"mode","type":"variable_if","value":1}],
+    "from": {"key_code":"i","modifiers":{"optional":["shift","option","control"]}},
+    "to": [{"key_code":"up_arrow"}],
+    "type": "basic"
+  },
+  {
+    "conditions": [{"name":"mode","type":"variable_if","value":1}],
+    "from": {"key_code":"i","modifiers":{"mandatory":["command"]}},
+    "to": [{"set_variable":{"name":"mode","value":0}},{"shell_command":"\"/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_cli\" --hide_notification_window"},{"set_notification_message":{"id":"capman.mode","text":""}},{"key_code":"i","modifiers":["command"]}],
+    "type": "basic"
+  }
+]

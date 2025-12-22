@@ -1,29 +1,26 @@
-{
-  "description": "Home/End Support",
-  "manipulators": [
-    {
-      "conditions": [{"name":"mode","type":"variable_unless","value":2}],
-      "from": {"key_code":"home", "modifiers":{"optional":["shift"]}},
-      "to": [{"key_code":"left_arrow","modifiers":["command"]}],
-      "type": "basic"
-    },
-    {
-      "conditions": [{"name":"mode","type":"variable_unless","value":2}],
-      "from": {"key_code":"home","modifiers":{"mandatory":["command"],"optional":["shift"]}},
-      "to": [{"key_code":"up_arrow","modifiers":["command"]}],
-      "type": "basic"
-    },
-    {
-      "conditions": [{"name":"mode","type":"variable_if","value":2}],
-      "from": {"key_code":"home"},
-      "to": [{"key_code":"left_arrow","modifiers":["command","shift"]}],
-      "type": "basic"
-    },
-    {
-      "conditions": [{"name":"mode","type":"variable_if","value":2}],
-      "from": {"key_code":"home","modifiers":{"mandatory":["command"]}},
-      "to": [{"key_code":"up_arrow","modifiers":["command","shift"]}],
-      "type": "basic"
-    }
-  ]
-}
+[
+  {
+    "conditions": [{"name":"mode","type":"variable_unless","value":2}],
+    "from": {"key_code":"home","modifiers":{"optional":["shift"]}},
+    "to": [{"key_code":"left_arrow","modifiers":["command"]}],
+    "type": "basic"
+  },
+  {
+    "conditions": [{"name":"mode","type":"variable_unless","value":2}],
+    "from": {"key_code":"home","modifiers":{"mandatory":["command"],"optional":["shift"]}},
+    "to": [{"key_code":"up_arrow","modifiers":["command"]}],
+    "type": "basic"
+  },
+  {
+    "conditions": [{"name":"mode","type":"variable_if","value":2}],
+    "from": {"key_code":"home"},
+    "to": [{"key_code":"left_arrow","modifiers":["command","shift"]}],
+    "type": "basic"
+  },
+  {
+    "conditions": [{"name":"mode","type":"variable_if","value":2}],
+    "from": {"key_code":"home","modifiers":{"mandatory":["command"]}},
+    "to": [{"key_code":"up_arrow","modifiers":["command","shift"]}],
+    "type": "basic"
+  }
+]

@@ -1,17 +1,14 @@
-{
-  "description": "Capman x",
-  "manipulators": [
-    {
-      "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}],
-      "from": {"key_code":"x"},
-      "to": [{"key_code":"x","modifiers":["command"]}],
-      "type": "basic"
-    },
-    {
-      "conditions": [{"name":"mode","type":"variable_unless","value":0}],
-      "from": {"key_code":"x"},
-      "to": [{"key_code":"x","modifiers":["command"]}],
-      "type": "basic"
-    }
-  ]
-}
+[
+  {
+    "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}],
+    "from": {"key_code":"x"},
+    "to": [{"key_code":"x","modifiers":["command"]}],
+    "type": "basic"
+  },
+  {
+    "conditions": [{"name":"mode","type":"variable_unless","value":0}],
+    "from": {"key_code":"x"},
+    "to": [{"key_code":"x","modifiers":["command"]}],
+    "type": "basic"
+  }
+]
