@@ -5,7 +5,12 @@
       {"type":"frontmost_application_if","bundle_identifiers":["^com\\.microsoft\\.VSCode$"]}
     ],
     "from": {"key_code":"g", "modifiers":{"optional":["option"]}},
-    "to": [{"key_code":"g", "modifiers":["option"]}],
+    "to": [
+      {"set_variable":{"name":"mode","value":0}},
+      {"shell_command":"\"/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_cli\" --hide_notification_window"},
+      {"set_notification_message":{"id":"capman.mode","text":""}},
+      {"key_code":"g","modifiers":["option"]}
+    ],
     "type": "basic"
   },
   {
@@ -18,7 +23,8 @@
       {"set_variable":{"name":"mode","value":0}},
       {"shell_command":"\"/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_cli\" --hide_notification_window"},
       {"set_notification_message":{"id":"capman.mode","text":""}},
-      {"key_code":"g","modifiers":["option"]}],
+      {"key_code":"g","modifiers":["option"]}
+    ],
     "type": "basic"
   }
 ]
