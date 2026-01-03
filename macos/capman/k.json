@@ -1,26 +1,32 @@
 [
   {
     "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}],
-    "from": {"key_code":"k","modifiers":{"optional":["shift","option","control"]}},
+    "from": {"key_code":"k","modifiers":{"optional":["shift","option"]}},
     "to": [{"key_code":"down_arrow"}],
     "type": "basic"
   },
   {
     "conditions": [{"name":"mode","type":"variable_if","value":3}],
-    "from": {"key_code":"k","modifiers":{"optional":["shift","option","control"]}},
+    "from": {"key_code":"k","modifiers":{"optional":["shift","option"]}},
     "to": [{"key_code":"down_arrow","modifiers":["control","option"]}],
     "type": "basic"
   },
   {
     "conditions": [{"name":"mode","type":"variable_if","value":2}],
-    "from": {"key_code":"k","modifiers":{"optional":["shift","option","control"]}},
+    "from": {"key_code":"k","modifiers":{"optional":["shift","option"]}},
     "to": [{"key_code":"down_arrow","modifiers":["shift"]}],
     "type": "basic"
   },
   {
     "conditions": [{"name":"mode","type":"variable_if","value":1}],
-    "from": {"key_code":"k","modifiers":{"optional":["shift","option","control"]}},
+    "from": {"key_code":"k","modifiers":{"optional":["shift","option"]}},
     "to": [{"key_code":"down_arrow"}],
+    "type": "basic"
+  },
+  {
+    "conditions": [{"name":"mode","type":"variable_if","value":1}],
+    "from": {"key_code":"k","modifiers":{"mandatory":["option","command"]}},
+    "to": [{"key_code":"down_arrow","modifiers":["option","command"]}],
     "type": "basic"
   }
 ]
