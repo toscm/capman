@@ -179,6 +179,50 @@ InsertNewLine(Hotkey) {
     SwitchToModeInsert("")
 }
 
+;; Vim-style insert variants
+
+OpenLineAbove(Hotkey) {
+    SendInput("{Home}")
+    SendInput("{Enter}")
+    SendInput("{Up}")
+    SwitchToModeInsert(Hotkey)
+}
+
+InsertAtLineEnd(Hotkey) {
+    SendInput("{End}")
+    SwitchToModeInsert(Hotkey)
+}
+
+InsertAtLineStart(Hotkey) {
+    SendInput("{Home}")
+    SwitchToModeInsert(Hotkey)
+}
+
+;; Vim-style line operations (stay in Control Mode)
+
+DeleteLine(Hotkey) {
+    SendInput("{Home}")
+    SendInput("+{Down}")
+    SendInput("^x")
+}
+
+YankLine(Hotkey) {
+    SendInput("{Home}")
+    SendInput("+{Down}")
+    SendInput("^c")
+    SendInput("{Up}")
+}
+
+GoToFileStartAndSwitchToModeLast(Hotkey) {
+    SendInput("^{Home}")
+    SwitchToModeLast(Hotkey)
+}
+
+GoToFileEndAndSwitchToModeLast(Hotkey) {
+    SendInput("^{End}")
+    SwitchToModeLast(Hotkey)
+}
+
 ListWindowControls()
 {
     try

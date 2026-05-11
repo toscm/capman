@@ -9,31 +9,34 @@ Keymaps["Caps"] := [
 
     ; Hint: CapsLock can't be combined with other modifier keys
 
-    ; Movement
-    ["CapsLock & i", Up],
-    ["CapsLock & j", Left],
-    ["CapsLock & k", Down],
+    ; Movement (Vim-style hjkl)
+    ["CapsLock & h", Left],
+    ["CapsLock & j", Down],
+    ["CapsLock & k", Up],
     ["CapsLock & l", Right],
     ["CapsLock & w", Word],
     ["CapsLock & b", WordBack],
     ["CapsLock & e", SendEnd],
-    ["CapsLock & h", SendHome],
+    ["CapsLock & i", SendHome],
 
     ; Edit
     ["CapsLock & u", Undo],
     ["CapsLock & d", Delete],
     ["CapsLock & s", Backspace],
 
-    ; Window Management
+    ; Mode Entry
+    ["CapsLock & n", SwitchToModeControl],
     ["CapsLock & v", SwitchToModeVisual],
+    ["CapsLock & Space", SwitchToModeWindow],
+
+    ; Window / Tab Management
     ["CapsLock & [", SendPageUp],
     ["CapsLock & ]", SendPageDown],
     ["CapsLock & a", SendAltD],
-    ["CapsLock & n", "AltTab"],
     ["CapsLock & m", SendF6],
     ["CapsLock & t", SendCtrlTab],
-    ["CapsLock & ,", SendCtrlPageUp],
-    ["CapsLock & .", SendCtrlPageDown],
+    ["CapsLock & SC033", SendCtrlPageUp], ; CapsLock+, — scancode avoids AHK's comma-parsing quirk
+    ["CapsLock & SC034", SendCtrlPageDown], ; CapsLock+.
 
     ; VSCode
     ["CapsLock & p", OpenControlPanel],
@@ -49,7 +52,6 @@ Keymaps["Caps"] := [
     ["CapsLock & g", SwitchToModeGoto],
     ["CapsLock & r", ReloadCapman],
     ["CapsLock & F12", ToggleInfoBar],
-    ["CapsLock & Space", SwitchToModeWindow],
 
     ; F Keys
     ["CapsLock & 1", SendF1],
@@ -72,12 +74,12 @@ Keymaps["Caps"] := [
 ]
 
 Keymaps["Insert"] := [
-    ["CapsLock", SwitchToModeControl],
+    ["CapsLock", SendEscape],
 ]
 
 Keymaps["Window"] := [
 
-    ["CapsLock", SwitchToModeLast],
+    ["CapsLock", SendEscape],
 
     ["a", SwitchToModeInsert],
     ["Space", SwitchToModeInsert],
@@ -88,10 +90,10 @@ Keymaps["Window"] := [
     ["f", MaximizeWindow],
     ["Enter", MaximizeWindow],
     ["g", DoNothing],
-    ["h", DoNothing],
-    ["i", SendWinUp],
-    ["j", SendWinLeft],
-    ["k", SendWinDown],
+    ["h", SendWinLeft],
+    ["i", SwitchToModeInsert],
+    ["j", SendWinDown],
+    ["k", SendWinUp],
     ["l", SendWinRight],
     ["Up", SendWinUp],
     ["Down", SendWinDown],
@@ -119,14 +121,16 @@ Keymaps["Mouse"] := [
     ["b", DoNothing],
     ["c", DoNothing],
     ["d", RightClick],
-    ["e", MouseRight120px],
+    ["e", DoNothing],
     ["f", LeftClick],
     ["g", DoNothing],
-    ["h", MouseLeft120px],
-    ["i", MouseUp012Px],
-    ["j", MouseLeft012Px],
-    ["k", MouseDown012Px],
+    ["h", MouseLeft012Px],
+    ["+h", MouseLeft120Px],
+    ["i", SwitchToModeInsert],
+    ["j", MouseDown012Px],
+    ["k", MouseUp012Px],
     ["l", MouseRight012Px],
+    ["+l", MouseRight120Px],
     ["m", DoNothing],
     ["n", DoNothing],
     ["o", ScrollDown],
@@ -142,39 +146,43 @@ Keymaps["Mouse"] := [
     ["y", DoNothing],
     ["z", DoNothing],
 
-    ["^i", MouseUp001Px],
-    ["^j", MouseLeft001Px],
-    ["^k", MouseDown001Px],
+    ["^h", MouseLeft001Px],
+    ["^j", MouseDown001Px],
+    ["^k", MouseUp001Px],
     ["^l", MouseRight001Px],
 
-    ["CapsLock", SwitchToModeControl],
+    ["CapsLock", SendEscape],
 ]
 
 Keymaps["Control"] := [
     ["a", SwitchToModeInsert],
+    ["+a", InsertAtLineEnd],
+    ["i", SwitchToModeInsert],
+    ["+i", InsertAtLineStart],
     ["b", WordBack],
     ["+b", SelectWordBack],
     ["c", ToggleCapsLock],
     ["d", Delete],
-    ["+d", Backspace],
+    ["+d", DeleteLine],
     ["*e", SendEnd],
     ["f", ExpandSelection],
     ["+f", ShrinkSelection],
     ["g", SwitchToModeGoto],
-    ["*h", SendHome],
-    ["i", Up],
-    ["+i", SelectUp],
-    ["j", Left],
-    ["+j", SelectLeft],
-    ["k", Down],
-    ["+k", SelectDown],
+    ["+g", GoToFileEnd],
+    ["h", Left],
+    ["+h", SelectLeft],
+    ["j", Down],
+    ["+j", SelectDown],
+    ["k", Up],
+    ["+k", SelectUp],
     ["l", Right],
     ["+l", SelectRight], ; Use separate hotkeys for select, because * is slow and we might miss key presses!
     ["m", SendF6],
     ["+m", SendShiftF6],
     ["n", SendCtrlAltTab],
     ["+n", SendCtrlShiftAltTab],
-    ["o", DoNothing],
+    ["o", InsertNewLine],
+    ["+o", OpenLineAbove],
     ["p", Paste],
     ["q", SendEscape],
     ["r", Redo],
@@ -187,7 +195,11 @@ Keymaps["Control"] := [
     ["+w", SelectWord],
     ["x", Cut],
     ["y", Yank],
+    ["+y", YankLine],
     ["z", DoNothing],
+
+    ["0", SendHome],
+    ["+4", SendEnd], ; $ — Vim-style end of line
 
     ["``", SendCtrlBacktick],
 
@@ -202,31 +214,32 @@ Keymaps["Control"] := [
     ["+,", SendCtrlShiftPageUp],
     [".", SendCtrlPageDown],
     ["+.", SendCtrlShiftPageDown],
-    ["/", ShowActiveHotkeys],
-    ["CapsLock", SwitchToModeInsert],
+    ["/", SendCtrlF],
+    ["+/", ShowActiveHotkeys], ; ? — show help
+    ["CapsLock", SendEscape],
 ]
 
 Keymaps["Visual"] := [
-    ; Movement
+    ; Movement (Vim-style hjkl)
     ["Up", SelectUp],
     ["Down", SelectDown],
     ["Left", SelectLeft],
     ["Right", SelectRight],
-    ["i", SelectUp],
-    ["j", SelectLeft],
-    ["^j", SelectWordBack],
-    ["k", SelectDown],
+    ["h", SelectLeft],
+    ["^h", SelectWordBack],
+    ["j", SelectDown],
+    ["k", SelectUp],
     ["l", SelectRight],
     ["^l", SelectWord],
     ["w", SelectWord],
     ["b", SelectWordBack],
     ["e", SelectEnd],
-    ["h", SelectHome],
+    ["0", SelectHome],
 
     ; ModeSwitches
     ["a", SwitchToModeInsert],
-    ["CapsLock", SwitchToModeLast],
-    ; ["vkDC", SwitchToModeLast],
+    ["i", SwitchToModeInsert],
+    ["CapsLock", SendEscape],
     ["o", SwitchToModeInsert],
     ["v", SwitchToModeLast],
 
@@ -268,11 +281,12 @@ Keymaps["Goto"] := [
     ["d", GoToDefinition],
     ["e", GoToEditorArea],
     ["f", SwitchToModeLast],
-    ["g", SwitchToModeLast],
-    ["h", SwitchToModeLast],
-    ["i", GoToEditorAbove],
-    ["j", GoToEditorLeft],
-    ["k", GoToEditorBelow],
+    ["g", GoToFileStartAndSwitchToModeLast], ; gg — top of file
+    ["+g", GoToFileEndAndSwitchToModeLast], ; gG — also bottom of file
+    ["h", GoToEditorLeft],
+    ["i", SwitchToModeInsert],
+    ["j", GoToEditorBelow],
+    ["k", GoToEditorAbove],
     ["l", GoToEditorRight],
     ["m", SwitchToModeLast],
     ["n", SendCtrlAltTab],
@@ -290,5 +304,5 @@ Keymaps["Goto"] := [
     ["y", GoToSymbolInWorkspace],
     ["z", SwitchToModeLast],
     ["Enter", EnterAndSwitchToModeLast],
-    ["CapsLock", SwitchToModeLast],
+    ["CapsLock", SendEscape],
 ]
