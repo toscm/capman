@@ -16,8 +16,9 @@ Keymaps["Caps"] := [
     ["CapsLock & l", Right],
     ["CapsLock & w", Word],
     ["CapsLock & b", WordBack],
-    ["CapsLock & e", SendEnd],
-    ["CapsLock & i", SendHome],
+    ["CapsLock & e", Word], ; Vim-faithful: end of word
+    ["CapsLock & i", SendHome], ; Home — i/o stand in for the line extremes in Caps mode
+    ["CapsLock & o", SendEnd], ; End
 
     ; Edit
     ["CapsLock & u", Undo],
@@ -40,7 +41,6 @@ Keymaps["Caps"] := [
 
     ; VSCode
     ["CapsLock & p", OpenControlPanel],
-    ["CapsLock & o", OpenCopilot],
     ["CapsLock & ``", SendCtrlBacktick],
     ["Capslock & '", SendCtrlBacktick],
     ["CapsLock & `;", SendCtrlL],
@@ -164,7 +164,8 @@ Keymaps["Control"] := [
     ["c", ToggleCapsLock],
     ["d", Delete],
     ["+d", DeleteLine],
-    ["*e", SendEnd],
+    ["e", Word], ; Vim-faithful: end of word
+    ["+e", SelectWord], ; Vim E — same as Shift+W in capman
     ["f", ExpandSelection],
     ["+f", ShrinkSelection],
     ["g", SwitchToModeGoto],
@@ -233,8 +234,9 @@ Keymaps["Visual"] := [
     ["^l", SelectWord],
     ["w", SelectWord],
     ["b", SelectWordBack],
-    ["e", SelectEnd],
+    ["e", SelectWord], ; Vim-faithful: extend selection to end of word
     ["0", SelectHome],
+    ["+4", SelectEnd], ; $ — Vim-style end of line
 
     ; ModeSwitches
     ["a", SwitchToModeInsert],
@@ -275,34 +277,39 @@ Keymaps["Visual"] := [
 ]
 
 Keymaps["Goto"] := [
-    ["a", GoToEditorArea],
-    ["b", GoToPrimarySidebar],
-    ["c", SwitchToModeInsert],
-    ["d", GoToDefinition],
-    ["e", GoToEditorArea],
-    ["f", SwitchToModeLast],
-    ["g", GoToFileStartAndSwitchToModeLast], ; gg — top of file
-    ["+g", GoToFileEndAndSwitchToModeLast], ; gG — also bottom of file
-    ["h", GoToEditorLeft],
+    ; Goto Mode is intentionally minimal: only file-extreme navigation.
+    ; `g` (or CapsLock+g) -> top of file; `G` (Shift+g) -> bottom of file.
+    ; Every other key cleanly exits without firing any side-effect command.
+    ["g", GoToFileStartAndSwitchToModeLast],
+    ["+g", GoToFileEndAndSwitchToModeLast],
+
+    ["a", SwitchToModeInsert],
     ["i", SwitchToModeInsert],
-    ["j", GoToEditorBelow],
-    ["k", GoToEditorAbove],
-    ["l", GoToEditorRight],
-    ["m", SwitchToModeLast],
-    ["n", SendCtrlAltTab],
-    ["+n", SendCtrlShiftAltTab],
-    ["o", SwitchToModeLast],
-    ["p", GoToPanel],
+
     ["q", SendEscape],
-    ["r", SwitchToModeLast],
-    ["s", GoToSymbolInEditor],
-    ["t", GoToPanel],
-    ["u", SwitchToModeLast],
-    ["v", GoToSecondarySidebar],
-    ["w", SendCtrlAltTab],
-    ["x", SwitchToModeLast],
-    ["y", GoToSymbolInWorkspace],
-    ["z", SwitchToModeLast],
-    ["Enter", EnterAndSwitchToModeLast],
     ["CapsLock", SendEscape],
+
+    ["b", SwitchToModeLast],
+    ["c", SwitchToModeLast],
+    ["d", SwitchToModeLast],
+    ["e", SwitchToModeLast],
+    ["f", SwitchToModeLast],
+    ["h", SwitchToModeLast],
+    ["j", SwitchToModeLast],
+    ["k", SwitchToModeLast],
+    ["l", SwitchToModeLast],
+    ["m", SwitchToModeLast],
+    ["n", SwitchToModeLast],
+    ["o", SwitchToModeLast],
+    ["p", SwitchToModeLast],
+    ["r", SwitchToModeLast],
+    ["s", SwitchToModeLast],
+    ["t", SwitchToModeLast],
+    ["u", SwitchToModeLast],
+    ["v", SwitchToModeLast],
+    ["w", SwitchToModeLast],
+    ["x", SwitchToModeLast],
+    ["y", SwitchToModeLast],
+    ["z", SwitchToModeLast],
+    ["Enter", SwitchToModeLast],
 ]

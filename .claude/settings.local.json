@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python macos/capmake format)",
+      "Bash(python macos/capmake build)"
+    ]
+  }
+}

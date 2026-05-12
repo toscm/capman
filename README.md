@@ -51,9 +51,8 @@ following bindings:
 
 - Text Movement (Vim-style):
   - `h`, `j`, `k`, `l` Move cursor Left/Down/Up/Right
-  - `w`, `b` Jump by word
-  - `e`, `0` Go to End/Start (Home) of Line
-  - `$` Alias for End of Line
+  - `w`, `b`, `e` Word forward / Word back / End of word
+  - `0`, `$` Start (Home) / End of Line
   - `gg`, `G` Top/Bottom of file
   - `[`, `]` Page Up/Down
   - `,`, `.` Ctrl Page Up/Down
@@ -90,8 +89,8 @@ keybindings are available:
 
 - Selection movement (Vim-style):
   - `h`, `j`, `k`, `l` Select Left/Down/Up/Right
-  - `w`, `b` Select word forward/back
-  - `e`, `0` Select to End/Home
+  - `w`, `b`, `e` Select word forward / back / to end of word
+  - `0`, `$` Select to Start / End of Line
 - Editing actions auto-exit:
   - `s`, `d`, `x`, `y` Backspace, delete, cut, yank
   - `Enter`, `Space` Insert newline/space

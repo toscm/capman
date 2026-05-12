@@ -423,7 +423,13 @@ SwitchToModeControl(Hotkey) {
 }
 
 SwitchToModeGoto(Hotkey) {
-    SwitchToMode("Goto")
+    global Mode
+    ; Pressing `g` (or CapsLock+g) while already in Goto Mode is the Vim `gg` chord.
+    if (Mode = "Goto") {
+        GoToFileStartAndSwitchToModeLast(Hotkey)
+    } else {
+        SwitchToMode("Goto")
+    }
 }
 
 SwitchToModeWindow(Hotkey) {
