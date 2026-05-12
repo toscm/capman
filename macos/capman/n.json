@@ -2,7 +2,7 @@
   {
     "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}],
     "from": {"key_code":"n","modifiers":{"optional":["shift"]}},
-    "to": [{"key_code":"tab","modifiers":["option"]}],
+    "to": [{"set_variable":{"name":"mode","value":1}},{"shell_command":"\"/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_cli\" --show_notification_window"},{"set_notification_message":{"id":"capman.mode","text":"NORMAL"}}],
     "type": "basic"
   },
   {

@@ -33,7 +33,7 @@ Keymaps["Caps"] := [
     ["CapsLock & [", SendPageUp],
     ["CapsLock & ]", SendPageDown],
     ["CapsLock & a", SendAltD],
-    ["CapsLock & m", SendF6],
+    ["CapsLock & m", SendCtrlAltTab], ; Persistent window picker
     ["CapsLock & t", SendCtrlTab],
     ["CapsLock & SC033", SendCtrlPageUp], ; CapsLock+, — scancode avoids AHK's comma-parsing quirk
     ["CapsLock & SC034", SendCtrlPageDown], ; CapsLock+.
@@ -82,13 +82,13 @@ Keymaps["Window"] := [
     ["CapsLock", SendEscape],
 
     ["a", SwitchToModeInsert],
-    ["Space", SwitchToModeInsert],
+    ["Space", SpaceAndSwitchToModeInsert],
+    ["Enter", EnterAndSwitchToModeInsert],
     ["b", DoNothing],
     ["c", DoNothing],
     ["d", DoNothing],
     ["e", DoNothing],
     ["f", MaximizeWindow],
-    ["Enter", MaximizeWindow],
     ["g", DoNothing],
     ["h", SendWinLeft],
     ["i", SwitchToModeInsert],

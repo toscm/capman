@@ -1,14 +1,20 @@
 [
   {
-    "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}],
-    "from": {"key_code":"o","modifiers":{"optional":["shift"]}},
-    "to": [{"key_code":"down_arrow","modifiers":["left_command"]}],
+    "conditions": [{"name":"mode","type":"variable_if","value":1}],
+    "from": {"key_code":"o","modifiers":{"mandatory":["shift"]}},
+    "to": [{"key_code":"left_arrow","modifiers":["command"]},{"key_code":"return_or_enter"},{"key_code":"up_arrow"},{"set_variable":{"name":"mode","value":0}},{"shell_command":"\"/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_cli\" --hide_notification_window"},{"set_notification_message":{"id":"capman.mode","text":""}}],
     "type": "basic"
   },
   {
-    "conditions": [{"name":"mode","type":"variable_unless","value":0}],
-    "from": {"key_code":"o","modifiers":{"optional":["shift"]}},
-    "to": [{"key_code":"down_arrow","modifiers":["left_command"]}],
+    "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}],
+    "from": {"key_code":"o"},
+    "to": [{"key_code":"right_arrow","modifiers":["command"]},{"key_code":"return_or_enter"},{"set_variable":{"name":"mode","value":0}},{"shell_command":"\"/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_cli\" --hide_notification_window"},{"set_notification_message":{"id":"capman.mode","text":""}}],
+    "type": "basic"
+  },
+  {
+    "conditions": [{"name":"mode","type":"variable_if","value":1}],
+    "from": {"key_code":"o"},
+    "to": [{"key_code":"right_arrow","modifiers":["command"]},{"key_code":"return_or_enter"},{"set_variable":{"name":"mode","value":0}},{"shell_command":"\"/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabiner_cli\" --hide_notification_window"},{"set_notification_message":{"id":"capman.mode","text":""}}],
     "type": "basic"
   }
 ]

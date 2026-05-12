@@ -19,12 +19,12 @@ and Window Mode.
 1. On MacOS: install [Karabiner-Elements](https://karabiner-elements.pqrs.org/)
 2. Start 'Karabiner-Elements', give it all required permissions and open the
    'Complex Modifications' tab
-3. Download [capman-v0.2.1.json](https://github.com/toscm/capman/releases/download/v0.2.1/capman-v0.2.1.json) and store it as
-    `~/.config/karabiner/assets/complex_modifications/capman-v0.2.1.json`
+3. Download [capman-v0.3.0.json](https://github.com/toscm/capman/releases/download/v0.3.0/capman-v0.3.0.json) and store it as
+    `~/.config/karabiner/assets/complex_modifications/capman-v0.3.0.json`
 
      ```bash
-     curl -o ~/.config/karabiner/assets/complex_modifications/capman-v0.2.1.json \
-     https://github.com/toscm/capman/releases/download/v0.2.1/capman-v0.2.1.json
+     curl -o ~/.config/karabiner/assets/complex_modifications/capman-v0.3.0.json \
+     https://github.com/toscm/capman/releases/download/v0.3.0/capman-v0.3.0.json
      ```
 4. In 'Karabiner-Elements', click 'Add predefined rule' and enable 'Capman'
 
@@ -103,14 +103,16 @@ keybindings are available:
 
 - Enter/Exit Window Mode:
   - `CapsLock + Space` Enter Window Mode
-  - `a`, `i`, `Space` Exit Window Mode (drop to Insert Mode)
+  - `a`, `i` Exit Window Mode (drop to Insert Mode)
+  - `Space` Send Space + drop to Insert Mode
+  - `Enter` Send Enter + drop to Insert Mode
   - `CapsLock` Send Escape
 - Move Windows (Vim-style):
   - `h`, `j`, `k`, `l` Tile Left/Down/Up/Right[^tile-windows]
 - Select Windows:
   - `n` Focus next window[^next-window]
 - Resize Windows:
-  - `Enter`, `f` Maximize active window[^tile-windows]
+  - `f` Maximize active window[^tile-windows]
   - `m` Minimize active window
 - Close Windows:
   - `q` Quit current app
