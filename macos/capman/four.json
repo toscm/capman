@@ -1,5 +1,11 @@
 [
   {
+    "conditions": [{"name":"capslock_pressed","type":"variable_if","value":1}],
+    "from": {"key_code":"4"},
+    "to": [{"key_code":"right_arrow","modifiers":["command"]}],
+    "type": "basic"
+  },
+  {
     "conditions": [{"name":"mode","type":"variable_if","value":1}],
     "from": {"key_code":"4","modifiers":{"mandatory":["shift"]}},
     "to": [{"key_code":"right_arrow","modifiers":["command"]}],
