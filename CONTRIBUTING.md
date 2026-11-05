@@ -4,9 +4,9 @@
 
 - **Goal:** Turn CapsLock into a modal workflow for navigation, editing, window,
   and mouse control.
-- **Tech stack:** AutoHotkey v2 on Windows, Karabiner-Elements on macOS.
-- **Entry points:** `capman/capman.ahk` (Windows) and the Karabiner rules under
-  `macos/`.
+- **Tech stack:** AutoHotkey v2 on Windows, a single-file Swift app on macOS.
+- **Entry points:** `capman/capman.ahk` (Windows) and `macos/Capman.swift`
+  (macOS).
 - **How to test quickly:** run `capman.ahk`, press `CapsLock + r` to reload after
   editing, and exercise the bindings you touched.
 
@@ -22,7 +22,20 @@
    ```
 4. Use `CapsLock + r` to reload Capman without restarting AutoHotkey.
 
-### macOS (Karabiner)
+### macOS (app)
+
+1. Install the Xcode command line tools (`xcode-select --install`).
+2. Edit `macos/Capman.swift`. All bindings are in one table in `buildBindings`;
+   window snapping is in `Snapper`.
+3. Run `macos/install.sh` to rebuild, re-sign and restart the app.
+   The Accessibility permission survives rebuilds, because the app is always
+   signed with the same certificate.
+4. For quick logic checks without permissions, `Engine.post` can be replaced by
+   a function that records the sent events instead of posting them.
+
+### macOS (legacy Karabiner rules)
+
+The Karabiner-Elements rules that preceded the app are still in `macos/capman/`.
 
 1. Install [Karabiner-Elements](https://karabiner-elements.pqrs.org/).
 2. Add the repo's `macos/` directory to your `PATH` so the `capmake` helper is
@@ -45,8 +58,10 @@
   - `keyboard.ahk` Internal helpers for enabling/disabling keymaps.
   - `mouse.ahk` Actions for mouse mode.
   - `config.ahk` Global constants and settings.
-- `macos` MacOS codebase (Karabiner).
-  - `capmake` Helper script to build, format, and install Karabiner rules.
+- `macos` MacOS codebase.
+  - `Capman.swift` The macOS app (event tap, bindings, window snapping, menu).
+  - `install.sh` Builds, signs and installs the app with a LaunchAgent.
+  - `capmake` Helper script to build, format, and install the legacy Karabiner rules.
   - `capman/*.json` Individual Karabiner rule fragments.
   - `macos/capman-v*.json` Bundles created by `capmake build`.
 
@@ -56,7 +71,8 @@
 2. Update or add bindings in `keymaps.ahk` and, if necessary, add the matching
    helper in `commands.ahk`.
 3. Reload Capman (`CapsLock + r`) and test the updated bindings.
-4. If you touch macOS rules, run `capmake format && capmake build` to refresh
+4. If you touch the macOS app, run `macos/install.sh` and test the bindings.
+   If you touch the legacy Karabiner rules, run `capmake format && capmake build` to refresh
    `macos/capman-v<version>.json`, then `capmake install` to update your local
    Karabiner config before testing.
 5. Update documentation:
@@ -82,7 +98,9 @@
 
 - Windows: verify the affected bindings in their relevant apps (e.g., window
   mode actions in Explorer, navigation in your editor).
-- macOS: enable the updated profile, open Karabiner EventViewer, and confirm
+- macOS: reinstall the app with `macos/install.sh` and try the bindings in a
+  text editor and a browser.
+- macOS (legacy rules): enable the updated profile, open Karabiner EventViewer, and confirm
   that each binding emits the expected modifiers/keys.
 - Confirm that pressing `CapsLock + r` reloads successfully without errors in
   the AutoHotkey console.

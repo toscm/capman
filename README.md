@@ -3,8 +3,22 @@
 Capman turns your CapsLock key into a modifier key with Vim-style bindings.
 Hold CapsLock for quick navigation and editing, or switch into one of several modes (Control, Visual, Window, ...) to control text, apps and windows without leaving the home row.
 
-Capman runs on Windows (AutoHotkey) and macOS (Karabiner-Elements).
+Capman runs on Windows (an AutoHotkey script) and macOS (a small menu-bar app).
 Most bindings are the same on both systems; differences are noted below.
+
+## Features
+
+- CapsLock as a modifier key with Vim-style movement and editing (Windows, macOS).
+
+- Modes: Control, Visual and Window Mode (Windows, macOS), Goto and Mouse Mode (Windows).
+
+- A status bar showing the current mode (Windows, macOS).
+
+- Windows-like window snapping with `Ctrl+Option+Cmd+Arrow` and in Window Mode (macOS; Windows has it built in as `Win+Arrow`).
+
+- `Home`, `End` and `Cmd+Y` behave like on Windows and Linux (macOS).
+
+- Optional: `Option+a/o/u/s` type ä, ö, ü, ß, independent of the keyboard layout (macOS, off by default, see [Configuration](#configuration-macos)).
 
 ## Installation
 
@@ -20,10 +34,19 @@ To compile Capman into a standalone `capman.exe`, run `capman/build.ps1`.
 
 ### macOS
 
-1. Install [Karabiner-Elements](https://karabiner-elements.pqrs.org/), start it and give it the permissions it asks for.
+You need macOS 14 or newer and the Xcode command line tools (`xcode-select --install`).
 
-2. Clone this repo and run `./macos/capmake install`.
-   This builds the rule bundle and adds the rule "Capman (v0.3.1)" to `~/.config/karabiner/karabiner.json`.
+1. Clone this repo and run `macos/install.sh`.
+   This builds `~/Applications/Capman.app`, starts it, and adds a LaunchAgent so that it starts at every login.
+
+2. Give Capman the Accessibility permission when macOS asks (System Settings → Privacy & Security → Accessibility).
+   Capman starts working as soon as the permission is granted.
+
+Run `macos/install.sh` again after pulling updates, and `macos/install.sh uninstall` to remove Capman.
+The app is signed with a self-made certificate ("Local Code Signing" in your login keychain), so the permission survives updates.
+
+Capman replaces Karabiner-Elements and Rectangle for these features.
+If you used the older Karabiner version of Capman, remove its "Capman" rule from Karabiner first; the rule files are still in `macos/capman/` (built with `macos/capmake`).
 
 ## Overview
 
@@ -40,7 +63,7 @@ To compile Capman into a standalone `capman.exe`, run `capman/build.ps1`.
 
 - `a` or `i` returns from any mode to Insert Mode, where the keyboard behaves normally.
 
-- The current mode is shown in a small status bar (Windows: top right of the primary monitor, macOS: bottom right).
+- The current mode is shown in a small status bar (Windows: top right of the primary monitor, macOS: bottom right, and in the menu bar).
   In Insert Mode the bar is hidden.
 
 ## CapsLock Layer
@@ -167,9 +190,13 @@ Movement keys extend the selection:
 
 Actions:
 
-- `y`: Copy and leave Visual Mode
+- `y`: Copy, then leave Visual Mode
 
-- `d`, `s`, `x`: Delete, backspace, cut (Windows: then leave Visual Mode)
+Leaving Visual Mode returns to the previous mode (macOS: always Control Mode).
+
+- `d`, `s`, `x`: Delete, backspace, cut, then leave Visual Mode
+
+- macOS only: `p` pastes over the selection, then leaves Visual Mode
 
 - `v`: Back to the previous mode (macOS: Control Mode)
 
@@ -183,17 +210,23 @@ Actions:
 
 Enter with `CapsLock + Space`.
 
-- `h`, `j`, `k`, `l` and the arrow keys: Snap the window left, down, up, right[^tile-windows]
+- `h`, `j`, `k`, `l` and the arrow keys: Snap the window left, down, up, right (Windows: native `Win+Arrow` snapping, macOS: see [Window Snapping](#window-snapping-macos))
 
-- `f`: Maximize the window[^tile-windows]
+- `f`: Maximize the window (macOS: again restores it)
 
-- `n`: Next window
+- `m`: Minimize the window
+
+- `w`: Close the window (Windows: `Ctrl+F4`, macOS: `Cmd+W`)
+
+- `q`: Quit the app (Windows: `Alt+F4`, macOS: `Cmd+Q`)
+
+- `n`: Next window (Windows: `N` previous window)
 
 - `a`, `i`: Insert Mode; `Space`, `Enter`: type the key and return to Insert Mode
 
 - macOS: `CapsLock + Space` again returns to Insert Mode
 
-- Windows only: `m` minimizes, `w` closes the window (`Ctrl+F4`), `q` quits the app (`Alt+F4`), `N` previous window
+In all modes and in the CapsLock layer, letters without a binding do nothing instead of typing.
 
 ## Goto Mode (Windows)
 
@@ -216,12 +249,41 @@ Enter with `CapsLock + x`.
 
 These apply in every mode, to make macOS behave more like Windows and Linux:
 
-- `Home`, `End`: Start / end of the line; `Cmd+Home`, `Cmd+End`: Start / end of the file (with `Shift` in Visual Mode)
+- `Home`, `End`: Start / end of the line; `Cmd+Home`, `Cmd+End`: Start / end of the file (with `Shift`, or in Visual Mode, they select)
 
 - `Cmd+Y`: Redo
 
-- Umlauts: `Option+a`, `Option+o`, `Option+u` type ä, ö, ü (with `Shift`: Ä, Ö, Ü), `Shift+Option+s` types ß.
-  These are skipped in iTerm2, whose profile types umlauts itself.
+- `Ctrl+Option+Cmd+Arrow`: [Window Snapping](#window-snapping-macos), like `Win+Arrow` on Windows
+
+- Umlauts, if enabled in the [configuration](#configuration-macos): `Option+a`, `Option+o`, `Option+u`, `Option+s` type ä, ö, ü, ß (with `Shift`: Ä, Ö, Ü).
+  They are typed directly, so they work with any keyboard layout.
+  They are skipped in iTerm2, where Option usually acts as Meta.
+
+## Window Snapping (macOS)
+
+The arrow keys in Window Mode and `Ctrl+Option+Cmd+Arrow` snap the focused window within the usable area of its display, similar to `Win+Arrow` on Windows:
+
+- Left / Right: Snap to the left / right half.
+  A window already snapped to the top or bottom keeps that, so Left then Up gives the top-left quarter.
+  Pressing Left on a window that is already on the left moves it to the right half of the display to the left (and vice versa).
+
+- Up: Snap to the top half, keeping the window's horizontal position and width; on a window already at the top, maximize; on a maximized window, restore.
+
+- Down: Snap to the bottom half, keeping the window's horizontal position and width; on a window already at the bottom or a maximized window, restore.
+
+"Restore" returns the window to the size and position it had before it was first snapped.
+Snapping does not use the macOS full-screen mode.
+
+## Configuration (macOS)
+
+Capman reads `~/.config/capman/capman.conf` at startup and on "Reload Config" in its menu.
+"Edit Config…" in the menu creates the file if it doesn't exist.
+Example:
+
+```
+# Option+a/o/u/s type ä/ö/ü/ß (default: false)
+umlauts = true
+```
 
 ## Contributing
 
@@ -235,5 +297,3 @@ Want to add a feature or port a binding? See [CONTRIBUTING.md](CONTRIBUTING.md) 
 
 [^dd-yy]: Vim's `dd` / `yy` chords are not detected; Capman binds the line-wise operations to `D` (Shift+d) and `Y` (Shift+y) instead.
 
-[^tile-windows]: On Windows, Capman sends the native `Win+Arrow` snapping shortcuts.
-  On macOS, it sends the default [Rectangle](https://rectangleapp.com/) shortcuts (`Ctrl+Option+Arrow`, `Ctrl+Option+Enter`), so these bindings only work while Rectangle is running.
