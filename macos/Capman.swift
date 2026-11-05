@@ -9,7 +9,7 @@ import Carbon.HIToolbox
 import IOKit
 import IOKit.hid
 
-let capmanVersion = "0.5.2"
+let capmanVersion = "0.5.3"
 let helpURL = "https://github.com/toscm/capman#readme"
 let configURL = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(".config/capman/capman.conf")
 
@@ -330,6 +330,7 @@ enum Snapper {
         var restoreArea: CGRect  // usable area of the display the restore frame was on
         var corner: Span?        // vertical span of a quarter that Left/Right stretched to a half
         var lastSet: CGRect      // frame Capman set last; if the window differs, the user moved it
+        var intended: CGRect     // frame Capman asked for; differs from lastSet if the app enforces a minimum size
     }
 
     static var memory: [CFHashCode: Memory] = [:]
@@ -428,13 +429,24 @@ enum Snapper {
         minimized = nil
         guard let w = focusedWindow(), let f = frame(w), let a = area(of: f) else { return }
         let id = CFHash(w)
-        var m = memory[id] ?? Memory(restore: f, restoreArea: a, corner: nil, lastSet: f)
-        if !near(f, m.lastSet) { m = Memory(restore: f, restoreArea: a, corner: nil, lastSet: f) } // moved by the user
-        let outcome = decide(f, a, span(f.minX, f.width, in: a.minX, a.width), span(f.minY, f.height, in: a.minY, a.height), &m)
+        let fresh = Memory(restore: f, restoreArea: a, corner: nil, lastSet: f, intended: f)
+        var m = memory[id] ?? fresh
+        if !near(f, m.lastSet) { m = fresh } // moved by the user
+        // Decide from the frame Capman asked for, not the one the window got: a window with a minimum size
+        // larger than half the display (like Battle.net) would otherwise never count as a top half and get stuck.
+        let g = m.intended
+        let outcome = decide(g, a, span(g.minX, g.width, in: a.minX, a.width), span(g.minY, g.height, in: a.minY, a.height), &m)
         switch outcome {
         case let .frame(r):
             setFrame(w, r)
+            if var got = frame(w), got.maxX > a.maxX + 1 || got.maxY > a.maxY + 1 {
+                // The app kept a larger minimum size: keep the window on the display, anchored to the snapped edge.
+                got.origin = CGPoint(x: max(a.minX, min(got.minX, a.maxX - got.width)), y: max(a.minY, min(got.minY, a.maxY - got.height)))
+                var o = got.origin
+                AXUIElementSetAttributeValue(w, kAXPositionAttribute as CFString, AXValueCreate(.cgPoint, &o)!)
+            }
             m.lastSet = frame(w) ?? r
+            m.intended = r
             memory[id] = m
         case .restore:
             setFrame(w, restoreFrame(m, in: a))

@@ -290,6 +290,7 @@ Pressing Up right after minimizing brings the window back, as long as you haven'
 If it was snapped onto another display meanwhile, it is restored on that display.
 Capman remembers this per window; moving or resizing a window by hand starts over.
 Snapping does not use the macOS full-screen mode.
+Windows that cannot shrink to half the display (like Battle.net) get their minimum size instead, stay on the display along the snapped edge, and keep snapping through the same steps.
 
 ## Displays (macOS)
 
