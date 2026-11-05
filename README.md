@@ -39,7 +39,8 @@ You need macOS 14 or newer and the Xcode command line tools (`xcode-select --ins
 1. Clone this repo and run `macos/install.sh`.
    This builds `~/Applications/Capman.app`, starts it, and adds a LaunchAgent so that it starts at every login.
 
-2. Give Capman the Accessibility permission when macOS asks (System Settings → Privacy & Security → Accessibility).
+2. Give Capman the Accessibility permission when macOS asks: System Settings → Privacy & Security → Accessibility (called "Device Control and Data Access" in newer macOS versions).
+   If Capman is not listed there, add `~/Applications/Capman.app` with the + button.
    Capman starts working as soon as the permission is granted.
 
 Run `macos/install.sh` again after pulling updates, and `macos/install.sh uninstall` to remove Capman.
