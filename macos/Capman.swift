@@ -9,7 +9,7 @@ import Carbon.HIToolbox
 import IOKit
 import IOKit.hid
 
-let capmanVersion = "0.5.1"
+let capmanVersion = "0.5.2"
 let helpURL = "https://github.com/toscm/capman#readme"
 let configURL = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(".config/capman/capman.conf")
 
@@ -540,6 +540,9 @@ func loadConfig() -> [String: String] {
 // MARK: - App
 
 /// Small label at the bottom left of the main display (where Vim shows it) showing the current mode (hidden in Insert Mode).
+/// Colours of the modes, shared by the mode indicator and the menu-bar icon (Insert Mode has none).
+let modeColors: [Mode: NSColor] = [.normal: .systemBlue, .visual: .systemOrange, .window: .systemPurple]
+
 final class ModeIndicator {
     private let panel = NSPanel(contentRect: .zero, styleMask: [.borderless, .nonactivatingPanel], backing: .buffered, defer: false)
     private let label = NSTextField(labelWithString: "")
@@ -561,8 +564,7 @@ final class ModeIndicator {
 
     func show(_ mode: Mode) {
         guard mode != .insert, let screen = NSScreen.main else { panel.orderOut(nil); return }
-        let colors: [Mode: NSColor] = [.normal: .systemBlue, .visual: .systemOrange, .window: .systemPurple]
-        panel.contentView?.layer?.backgroundColor = colors[mode]?.withAlphaComponent(0.9).cgColor
+        panel.contentView?.layer?.backgroundColor = modeColors[mode]?.withAlphaComponent(0.9).cgColor
         label.stringValue = mode.rawValue
         label.sizeToFit()
         label.setFrameOrigin(NSPoint(x: 12, y: 6))
@@ -674,12 +676,16 @@ final class App: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
 
     func showMode(_ m: Mode) {
-        // The CapsLock symbol, filled and followed by the mode name outside Insert Mode.
-        let image = NSImage(systemSymbolName: m == .insert ? "capslock" : "capslock.fill", accessibilityDescription: "Capman")
-        image?.isTemplate = true
+        // The filled CapsLock symbol: plain in Insert Mode (adapts to light/dark), coloured in the other modes.
+        var image = NSImage(systemSymbolName: "capslock.fill", accessibilityDescription: "Capman \(m.rawValue)")
+        if let color = modeColors[m] {
+            image = image?.withSymbolConfiguration(NSImage.SymbolConfiguration(paletteColors: [color]))
+            image?.isTemplate = false
+        } else {
+            image?.isTemplate = true
+        }
         item.button?.image = image
-        item.button?.imagePosition = .imageLeading
-        item.button?.title = m == .insert ? "" : " " + m.rawValue
+        item.button?.title = ""
         indicator.show(m)
     }
 

@@ -309,7 +309,7 @@ If a screen ever stays dark, unplug and replug the monitor or restart the Mac.
 
 ## Configuration (macOS)
 
-The menu-bar icon (the CapsLock symbol, filled and followed by the mode name outside Insert Mode) opens Capman's menu.
+The menu-bar icon (the filled CapsLock symbol, coloured like the mode indicator outside Insert Mode: blue for Control, orange for Visual, purple for Window Mode) opens Capman's menu.
 Its first part holds Capman's own settings (the umlaut switch, the config file, help), the second part the displays and display modes.
 
 Capman reads `~/.config/capman/capman.conf` at startup and on "Reload Config" in its menu.
