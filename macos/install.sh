@@ -20,7 +20,7 @@ if [ "${1:-}" = uninstall ]; then
 fi
 
 mkdir -p "$APP/Contents/MacOS" "$HOME/Library/LaunchAgents"
-swiftc -O -swift-version 5 Capman.swift -o "$APP/Contents/MacOS/Capman"
+swiftc -O -swift-version 5 -parse-as-library Capman.swift Displays.swift -o "$APP/Contents/MacOS/Capman"
 cat > "$APP/Contents/Info.plist" <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">

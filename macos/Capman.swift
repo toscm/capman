@@ -1,4 +1,5 @@
-// Capman for macOS: CapsLock as a Vim-style modifier key, modes, and Windows-like window snapping.
+// Capman for macOS: CapsLock as a Vim-style modifier key, modes, Windows-like window snapping,
+// and display switching (Displays.swift).
 //
 // How it works: at startup hidutil maps the CapsLock key to F18, which has no other use.
 // A keyboard event tap then sees F18 going down and up, and rewrites the keys pressed meanwhile.
@@ -8,7 +9,7 @@ import Carbon.HIToolbox
 import IOKit
 import IOKit.hid
 
-let capmanVersion = "0.4.0"
+let capmanVersion = "0.5.0"
 let helpURL = "https://github.com/toscm/capman#readme"
 let configURL = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(".config/capman/capman.conf")
 
@@ -34,6 +35,7 @@ enum Action {
     case snap(Direction)
     case toggleMaximize
     case minimize
+    case displayPicker
 }
 
 /// A binding runs its actions in order. With `pass`, modifiers the user holds in addition
@@ -163,6 +165,7 @@ func buildBindings(umlauts: Bool) {
     for (k, d) in [(left, Direction.left), (right, .right), (up, .up), (down, .down)] {
         bind([global], k, [ctrl, opt, cmd], .snap(d))
     }
+    bind([global], kVK_ANSI_P, [ctrl, opt], .displayPicker)                 // like Win+P
 
     // Optional: Option+a/o/u/s type ä/ö/ü/ß (with Shift: Ä/Ö/Ü), independent of the keyboard layout.
     if umlauts {
@@ -261,6 +264,7 @@ final class Engine {
             case let .snap(d): DispatchQueue.main.async { Snapper.snap(d) }
             case .toggleMaximize: DispatchQueue.main.async { Snapper.toggleMaximize() }
             case .minimize: DispatchQueue.main.async { Snapper.minimize() }
+            case .displayPicker: DispatchQueue.main.async { (NSApp.delegate as? App)?.displayHotKey() }
             }
         }
     }
@@ -319,8 +323,16 @@ func drain(_ iterator: io_iterator_t) {
 // MARK: - Window snapping
 
 /// Windows-like snapping of the focused window (see README.md, "Window Snapping").
+/// Per window it remembers the frame to restore and the corner a quarter was stretched from.
 enum Snapper {
-    static var restoreFrames: [CFHashCode: CGRect] = [:]
+    struct Memory {
+        var restore: CGRect      // frame before the first snap
+        var restoreArea: CGRect  // usable area of the display the restore frame was on
+        var corner: Span?        // vertical span of a quarter that Left/Right stretched to a half
+        var lastSet: CGRect      // frame Capman set last; if the window differs, the user moved it
+    }
+
+    static var memory: [CFHashCode: Memory] = [:]
     static let tol: CGFloat = 40 // apps like terminals round their size to whole characters
 
     enum Span { case low, high, full, free } // low = left/top half, high = right/bottom half
@@ -366,14 +378,20 @@ enum Snapper {
         return all.first { $0.contains(CGPoint(x: r.midX, y: r.midY)) } ?? all.first
     }
 
+    static func near(_ a: CGFloat, _ b: CGFloat) -> Bool { abs(a - b) < tol }
+
+    static func near(_ a: CGRect, _ b: CGRect) -> Bool {
+        near(a.minX, b.minX) && near(a.minY, b.minY) && near(a.width, b.width) && near(a.height, b.height)
+    }
+
     static func span(_ lo: CGFloat, _ len: CGFloat, in aLo: CGFloat, _ aLen: CGFloat) -> Span {
-        func near(_ a: CGFloat, _ b: CGFloat) -> Bool { abs(a - b) < tol }
         if near(lo, aLo) && near(len, aLen) { return .full }
         if near(lo, aLo) && near(len, aLen / 2) { return .low }
         if near(lo, aLo + aLen / 2) && near(len, aLen / 2) { return .high }
         return .free
     }
 
+    /// Start and length of a span within an area; `.free` keeps the given values.
     static func place(_ s: Span, _ aLo: CGFloat, _ aLen: CGFloat, keep: (CGFloat, CGFloat)) -> (CGFloat, CGFloat) {
         switch s {
         case .low: return (aLo, aLen / 2)
@@ -383,57 +401,97 @@ enum Snapper {
         }
     }
 
-    static func apply(_ w: AXUIElement, from f: CGRect, to r: CGRect) {
-        let id = CFHash(w)
-        if restoreFrames[id] == nil { restoreFrames[id] = f }
-        setFrame(w, r)
+    static func rect(_ h: Span, _ v: Span, in a: CGRect, keeping f: CGRect) -> CGRect {
+        let (x, w) = place(h, a.minX, a.width, keep: (f.minX, f.width))
+        let (y, ht) = place(v, a.minY, a.height, keep: (f.minY, f.height))
+        return CGRect(x: x, y: y, width: w, height: ht)
     }
 
-    static func restore(_ w: AXUIElement) {
-        if let r = restoreFrames.removeValue(forKey: CFHash(w)) { setFrame(w, r) }
+    /// The restore frame, moved to the display the window is on now if it was snapped to another one.
+    static func restoreFrame(_ m: Memory, in a: CGRect) -> CGRect {
+        if m.restoreArea == a { return m.restore }
+        let w = min(m.restore.width, a.width), h = min(m.restore.height, a.height)
+        let x = a.minX + min(max(m.restore.minX - m.restoreArea.minX, 0), a.width - w)
+        let y = a.minY + min(max(m.restore.minY - m.restoreArea.minY, 0), a.height - h)
+        return CGRect(x: x, y: y, width: w, height: h)
+    }
+
+    enum Outcome { case frame(CGRect), restore, minimize, none }
+
+    /// Applies one snapping step to the focused window.
+    static func act(_ decide: (CGRect, CGRect, Span, Span, inout Memory) -> Outcome) {
+        guard let w = focusedWindow(), let f = frame(w), let a = area(of: f) else { return }
+        let id = CFHash(w)
+        var m = memory[id] ?? Memory(restore: f, restoreArea: a, corner: nil, lastSet: f)
+        if !near(f, m.lastSet) { m = Memory(restore: f, restoreArea: a, corner: nil, lastSet: f) } // moved by the user
+        let outcome = decide(f, a, span(f.minX, f.width, in: a.minX, a.width), span(f.minY, f.height, in: a.minY, a.height), &m)
+        switch outcome {
+        case let .frame(r):
+            setFrame(w, r)
+            m.lastSet = frame(w) ?? r
+            memory[id] = m
+        case .restore:
+            setFrame(w, restoreFrame(m, in: a))
+            memory[id] = nil
+        case .minimize:
+            memory[id] = m
+            AXUIElementSetAttributeValue(w, kAXMinimizedAttribute as CFString, kCFBooleanTrue)
+        case .none:
+            break
+        }
     }
 
     static func snap(_ d: Direction) {
-        guard let w = focusedWindow(), let f = frame(w), let a = area(of: f) else { return }
-        let h = span(f.minX, f.width, in: a.minX, a.width), v = span(f.minY, f.height, in: a.minY, a.height)
-        // Vertical placement used by Left/Right: keep a top/bottom snap, otherwise use the full height.
-        let (y, height) = place(v == .low || v == .high ? v : .full, a.minY, a.height, keep: (f.minY, f.height))
-        switch d {
-        case .left, .right:
-            let side: Span = d == .left ? .low : .high
-            if h == side { // already on that side: continue on the neighbouring display
-                let others = areas().filter { d == .left ? $0.maxX <= a.minX + tol : $0.minX >= a.maxX - tol }
-                guard let n = others.min(by: { abs($0.midX - a.midX) < abs($1.midX - a.midX) }) else { return }
-                let vy = place(v == .low || v == .high ? v : .full, n.minY, n.height, keep: (n.minY, n.height))
-                let (x, width) = place(d == .left ? .high : .low, n.minX, n.width, keep: (0, 0))
-                apply(w, from: f, to: CGRect(x: x, y: vy.0, width: width, height: vy.1))
-            } else {
-                let (x, width) = place(side, a.minX, a.width, keep: (0, 0))
-                apply(w, from: f, to: CGRect(x: x, y: y, width: width, height: height))
-            }
-        case .up, .down:
-            let side: Span = d == .up ? .low : .high
-            if h == .full && v == .full { restore(w) }            // maximized: restore
-            else if v == side {                                     // already at that side
-                if d == .up { apply(w, from: f, to: a) } else { restore(w) }
-            } else {                                                // top/bottom half, keeping x and width
-                let (ny, nh) = place(side, a.minY, a.height, keep: (0, 0))
-                apply(w, from: f, to: CGRect(x: f.minX, y: ny, width: f.width, height: nh))
+        act { f, a, h, v, m in
+            let maximized = h == .full && v == .full
+            switch d {
+            case .left, .right:
+                let side: Span = d == .left ? .low : .high
+                if h == side && (v == .low || v == .high) {           // quarter: stretch to the half
+                    m.corner = v
+                    return .frame(rect(side, .full, in: a, keeping: f))
+                }
+                if h == side && v == .full, let corner = m.corner {   // stretched half: back to the quarter
+                    m.corner = nil
+                    return .frame(rect(side, corner, in: a, keeping: f))
+                }
+                m.corner = nil
+                if h == side {                                        // half: continue on the neighbouring display
+                    let others = areas().filter { d == .left ? $0.maxX <= a.minX + tol : $0.minX >= a.maxX - tol }
+                    guard let n = others.min(by: { abs($0.midX - a.midX) < abs($1.midX - a.midX) }) else { return .none }
+                    return .frame(rect(d == .left ? .high : .low, v == .free ? .full : v, in: n, keeping: f))
+                }
+                let keepV = !maximized && (v == .low || v == .high)
+                return .frame(rect(side, keepV ? v : .full, in: a, keeping: f))
+            case .up:
+                m.corner = nil
+                if maximized { return .restore }
+                switch v {
+                case .low: return .frame(a)                                       // top: maximize
+                case .high: return .frame(rect(.free, .full, in: a, keeping: f))  // bottom: full height
+                case .full, .free: return .frame(rect(.free, .low, in: a, keeping: f))
+                }
+            case .down:
+                m.corner = nil
+                if maximized { return .restore }
+                switch v {
+                case .high: return .minimize                                      // bottom: minimize
+                case .low: return .frame(rect(.free, .full, in: a, keeping: f))   // top: full height
+                case .full, .free: return .frame(rect(.free, .high, in: a, keeping: f))
+                }
             }
         }
     }
 
     static func toggleMaximize() {
-        guard let w = focusedWindow(), let f = frame(w), let a = area(of: f) else { return }
-        if span(f.minX, f.width, in: a.minX, a.width) == .full && span(f.minY, f.height, in: a.minY, a.height) == .full {
-            restore(w)
-        } else {
-            apply(w, from: f, to: a)
+        act { _, a, h, v, m in
+            m.corner = nil
+            return h == .full && v == .full ? .restore : .frame(a)
         }
     }
 
     static func minimize() {
-        if let w = focusedWindow() { AXUIElementSetAttributeValue(w, kAXMinimizedAttribute as CFString, kCFBooleanTrue) }
+        act { _, _, _, _, _ in .minimize }
     }
 }
 
@@ -453,7 +511,7 @@ func loadConfig() -> [String: String] {
 
 // MARK: - App
 
-/// Small label at the bottom right of the main display showing the current mode (hidden in Insert Mode).
+/// Small label at the bottom left of the main display (where Vim shows it) showing the current mode (hidden in Insert Mode).
 final class ModeIndicator {
     private let panel = NSPanel(contentRect: .zero, styleMask: [.borderless, .nonactivatingPanel], backing: .buffered, defer: false)
     private let label = NSTextField(labelWithString: "")
@@ -482,7 +540,7 @@ final class ModeIndicator {
         label.setFrameOrigin(NSPoint(x: 12, y: 6))
         let size = NSSize(width: label.frame.width + 24, height: label.frame.height + 12)
         let v = screen.visibleFrame
-        panel.setFrame(NSRect(x: v.maxX - size.width - 12, y: v.minY + 12, width: size.width, height: size.height), display: true)
+        panel.setFrame(NSRect(x: v.minX + 12, y: v.minY + 12, width: size.width, height: size.height), display: true)
         panel.orderFrontRegardless()
     }
 }
@@ -495,6 +553,11 @@ final class App: NSObject, NSApplicationDelegate, NSMenuDelegate {
     var devicePort: IONotificationPortRef?
     var deviceIterator: io_iterator_t = 0
     var sigterm: DispatchSourceSignal?
+    let displays = DisplayManager()
+    lazy var picker = DisplayPicker { [weak self] in self?.setDisplayMode($0) }
+    var displayBusy = false
+    // Keeps App Nap from throttling the display watchdog while Capman sits idle in the menu bar.
+    let activity = ProcessInfo.processInfo.beginActivity(options: .userInitiatedAllowingIdleSystemSleep, reason: "display watchdog")
 
     func applicationDidFinishLaunching(_: Notification) {
         let menu = NSMenu()
@@ -503,6 +566,14 @@ final class App: NSObject, NSApplicationDelegate, NSMenuDelegate {
         engine.onModeChange = { [weak self] m in self?.showMode(m) }
         reloadConfig()
         showMode(.insert)
+
+        // If no usable display is left (e.g. the monitor was unplugged while the built-in display was off),
+        // turn all displays back on: on every display change and, as a fallback, every second.
+        RunLoop.main.add(Timer(timeInterval: 1, repeats: true) { [weak self] _ in self?.displays.watchdog() }, forMode: .common)
+        CGDisplayRegisterReconfigurationCallback({ _, flags, _ in
+            guard !flags.contains(.beginConfigurationFlag) else { return }
+            DispatchQueue.main.async { let d = (NSApp.delegate as? App)?.displays; d?.logState(); d?.watchdog() }
+        }, nil)
 
         // Undo the CapsLock mapping when launchd stops us (e.g. via install.sh).
         signal(SIGTERM, SIG_IGN)
@@ -568,6 +639,25 @@ final class App: NSObject, NSApplicationDelegate, NSMenuDelegate {
         menu.addItem(withTitle: "Mode: \(engine.mode.rawValue.capitalized)", action: nil, keyEquivalent: "")
         menu.addItem(withTitle: "Umlauts: \(engine.umlauts ? "on" : "off")", action: nil, keyEquivalent: "")
         menu.addItem(.separator())
+        menu.addItem(.sectionHeader(title: "Displays"))
+        for d in displays.displays() {
+            let i = NSMenuItem(title: d.name, action: #selector(toggleDisplay(_:)), keyEquivalent: "")
+            i.state = d.enabled ? .on : .off
+            i.representedObject = d
+            i.target = self
+            menu.addItem(i)
+        }
+        menu.addItem(.sectionHeader(title: "Display Mode (⌃⌥P)"))
+        let current = displays.currentMode()
+        for m in DisplayMode.allCases {
+            let i = NSMenuItem(title: m.rawValue, action: #selector(pickDisplayMode(_:)), keyEquivalent: "")
+            i.state = m == current ? .on : .off
+            i.representedObject = m.rawValue
+            i.target = self
+            menu.addItem(i)
+        }
+        menu.addItem(withTitle: "Display Settings…", action: #selector(openDisplaySettings), keyEquivalent: "").target = self
+        menu.addItem(.separator())
         menu.addItem(withTitle: "Edit Config…", action: #selector(editConfig), keyEquivalent: "").target = self
         menu.addItem(withTitle: "Reload Config", action: #selector(reload), keyEquivalent: "r").target = self
         menu.addItem(withTitle: "Help", action: #selector(help), keyEquivalent: "").target = self
@@ -584,12 +674,44 @@ final class App: NSObject, NSApplicationDelegate, NSMenuDelegate {
                                 configuration: NSWorkspace.OpenConfiguration())
     }
 
+    @objc func toggleDisplay(_ sender: NSMenuItem) {
+        guard let d = sender.representedObject as? Display else { return }
+        displays.setEnabled(d, !d.enabled)
+    }
+
+    @objc func pickDisplayMode(_ sender: NSMenuItem) {
+        if let m = DisplayMode(rawValue: sender.representedObject as? String ?? "") { setDisplayMode(m) }
+    }
+
+    @objc func openDisplaySettings() {
+        NSWorkspace.shared.open(URL(string: "x-apple.systempreferences:com.apple.Displays-Settings.extension")!)
+    }
+
+    func setDisplayMode(_ mode: DisplayMode) {
+        guard !displayBusy else { return }
+        displayBusy = true
+        displays.apply(mode) { [weak self] in
+            self?.displayBusy = false
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { HUD.show(mode.rawValue) }
+        }
+    }
+
+    /// Ctrl+Option+P opens the display picker with the next mode selected; further presses move the selection.
+    func displayHotKey() {
+        if picker.isVisible { picker.move(1) } else { picker.open(current: displays.currentMode()) }
+    }
+
     @objc func reload() { reloadConfig() }
     @objc func help() { NSWorkspace.shared.open(URL(string: helpURL)!) }
 }
 
-let app = NSApplication.shared
-let delegate = App()
-app.delegate = delegate
-app.setActivationPolicy(.accessory)
-app.run()
+@main
+enum CapmanMain {
+    static func main() {
+        let app = NSApplication.shared
+        let delegate = App()
+        app.delegate = delegate
+        app.setActivationPolicy(.accessory) // menu bar only, no Dock icon
+        withExtendedLifetime(delegate) { app.run() }
+    }
+}

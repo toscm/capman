@@ -26,7 +26,8 @@
 
 1. Install the Xcode command line tools (`xcode-select --install`).
 2. Edit `macos/Capman.swift`. All bindings are in one table in `buildBindings`;
-   window snapping is in `Snapper`.
+   window snapping is in `Snapper`; display switching is in `macos/Displays.swift`.
+   For window snapping, Windows' `Win+Arrow` behaviour is the reference.
 3. Run `macos/install.sh` to rebuild, re-sign and restart the app.
    The Accessibility permission survives rebuilds, because the app is always
    signed with the same certificate.
@@ -60,6 +61,7 @@ The Karabiner-Elements rules that preceded the app are still in `macos/capman/`.
   - `config.ahk` Global constants and settings.
 - `macos` MacOS codebase.
   - `Capman.swift` The macOS app (event tap, bindings, window snapping, menu).
+  - `Displays.swift` Turning displays on/off and the display-mode picker.
   - `install.sh` Builds, signs and installs the app with a LaunchAgent.
   - `capmake` Helper script to build, format, and install the legacy Karabiner rules.
   - `capman/*.json` Individual Karabiner rule fragments.
