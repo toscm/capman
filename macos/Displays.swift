@@ -1,5 +1,5 @@
 // Display management: turn displays on/off and switch display modes, similar to Win+P on Windows.
-// Formerly the separate app toscdm. Used by the menu and by Ctrl+Option+P (see Capman.swift).
+// Formerly the separate app toscdm. Used by the menu and by Ctrl+Option+Cmd+P (see Capman.swift).
 import AppKit
 import Carbon.HIToolbox
 

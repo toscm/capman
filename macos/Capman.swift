@@ -9,7 +9,7 @@ import Carbon.HIToolbox
 import IOKit
 import IOKit.hid
 
-let capmanVersion = "0.5.0"
+let capmanVersion = "0.5.1"
 let helpURL = "https://github.com/toscm/capman#readme"
 let configURL = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(".config/capman/capman.conf")
 
@@ -165,7 +165,7 @@ func buildBindings(umlauts: Bool) {
     for (k, d) in [(left, Direction.left), (right, .right), (up, .up), (down, .down)] {
         bind([global], k, [ctrl, opt, cmd], .snap(d))
     }
-    bind([global], kVK_ANSI_P, [ctrl, opt], .displayPicker)                 // like Win+P
+    bind([global], kVK_ANSI_P, [ctrl, opt, cmd], .displayPicker)            // like Win+P
 
     // Optional: Option+a/o/u/s type ä/ö/ü/ß (with Shift: Ä/Ö/Ü), independent of the keyboard layout.
     if umlauts {
@@ -333,6 +333,11 @@ enum Snapper {
     }
 
     static var memory: [CFHashCode: Memory] = [:]
+    // The window minimized by the last snapping step, and the window that had focus right afterwards.
+    // Up restores it as long as the focus has not moved on, like Win+Up after Win+Down on Windows.
+    static var minimized: AXUIElement?
+    static var focusAfterMinimize: AXUIElement?
+    static var focusRecorded = false
     static let tol: CGFloat = 40 // apps like terminals round their size to whole characters
 
     enum Span { case low, high, full, free } // low = left/top half, high = right/bottom half
@@ -420,6 +425,7 @@ enum Snapper {
 
     /// Applies one snapping step to the focused window.
     static func act(_ decide: (CGRect, CGRect, Span, Span, inout Memory) -> Outcome) {
+        minimized = nil
         guard let w = focusedWindow(), let f = frame(w), let a = area(of: f) else { return }
         let id = CFHash(w)
         var m = memory[id] ?? Memory(restore: f, restoreArea: a, corner: nil, lastSet: f)
@@ -436,12 +442,34 @@ enum Snapper {
         case .minimize:
             memory[id] = m
             AXUIElementSetAttributeValue(w, kAXMinimizedAttribute as CFString, kCFBooleanTrue)
+            minimized = w
+            focusAfterMinimize = nil
+            focusRecorded = false
+            // macOS moves the focus asynchronously, so look at it a moment later.
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                if minimized === w { focusAfterMinimize = focusedWindow(); focusRecorded = true }
+            }
         case .none:
             break
         }
     }
 
+    /// Un-minimizes the window minimized last, if the focus is still where minimizing left it.
+    static func unminimize() -> Bool {
+        guard let w = minimized else { return false }
+        let focus = focusedWindow()
+        let unchanged = !focusRecorded || (focus == nil ? focusAfterMinimize == nil : focusAfterMinimize.map { CFEqual($0, focus) } ?? false)
+        minimized = nil
+        guard unchanged else { return false }
+        AXUIElementSetAttributeValue(w, kAXMinimizedAttribute as CFString, kCFBooleanFalse)
+        AXUIElementPerformAction(w, kAXRaiseAction as CFString)
+        var pid: pid_t = 0
+        if AXUIElementGetPid(w, &pid) == .success { NSRunningApplication(processIdentifier: pid)?.activate() }
+        return true
+    }
+
     static func snap(_ d: Direction) {
+        if d == .up && unminimize() { return }
         act { f, a, h, v, m in
             let maximized = h == .full && v == .full
             switch d {
@@ -623,21 +651,48 @@ final class App: NSObject, NSApplicationDelegate, NSMenuDelegate {
         drain(deviceIterator) // arms the notification
     }
 
+    /// Flips `umlauts` in the config file. Writes in place, so a symlinked config (e.g. from a dotfiles repo) stays a symlink.
+    @objc func toggleUmlauts() {
+        let target = configURL.resolvingSymlinksInPath()
+        var lines = ((try? String(contentsOf: target, encoding: .utf8)) ?? "# Capman configuration, see \(helpURL)\n")
+            .components(separatedBy: "\n")
+        let line = "umlauts = \(!engine.umlauts)"
+        if let i = lines.firstIndex(where: { $0.trimmingCharacters(in: .whitespaces).hasPrefix("umlauts") }) {
+            lines[i] = line
+        } else {
+            if lines.last == "" { lines.removeLast() }
+            lines += [line, ""]
+        }
+        try? FileManager.default.createDirectory(at: target.deletingLastPathComponent(), withIntermediateDirectories: true)
+        try? lines.joined(separator: "\n").write(to: target, atomically: false, encoding: .utf8)
+        reloadConfig()
+    }
+
     func reloadConfig() {
         engine.umlauts = loadConfig()["umlauts"] == "true"
         buildBindings(umlauts: engine.umlauts)
     }
 
     func showMode(_ m: Mode) {
-        item.button?.title = m == .insert ? "⇪" : "⇪ " + m.rawValue
+        // The CapsLock symbol, filled and followed by the mode name outside Insert Mode.
+        let image = NSImage(systemSymbolName: m == .insert ? "capslock" : "capslock.fill", accessibilityDescription: "Capman")
+        image?.isTemplate = true
+        item.button?.image = image
+        item.button?.imagePosition = .imageLeading
+        item.button?.title = m == .insert ? "" : " " + m.rawValue
         indicator.show(m)
     }
 
     func menuNeedsUpdate(_ menu: NSMenu) {
         menu.removeAllItems()
-        menu.addItem(withTitle: "Capman \(capmanVersion)", action: nil, keyEquivalent: "")
-        menu.addItem(withTitle: "Mode: \(engine.mode.rawValue.capitalized)", action: nil, keyEquivalent: "")
-        menu.addItem(withTitle: "Umlauts: \(engine.umlauts ? "on" : "off")", action: nil, keyEquivalent: "")
+        menu.addItem(.sectionHeader(title: "Capman \(capmanVersion) · \(engine.mode.rawValue.capitalized) Mode"))
+        let umlauts = NSMenuItem(title: "Umlauts (⌥A, ⌥O, ⌥U, ⌥S)", action: #selector(toggleUmlauts), keyEquivalent: "")
+        umlauts.state = engine.umlauts ? .on : .off
+        umlauts.target = self
+        menu.addItem(umlauts)
+        menu.addItem(withTitle: "Edit Config…", action: #selector(editConfig), keyEquivalent: "").target = self
+        menu.addItem(withTitle: "Reload Config", action: #selector(reload), keyEquivalent: "r").target = self
+        menu.addItem(withTitle: "Help", action: #selector(help), keyEquivalent: "").target = self
         menu.addItem(.separator())
         menu.addItem(.sectionHeader(title: "Displays"))
         for d in displays.displays() {
@@ -647,7 +702,7 @@ final class App: NSObject, NSApplicationDelegate, NSMenuDelegate {
             i.target = self
             menu.addItem(i)
         }
-        menu.addItem(.sectionHeader(title: "Display Mode (⌃⌥P)"))
+        menu.addItem(.sectionHeader(title: "Display Mode (⌃⌥⌘P)"))
         let current = displays.currentMode()
         for m in DisplayMode.allCases {
             let i = NSMenuItem(title: m.rawValue, action: #selector(pickDisplayMode(_:)), keyEquivalent: "")
@@ -657,10 +712,6 @@ final class App: NSObject, NSApplicationDelegate, NSMenuDelegate {
             menu.addItem(i)
         }
         menu.addItem(withTitle: "Display Settings…", action: #selector(openDisplaySettings), keyEquivalent: "").target = self
-        menu.addItem(.separator())
-        menu.addItem(withTitle: "Edit Config…", action: #selector(editConfig), keyEquivalent: "").target = self
-        menu.addItem(withTitle: "Reload Config", action: #selector(reload), keyEquivalent: "r").target = self
-        menu.addItem(withTitle: "Help", action: #selector(help), keyEquivalent: "").target = self
         menu.addItem(.separator())
         menu.addItem(withTitle: "Quit Capman", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
     }
@@ -696,7 +747,7 @@ final class App: NSObject, NSApplicationDelegate, NSMenuDelegate {
         }
     }
 
-    /// Ctrl+Option+P opens the display picker with the next mode selected; further presses move the selection.
+    /// Ctrl+Option+Cmd+P opens the display picker with the next mode selected; further presses move the selection.
     func displayHotKey() {
         if picker.isVisible { picker.move(1) } else { picker.open(current: displays.currentMode()) }
     }

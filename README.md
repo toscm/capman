@@ -18,7 +18,7 @@ Most bindings are the same on both systems; differences are noted below.
 
 - `Home`, `End` and `Cmd+Y` behave like on Windows and Linux (macOS).
 
-- Display switching like `Win+P`: turn displays on and off, or switch between internal only, external only, mirror and extend with `Ctrl+Option+P` (macOS; built into Windows).
+- Display switching like `Win+P`: turn displays on and off, or switch between internal only, external only, mirror and extend with `Ctrl+Option+Cmd+P` (macOS; built into Windows).
 
 - Optional: `Option+a/o/u/s` type ä, ö, ü, ß, independent of the keyboard layout (macOS, off by default, see [Configuration](#configuration-macos)).
 
@@ -258,7 +258,7 @@ These apply in every mode, to make macOS behave more like Windows and Linux:
 
 - `Ctrl+Option+Cmd+Arrow`: [Window Snapping](#window-snapping-macos), like `Win+Arrow` on Windows
 
-- `Ctrl+Option+P`: [Display modes](#displays-macos), like `Win+P` on Windows
+- `Ctrl+Option+Cmd+P`: [Display modes](#displays-macos), like `Win+P` on Windows
 
 - Umlauts, if enabled in the [configuration](#configuration-macos): `Option+a`, `Option+o`, `Option+u`, `Option+s` type ä, ö, ü, ß (with `Shift`: Ä, Ö, Ü).
   They are typed directly, so they work with any keyboard layout.
@@ -284,6 +284,7 @@ The behaviour follows `Win+Arrow` on Windows:
   On a window at the top, it stretches to the full height; on a window at the bottom, it minimizes; on a maximized window, it restores.
 
 So from the top-left quarter, Down goes to the full left half, then to the bottom-left quarter, then minimizes.
+Pressing Up right after minimizing brings the window back, as long as you haven't focused another window in between.
 
 "Restore" returns the window to the size and position it had before it was first snapped.
 If it was snapped onto another display meanwhile, it is restored on that display.
@@ -295,11 +296,11 @@ Snapping does not use the macOS full-screen mode.
 The Capman menu lists all displays; click one to turn it off or back on (the last active display can't be turned off).
 macOS treats a display that is turned off as disconnected and moves its windows to the other displays.
 
-`Ctrl+Option+P` opens a list of display modes in the middle of the screen, like `Win+P` on Windows:
+`Ctrl+Option+Cmd+P` opens a list of display modes in the middle of the screen, like `Win+P` on Windows:
 
 - Internal display only, External displays only, Mirror displays, Extend displays
 
-- Each further `Ctrl+Option+P` (or `↓`, `↑`, `Tab`) moves the selection, `Enter` applies it, `Esc` closes the list.
+- Each further `Ctrl+Option+Cmd+P` (or `↓`, `↑`, `Tab`) moves the selection, `Enter` applies it, `Esc` closes the list.
 
 If no usable display is left, for example because the monitor was unplugged while the built-in display was off, Capman turns all displays back on within a second.
 
@@ -308,10 +309,11 @@ If a screen ever stays dark, unplug and replug the monitor or restart the Mac.
 
 ## Configuration (macOS)
 
-The menu-bar icon (⇪, followed by the mode outside Insert Mode) opens Capman's menu with the displays, the display modes, the configuration and Quit.
+The menu-bar icon (the CapsLock symbol, filled and followed by the mode name outside Insert Mode) opens Capman's menu.
+Its first part holds Capman's own settings (the umlaut switch, the config file, help), the second part the displays and display modes.
 
 Capman reads `~/.config/capman/capman.conf` at startup and on "Reload Config" in its menu.
-"Edit Config…" in the menu creates the file if it doesn't exist.
+"Edit Config…" in the menu creates the file if it doesn't exist, and the "Umlauts" menu item switches the umlaut setting in the file directly (a symlinked file stays a symlink).
 Example:
 
 ```
