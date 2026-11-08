@@ -9,7 +9,7 @@ import Carbon.HIToolbox
 import IOKit
 import IOKit.hid
 
-let capmanVersion = "0.5.3"
+let capmanVersion = "0.5.4"
 let helpURL = "https://github.com/toscm/capman#readme"
 let configURL = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(".config/capman/capman.conf")
 
@@ -36,6 +36,7 @@ enum Action {
     case toggleMaximize
     case minimize
     case displayPicker
+    case enableAllDisplays
 }
 
 /// A binding runs its actions in order. With `pass`, modifiers the user holds in addition
@@ -166,6 +167,7 @@ func buildBindings(umlauts: Bool) {
         bind([global], k, [ctrl, opt, cmd], .snap(d))
     }
     bind([global], kVK_ANSI_P, [ctrl, opt, cmd], .displayPicker)            // like Win+P
+    bind([global], kVK_ANSI_P, [ctrl, opt, cmd, shift], .enableAllDisplays) // emergency: every display on
 
     // Optional: Option+a/o/u/s type ä/ö/ü/ß (with Shift: Ä/Ö/Ü), independent of the keyboard layout.
     if umlauts {
@@ -265,6 +267,7 @@ final class Engine {
             case .toggleMaximize: DispatchQueue.main.async { Snapper.toggleMaximize() }
             case .minimize: DispatchQueue.main.async { Snapper.minimize() }
             case .displayPicker: DispatchQueue.main.async { (NSApp.delegate as? App)?.displayHotKey() }
+            case .enableAllDisplays: DispatchQueue.main.async { (NSApp.delegate as? App)?.enableAllDisplays() }
             }
         }
     }
@@ -609,12 +612,15 @@ final class App: NSObject, NSApplicationDelegate, NSMenuDelegate {
         reloadConfig()
         showMode(.insert)
 
+        // Displays are only ever off while Capman runs: a fresh start (login, reboot, crash) turns them all back on.
+        displays.enableAll()
+
         // If no usable display is left (e.g. the monitor was unplugged while the built-in display was off),
         // turn all displays back on: on every display change and, as a fallback, every second.
         RunLoop.main.add(Timer(timeInterval: 1, repeats: true) { [weak self] _ in self?.displays.watchdog() }, forMode: .common)
         CGDisplayRegisterReconfigurationCallback({ _, flags, _ in
             guard !flags.contains(.beginConfigurationFlag) else { return }
-            DispatchQueue.main.async { let d = (NSApp.delegate as? App)?.displays; d?.logState(); d?.watchdog() }
+            DispatchQueue.main.async { let d = (NSApp.delegate as? App)?.displays; d?.logState(); d?.displaysChanged() }
         }, nil)
 
         // Undo the CapsLock mapping when launchd stops us (e.g. via install.sh).
@@ -633,6 +639,7 @@ final class App: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     func applicationWillTerminate(_: Notification) {
         remapCapsLock(false)
+        displays.enableAll()
     }
 
     /// Creates the keyboard event tap once Capman has the Accessibility permission.
@@ -729,6 +736,7 @@ final class App: NSObject, NSApplicationDelegate, NSMenuDelegate {
             i.target = self
             menu.addItem(i)
         }
+        menu.addItem(withTitle: "Turn All Displays On (⌃⌥⇧⌘P)", action: #selector(enableAllDisplays), keyEquivalent: "").target = self
         menu.addItem(withTitle: "Display Settings…", action: #selector(openDisplaySettings), keyEquivalent: "").target = self
         menu.addItem(.separator())
         menu.addItem(withTitle: "Quit Capman", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
@@ -770,6 +778,12 @@ final class App: NSObject, NSApplicationDelegate, NSMenuDelegate {
         if picker.isVisible { picker.move(1) } else { picker.open(current: displays.currentMode()) }
     }
 
+    /// Ctrl+Option+Shift+Cmd+P and the menu: turn every display on, whatever Capman thinks is off.
+    @objc func enableAllDisplays() {
+        displays.enableAll()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { HUD.show("All displays on") }
+    }
+
     @objc func reload() { reloadConfig() }
     @objc func help() { NSWorkspace.shared.open(URL(string: helpURL)!) }
 }
@@ -777,6 +791,12 @@ final class App: NSObject, NSApplicationDelegate, NSMenuDelegate {
 @main
 enum CapmanMain {
     static func main() {
+        // Rescue from a terminal, even if the running Capman is stuck: Capman --enable-displays
+        if CommandLine.arguments.contains("--enable-displays") {
+            DisplayManager.rescue()
+            sleep(2) // let the displays come online before the process (and its display configuration) goes away
+            exit(0)
+        }
         let app = NSApplication.shared
         let delegate = App()
         app.delegate = delegate

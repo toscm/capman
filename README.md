@@ -260,6 +260,8 @@ These apply in every mode, to make macOS behave more like Windows and Linux:
 
 - `Ctrl+Option+Cmd+P`: [Display modes](#displays-macos), like `Win+P` on Windows
 
+- `Ctrl+Option+Shift+Cmd+P`: Turn all displays back on
+
 - Umlauts, if enabled in the [configuration](#configuration-macos): `Option+a`, `Option+o`, `Option+u`, `Option+s` type ä, ö, ü, ß (with `Shift`: Ä, Ö, Ü).
   They are typed directly, so they work with any keyboard layout.
   They are skipped in iTerm2, where Option usually acts as Meta.
@@ -295,6 +297,7 @@ Windows that cannot shrink to half the display (like Battle.net) get their minim
 ## Displays (macOS)
 
 The Capman menu lists all displays; click one to turn it off or back on (the last active display can't be turned off).
+The built-in display is always listed, even when macOS no longer reports it.
 macOS treats a display that is turned off as disconnected and moves its windows to the other displays.
 
 `Ctrl+Option+Cmd+P` opens a list of display modes in the middle of the screen, like `Win+P` on Windows:
@@ -303,10 +306,19 @@ macOS treats a display that is turned off as disconnected and moves its windows 
 
 - Each further `Ctrl+Option+Cmd+P` (or `↓`, `↑`, `Tab`) moves the selection, `Enter` applies it, `Esc` closes the list.
 
-If no usable display is left, for example because the monitor was unplugged while the built-in display was off, Capman turns all displays back on within a second.
+Displays stay off only while Capman runs, and there are several ways to get them back:
+
+- `Ctrl+Option+Shift+Cmd+P` or "Turn All Displays On" in the menu turns on every display Capman knows of, always including the built-in one.
+
+- If no usable display is left, for example because the monitor was unplugged while the built-in display was off, Capman turns all displays back on within a second.
+
+- Quitting Capman, and every start of Capman (at login, after a restart of the Mac or after a crash), turns all displays back on.
+
+- `~/Applications/Capman.app/Contents/MacOS/Capman --enable-displays` in a terminal turns all displays on, even if the running Capman is stuck.
+
+Capman keeps asking macOS to turn a display back on for about 20 seconds, until macOS reports it again.
 
 Turning displays off uses the private CoreGraphics function `CGSConfigureDisplayEnabled`, so a future macOS update may break it.
-If a screen ever stays dark, unplug and replug the monitor or restart the Mac.
 
 ## Configuration (macOS)
 
