@@ -10,13 +10,14 @@ Most bindings are the same on both systems; differences are noted below.
 
 - CapsLock as a modifier key with Vim-style movement and editing (Windows, macOS).
 
-- Modes: Control, Visual and Window Mode (Windows, macOS), Goto and Mouse Mode (Windows).
+- Modes: Control and Visual Mode (Windows, macOS), Window, Goto and Mouse Mode (Windows).
 
 - A status bar showing the current mode (Windows, macOS).
 
 - [Snippets](#snippets-windows): paste up to twelve saved strings with `CapsLock + F1` ... `CapsLock + F12` (Windows).
 
-- Windows-like window snapping with `Ctrl+Option+Cmd+Arrow` and in Window Mode (macOS; Windows has it built in as `Win+Arrow`).
+- Window management (macOS): Windows-like snapping with `Ctrl+Option+Arrow` (Windows has it built in as `Win+Arrow`), moving by grid tiles, and placing windows on a tile grid of each display.
+  It replaces tools like Rectangle.
 
 - `Home`, `End` and `Cmd+Y` behave like on Windows and Linux (macOS).
 
@@ -64,7 +65,7 @@ If you used the older Karabiner version of Capman, remove its "Capman" rule from
 
 - `CapsLock + v` enters [Visual Mode](#visual-mode) for selecting text.
 
-- `CapsLock + Space` enters [Window Mode](#window-mode) for moving and managing windows.
+- `CapsLock + Space` enters [Window Mode](#window-mode-windows) for moving and managing windows (Windows); on macOS it opens the [window grid](#window-grid-macos).
 
 - `a` or `i` returns from any mode to Insert Mode, where the keyboard behaves normally.
 
@@ -93,7 +94,7 @@ While CapsLock is held:
 
 - `c`: Toggle CapsLock
 
-- `n`: Control Mode, `v`: Visual Mode, `Space`: Window Mode
+- `n`: Control Mode, `v`: Visual Mode, `Space`: Windows: Window Mode, macOS: [window grid](#window-grid-macos)
 
 - `m`: Window switcher (Windows: `Ctrl+Alt+Tab`, macOS: `Option+Tab` for [AltTab][alttab])
 
@@ -211,13 +212,13 @@ Leaving Visual Mode returns to the previous mode (macOS: always Control Mode).
 
 - Windows only: `c` copies, `Enter` and `Space` replace the selection, each followed by leaving Visual Mode
 
-## Window Mode
+## Window Mode (Windows)
 
 Enter with `CapsLock + Space`.
 
-- `h`, `j`, `k`, `l` and the arrow keys: Snap the window left, down, up, right (Windows: native `Win+Arrow` snapping, macOS: see [Window Snapping](#window-snapping-macos))
+- `h`, `j`, `k`, `l` and the arrow keys: Snap the window left, down, up, right (native `Win+Arrow` snapping)
 
-- `f`: Maximize the window (macOS: again restores it)
+- `f`: Maximize the window
 
 - `m`: Minimize the window
 
@@ -229,7 +230,7 @@ Enter with `CapsLock + Space`.
 
 - `a`, `i`: Insert Mode; `Space`, `Enter`: type the key and return to Insert Mode
 
-- macOS: `CapsLock + Space` again returns to Insert Mode
+On macOS, the [window management](#window-management-macos) shortcuts below replace Window Mode.
 
 In all modes and in the CapsLock layer, letters without a binding do nothing instead of typing.
 
@@ -272,7 +273,7 @@ These apply in every mode, to make macOS behave more like Windows and Linux:
 
 - `Cmd+Y`: Redo
 
-- `Ctrl+Option+Cmd+Arrow`: [Window Snapping](#window-snapping-macos), like `Win+Arrow` on Windows
+- `Ctrl+Option+Arrow`, `Ctrl+Option+Cmd+Arrow`, `Ctrl+Option+Enter`, `Ctrl+Option+Cmd+M/H/F`: [Window management](#window-management-macos)
 
 - `Ctrl+Option+Cmd+P`: [Display modes](#displays-macos), like `Win+P` on Windows
 
@@ -282,17 +283,42 @@ These apply in every mode, to make macOS behave more like Windows and Linux:
   They are typed directly, so they work with any keyboard layout.
   They are skipped in iTerm2, where Option usually acts as Meta.
 
-## Window Snapping (macOS)
+## Window Management (macOS)
 
-The arrow keys in Window Mode and `Ctrl+Option+Cmd+Arrow` snap the focused window within the usable area of its display.
-The behaviour follows `Win+Arrow` on Windows:
+These shortcuts work everywhere and act on the focused window:
+
+- `Ctrl+Option+Arrow`: [snap](#window-snapping-macos) the window, like `Win+Arrow` on Windows
+
+- `Ctrl+Option+Cmd+Arrow`: move the window to the next grid line without resizing it; at the edge of the display it continues on the neighbouring display
+
+- `Ctrl+Option+Enter`: maximize the window; again restores it
+
+- `Ctrl+Option+Cmd+M`: minimize the window; again brings it back, as long as you haven't focused another window in between
+
+- `Ctrl+Option+Cmd+H`: hide the app; again brings it back, as long as no other app came to the front in between
+
+- `Ctrl+Option+Cmd+F`: switch the window into or out of the macOS full-screen mode
+
+- `CapsLock + Space` or `Ctrl+Option+Cmd+Space`: place the window on the [window grid](#window-grid-macos)
+
+Minimize, hide and full screen use `Cmd` in addition, because some editors use `Ctrl+Option+letter` themselves.
+
+Windows are placed within the usable area of a display, which leaves out the menu bar, the Dock and the camera notch.
+If the menu bar hides automatically, windows go up to the top edge; "Leave Room for Hidden Menu Bar" in the menu keeps them below it.
+
+### Window Snapping (macOS)
+
+`Ctrl+Option+Arrow` follows `Win+Arrow` on Windows:
 
 - Left / Right snap the window to the left / right half.
   A window snapped to the top or bottom stays there, so Left then Up gives the top-left quarter.
 
-- On a quarter, pressing the same side again stretches it to the full half; pressing it once more shrinks it back to the quarter it came from.
+- On a quarter, pressing the same side again stretches it to the full height; pressing it once more shrinks it back to the quarter it came from.
 
 - On a half, pressing the same side again moves the window to the opposite half of the neighbouring display.
+
+- On a display whose [grid](#window-grid-macos) has more than two columns, a side is half the columns, rounded up, and pressing the same side again cycles through one column less and its complement instead of moving to the next display.
+  With the default 4×2 grid of ultrawide displays that is half, quarter, three quarters, half, ...; with 3×2 it is two thirds, one third, two thirds, ...
 
 - Up snaps to the top half, keeping the window's horizontal position and width.
   On a window at the top, it maximizes; on a maximized window, it restores.
@@ -309,6 +335,22 @@ If it was snapped onto another display meanwhile, it is restored on that display
 Capman remembers this per window; moving or resizing a window by hand starts over.
 Snapping does not use the macOS full-screen mode.
 Windows that cannot shrink to half the display (like Battle.net) get their minimum size instead, stay on the display along the snapped edge, and keep snapping through the same steps.
+
+### Window Grid (macOS)
+
+Each display has a grid of tiles: by default 2×2 (columns × rows), and 4×2 on ultrawide displays (wider than 2:1).
+Choose another grid per display under "Window Grid" in the menu, or set it in the [configuration](#configuration-macos).
+The grid sets the steps of `Ctrl+Option+Cmd+Arrow` and of snapping on wide grids, and is used by the grid picker:
+
+- `CapsLock + Space` or `Ctrl+Option+Cmd+Space` shows the grid of the display under the mouse, with the tiles numbered `1`-`9`, then `a`-`z`, row by row.
+
+- Type two tiles: the focused window moves to the smallest rectangle covering both.
+  On a 4×2 grid, `1` `4` is the top row, `1` `5` the first column, `1` `7` the first three columns, and `5` `7` three quarters of the bottom row.
+  For a single tile, type it twice (`2` `2`) or type it and press `Enter`.
+
+- With "Confirm Window Grid with Enter" in the menu, the tiles are only highlighted in blue, and `Enter` moves the window.
+
+- `Backspace` removes the last tile; `Esc`, CapsLock or `Space` closes the grid.
 
 ## Displays (macOS)
 
@@ -338,16 +380,26 @@ Turning displays off uses the private CoreGraphics function `CGSConfigureDisplay
 
 ## Configuration (macOS)
 
-The menu-bar icon (the filled CapsLock symbol, coloured like the mode indicator outside Insert Mode: blue for Control, orange for Visual, purple for Window Mode) opens Capman's menu.
-Its first part holds Capman's own settings (the umlaut switch, the config file, help), the second part the displays and display modes.
+The menu-bar icon (the filled CapsLock symbol, coloured like the mode indicator outside Insert Mode: blue for Control, orange for Visual) opens Capman's menu.
+Its first part holds Capman's own settings (the umlaut and menu-bar switches, the config file, help), then come the window grid of each display, the displays and the display modes.
 
 Capman reads `~/.config/capman/capman.conf` at startup and on "Reload Config" in its menu.
-"Edit Config…" in the menu creates the file if it doesn't exist, and the "Umlauts" menu item switches the umlaut setting in the file directly (a symlinked file stays a symlink).
+"Edit Config…" in the menu creates the file if it doesn't exist, and the menu items for umlauts, the hidden menu bar and the window grids change the file directly (a symlinked file stays a symlink).
 Example:
 
 ```
 # Option+a/o/u/s type ä/ö/ü/ß (default: false)
 umlauts = true
+
+# Window grid: wait for Enter after the tiles (default: false)
+grid_confirm = true
+
+# Keep windows below a menu bar that hides automatically (default: false)
+reserve_menubar = true
+
+# Window grid (columns x rows) of a display, by its name as shown in the menu
+# (default: 2x2, ultrawide displays 4x2; at most 35 tiles)
+grid.LG HDR 4K = 3x2
 ```
 
 ## Contributing

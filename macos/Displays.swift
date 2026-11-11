@@ -1,6 +1,7 @@
 // Display management: turn displays on/off and switch display modes, similar to Win+P on Windows.
 // Formerly the separate app toscdm. Used by the menu and by Ctrl+Option+Cmd+P (see Capman.swift).
 import AppKit
+import IOKit
 import Carbon.HIToolbox
 
 // Private CoreGraphics call that logically disconnects a display (same one BetterDisplay uses).
@@ -33,6 +34,16 @@ final class DisplayManager {
         didSet { if let builtinID, builtinID != oldValue { UserDefaults.standard.set(Int(builtinID), forKey: "builtin") } }
     }
     private static let retries = 10
+    private var lastLidClosed: Bool? // lid state at the last watchdog run (nil before the first)
+
+    /// Whether the lid of a MacBook is closed (clamshell mode). Then macOS keeps the built-in display off,
+    /// and Capman must not turn it on behind macOS's back.
+    static func lidClosed() -> Bool {
+        let root = IOServiceGetMatchingService(kIOMainPortDefault, IOServiceMatching("IOPMrootDomain"))
+        defer { IOObjectRelease(root) }
+        let v = IORegistryEntryCreateCFProperty(root, "AppleClamshellState" as CFString, kCFAllocatorDefault, 0)
+        return (v?.takeRetainedValue() as? Bool) ?? false
+    }
 
     init() {
         let saved = UserDefaults.standard.dictionary(forKey: "disabled") as? [String: String] ?? [:]
@@ -102,7 +113,7 @@ final class DisplayManager {
         var off = disabled
         for (id, p) in pending { off[id] = p.name }
         let b = builtinID ?? 1 // the built-in display of Apple silicon Macs has id 1
-        if off[b] == nil { off[b] = "Built-in Display" }
+        if Self.lidClosed() { off[b] = nil } else if off[b] == nil { off[b] = "Built-in Display" }
         off = off.filter { !online.contains($0.key) }
         disabled = [:]
         guard !off.isEmpty else { return }
@@ -116,7 +127,7 @@ final class DisplayManager {
         let saved = UserDefaults.standard.dictionary(forKey: "disabled") as? [String: String] ?? [:]
         var ids = Set(saved.keys.compactMap { UInt32($0) })
         let b = UserDefaults.standard.integer(forKey: "builtin")
-        ids.insert(b > 0 ? CGDirectDisplayID(b) : 1)
+        if lidClosed() { ids.remove(b > 0 ? CGDirectDisplayID(b) : 1) } else { ids.insert(b > 0 ? CGDirectDisplayID(b) : 1) }
         turnOn(ids)
     }
 
@@ -124,6 +135,7 @@ final class DisplayManager {
     /// and if no real display is left (e.g. HDMI unplugged while the built-in was off), turns everything back on.
     /// Displays without a vendor id are placeholders macOS may create when nothing is attached, so they don't count.
     func watchdog() {
+        followLid()
         let online = Set(list())
         for (id, p) in pending {
             if online.contains(id) || p.tries >= Self.retries { pending[id] = nil; continue }
@@ -135,6 +147,30 @@ final class DisplayManager {
         if usable.isEmpty {
             NSLog("capman: no usable display left, re-enabling %@", disabled.values.joined(separator: ", "))
             enableAll()
+        }
+    }
+
+    /// On closing the lid (and at startup with the lid closed), turns the built-in display off if something
+    /// turned it on anyway (Capman 0.5.4 did at every start) and another display is active.
+    /// On opening the lid, turns it back on if macOS doesn't by itself.
+    private func followLid() {
+        let closed = Self.lidClosed()
+        defer { lastLidClosed = closed }
+        guard closed != lastLidClosed else { return }
+        let b = builtinID ?? 1
+        if closed {
+            let others = list(active: true).filter { $0 != b && CGDisplayVendorNumber($0) != 0 }
+            guard list().contains(b), !others.isEmpty else { return }
+            NSLog("capman: lid closed, turning the built-in display off")
+            pending[b] = nil
+            Self.configure { _ = CGSConfigureDisplayEnabled($0, b, false) }
+        } else if lastLidClosed == true {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [self] in
+                guard !Self.lidClosed(), !list().contains(b) else { return }
+                NSLog("capman: lid opened, turning the built-in display on")
+                Self.turnOn([b])
+                pending[b] = ("Built-in Display", 0)
+            }
         }
     }
 

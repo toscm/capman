@@ -1,5 +1,5 @@
 // Capman for macOS: CapsLock as a Vim-style modifier key, modes, Windows-like window snapping,
-// and display switching (Displays.swift).
+// a tile grid for placing windows, and display switching (Displays.swift).
 //
 // How it works: at startup hidutil maps the CapsLock key to F18, which has no other use.
 // A keyboard event tap then sees F18 going down and up, and rewrites the keys pressed meanwhile.
@@ -9,7 +9,7 @@ import Carbon.HIToolbox
 import IOKit
 import IOKit.hid
 
-let capmanVersion = "0.5.4"
+let capmanVersion = "0.6.0"
 let helpURL = "https://github.com/toscm/capman#readme"
 let configURL = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(".config/capman/capman.conf")
 
@@ -20,7 +20,7 @@ let modifierMask: CGEventFlags = [shift, ctrl, opt, cmd]
 // MARK: - Bindings
 
 enum Mode: String {
-    case insert = "INSERT", normal = "NORMAL", visual = "VISUAL", window = "WINDOW"
+    case insert = "INSERT", normal = "NORMAL", visual = "VISUAL"
 }
 
 enum Direction { case left, right, up, down }
@@ -29,12 +29,15 @@ enum Action {
     case key(Int, CGEventFlags)
     case text(String)
     case mode(Mode)
-    case toggleWindowMode
     case toggleCapsLock
     case open(String)
     case snap(Direction)
+    case move(Direction)
     case toggleMaximize
-    case minimize
+    case toggleMinimize
+    case toggleHide
+    case toggleFullScreen
+    case gridPicker
     case displayPicker
     case enableAllDisplays
 }
@@ -53,7 +56,7 @@ struct Trigger: Hashable {
 
 enum Layer: Hashable {
     case caps            // while CapsLock is held
-    case mode(Mode)      // in Control, Visual or Window Mode
+    case mode(Mode)      // in Control or Visual Mode
     case global          // always
 }
 
@@ -73,7 +76,7 @@ let left = kVK_LeftArrow, right = kVK_RightArrow, up = kVK_UpArrow, down = kVK_D
 
 func buildBindings(umlauts: Bool) {
     bindings = [:]
-    let caps = Layer.caps, normal = Layer.mode(.normal), visual = Layer.mode(.visual), window = Layer.mode(.window)
+    let caps = Layer.caps, normal = Layer.mode(.normal), visual = Layer.mode(.visual)
     let global = Layer.global
 
     // Movement. Visual Mode sends the same keys with Shift, which extends the selection.
@@ -119,8 +122,8 @@ func buildBindings(umlauts: Bool) {
     bind([caps, normal, visual], kVK_ANSI_R, key(kVK_ANSI_Z, [cmd, shift]))
 
     // Back to Insert Mode.
-    bind([normal, visual, window], kVK_ANSI_I, .mode(.insert))
-    bind([normal, visual, window], kVK_ANSI_A, .mode(.insert))
+    bind([normal, visual], kVK_ANSI_I, .mode(.insert))
+    bind([normal, visual], kVK_ANSI_A, .mode(.insert))
     bind([normal], kVK_ANSI_I, shift, key(left, cmd), .mode(.insert))
     bind([normal], kVK_ANSI_A, shift, key(right, cmd), .mode(.insert))
     bind([normal], kVK_ANSI_O, key(right, cmd), key(kVK_Return), .mode(.insert))
@@ -131,7 +134,7 @@ func buildBindings(umlauts: Bool) {
     bind([caps], kVK_ANSI_N, pass: true, .mode(.normal))
     bind([caps, normal], kVK_ANSI_V, .mode(.visual))
     bind([visual], kVK_ANSI_V, .mode(.normal))
-    bind([caps], kVK_Space, .toggleWindowMode)
+    bind([caps], kVK_Space, .gridPicker)
     bind([caps, normal, visual], kVK_ANSI_Q, key(kVK_Escape))
     bind([caps, normal], kVK_ANSI_C, .toggleCapsLock)
     bind([caps, normal], kVK_ANSI_Slash, key(kVK_ANSI_F, cmd))
@@ -139,23 +142,11 @@ func buildBindings(umlauts: Bool) {
     bind([caps, normal, visual], kVK_ANSI_Z)                                 // reserved
     bind([caps], kVK_ANSI_M, key(kVK_Tab, opt))                              // AltTab
     bind([normal], kVK_ANSI_M, .mode(.insert), key(kVK_Tab, opt))
-    bind([normal, visual, window], kVK_ANSI_N, key(kVK_Tab, opt))
+    bind([normal, visual], kVK_ANSI_N, key(kVK_Tab, opt))
     bind([caps], kVK_ANSI_F, key(kVK_Space, [shift, cmd]))                   // Homerow hints
     bind([normal], kVK_ANSI_F, .mode(.insert), key(kVK_Space, [shift, cmd]))
 
-    // Window Mode.
-    for (k, d) in [(kVK_ANSI_H, Direction.left), (kVK_ANSI_J, .down), (kVK_ANSI_K, .up), (kVK_ANSI_L, .right),
-                   (left, .left), (down, .down), (up, .up), (right, .right)] {
-        bind([window], k, .snap(d))
-    }
-    bind([window], kVK_ANSI_F, .toggleMaximize)
-    bind([window], kVK_ANSI_M, .minimize)
-    bind([window], kVK_ANSI_W, key(kVK_ANSI_W, cmd))
-    bind([window], kVK_ANSI_Q, key(kVK_ANSI_Q, cmd))
-    bind([window], kVK_Space, key(kVK_Space), .mode(.insert))
-    bind([window], kVK_Return, key(kVK_Return), .mode(.insert))
-
-    // Always on: Home/End like on Windows and Linux, Cmd+Y redo, Ctrl+Option+Cmd+Arrow snapping.
+    // Always on: Home/End like on Windows and Linux, Cmd+Y redo, window management.
     bind([global], kVK_Home, pass: true, key(left, cmd))
     bind([global], kVK_End, pass: true, key(right, cmd))
     bind([global], kVK_Home, cmd, pass: true, key(up, cmd))
@@ -164,8 +155,15 @@ func buildBindings(umlauts: Bool) {
     bind([visual], kVK_End, key(right, [cmd, shift]))
     bind([global], kVK_ANSI_Y, cmd, key(kVK_ANSI_Z, [cmd, shift]))
     for (k, d) in [(left, Direction.left), (right, .right), (up, .up), (down, .down)] {
-        bind([global], k, [ctrl, opt, cmd], .snap(d))
+        bind([global], k, [ctrl, opt], .snap(d))
+        bind([global], k, [ctrl, opt, cmd], .move(d))
     }
+    bind([global], kVK_Return, [ctrl, opt], .toggleMaximize)
+    bind([global], kVK_Space, [ctrl, opt, cmd], .gridPicker) // Ctrl+Option+Space switches the input source
+    // Ctrl+Option+letter is taken in some editors (e.g. Ctrl+Option+H in JetBrains IDEs), so these add Cmd.
+    bind([global], kVK_ANSI_M, [ctrl, opt, cmd], .toggleMinimize)
+    bind([global], kVK_ANSI_H, [ctrl, opt, cmd], .toggleHide)
+    bind([global], kVK_ANSI_F, [ctrl, opt, cmd], .toggleFullScreen)
     bind([global], kVK_ANSI_P, [ctrl, opt, cmd], .displayPicker)            // like Win+P
     bind([global], kVK_ANSI_P, [ctrl, opt, cmd, shift], .enableAllDisplays) // emergency: every display on
 
@@ -200,6 +198,8 @@ final class Engine {
     private var swallowed = Set<Int>() // keys whose key-up must be dropped because we handled their key-down
     private let source = CGEventSource(stateID: .privateState)
     var tap: CFMachPort?
+    /// While set (the grid picker is open), it gets every key press instead of the bindings; it returns false to decline.
+    var intercept: (Int, String) -> Bool = { _, _ in false }
     var post: (CGEvent) -> Void = { $0.post(tap: .cgSessionEventTap) }
 
     func handle(_ type: CGEventType, _ e: CGEvent) -> CGEvent? {
@@ -217,7 +217,7 @@ final class Engine {
                 capsPressedAt = Date()
             } else if type == .keyUp {
                 capsDown = false
-                if !capsUsed && Date().timeIntervalSince(capsPressedAt) < 1 { send(kVK_Escape) }
+                if !capsUsed && Date().timeIntervalSince(capsPressedAt) < 1 && !intercept(kVK_Escape, "") { send(kVK_Escape) }
             }
             return nil
         }
@@ -225,6 +225,10 @@ final class Engine {
         guard type == .keyDown else { return e }
         if capsDown { capsUsed = true }
 
+        if intercept(k, typed(e)) {
+            swallowed.insert(k)
+            return nil
+        }
         let held = e.flags.intersection(modifierMask)
         if let (b, extra) = lookup(k, held) {
             swallowed.insert(k)
@@ -237,6 +241,14 @@ final class Engine {
             return nil
         }
         return e
+    }
+
+    /// The character the key types in the current keyboard layout, lowercased.
+    private func typed(_ e: CGEvent) -> String {
+        var len = 0
+        var buf = [UniChar](repeating: 0, count: 4)
+        e.keyboardGetUnicodeString(maxStringLength: 4, actualStringLength: &len, unicodeString: &buf)
+        return String(utf16CodeUnits: buf, count: len).lowercased()
     }
 
     private func lookup(_ k: Int, _ held: CGEventFlags) -> (Binding, CGEventFlags)? {
@@ -259,13 +271,16 @@ final class Engine {
             case let .key(k, f): send(k, b.pass ? f.union(extra) : f)
             case let .text(s): type(s)
             case let .mode(m): mode = m
-            case .toggleWindowMode: mode = mode == .window ? .insert : .window
             case .toggleCapsLock: toggleCapsLock()
             case let .open(url): DispatchQueue.main.async { NSWorkspace.shared.open(URL(string: url)!) }
             // Accessibility calls can be slow, so they run after the event tap has returned.
             case let .snap(d): DispatchQueue.main.async { Snapper.snap(d) }
+            case let .move(d): DispatchQueue.main.async { Snapper.move(d) }
             case .toggleMaximize: DispatchQueue.main.async { Snapper.toggleMaximize() }
-            case .minimize: DispatchQueue.main.async { Snapper.minimize() }
+            case .toggleMinimize: DispatchQueue.main.async { Snapper.toggleMinimize() }
+            case .toggleHide: DispatchQueue.main.async { Snapper.toggleHide() }
+            case .toggleFullScreen: DispatchQueue.main.async { Snapper.toggleFullScreen() }
+            case .gridPicker: DispatchQueue.main.async { (NSApp.delegate as? App)?.gridPicker.toggle() }
             case .displayPicker: DispatchQueue.main.async { (NSApp.delegate as? App)?.displayHotKey() }
             case .enableAllDisplays: DispatchQueue.main.async { (NSApp.delegate as? App)?.enableAllDisplays() }
             }
@@ -325,6 +340,27 @@ func drain(_ iterator: io_iterator_t) {
 
 // MARK: - Window snapping
 
+/// A display's tile grid: `cols` columns and `rows` rows, written `4x2` in the config.
+struct Grid: Equatable {
+    let cols: Int, rows: Int
+    var text: String { "\(cols)x\(rows)" }
+    static let maxTiles = 35 // tiles are named 1-9, then a-z
+}
+
+func parseGrid(_ s: String?) -> Grid? {
+    guard let p = s?.lowercased().split(separator: "x"), p.count == 2,
+          let c = Int(p[0].trimmingCharacters(in: .whitespaces)), let r = Int(p[1].trimmingCharacters(in: .whitespaces)),
+          c >= 1, r >= 1, c * r <= Grid.maxTiles else { return nil }
+    return Grid(cols: c, rows: r)
+}
+
+/// Ultrawide displays (wider than 2:1) default to 4x2, all others to 2x2.
+func defaultGrid(_ s: NSScreen) -> Grid {
+    s.frame.width > 2 * s.frame.height ? Grid(cols: 4, rows: 2) : Grid(cols: 2, rows: 2)
+}
+
+func screenGrid(_ s: NSScreen) -> Grid { parseGrid(capmanConfig["grid.\(s.localizedName)"]) ?? defaultGrid(s) }
+
 /// Windows-like snapping of the focused window (see README.md, "Window Snapping").
 /// Per window it remembers the frame to restore and the corner a quarter was stretched from.
 enum Snapper {
@@ -373,13 +409,34 @@ enum Snapper {
         AXUIElementSetAttributeValue(w, kAXSizeAttribute as CFString, s)
     }
 
-    /// Usable area of every display (without menu bar and Dock), in Accessibility coordinates (origin top left).
-    static func areas() -> [CGRect] {
+    /// Usable area of a display (without menu bar, notch and Dock), in Accessibility coordinates (origin top left).
+    /// With `reserve_menubar`, it also leaves room for a menu bar that hides automatically.
+    static func usable(_ s: NSScreen) -> CGRect {
         let h = NSScreen.screens.first?.frame.height ?? 0
-        return NSScreen.screens.map { s in
-            let v = s.visibleFrame
-            return CGRect(x: v.minX, y: h - v.maxY, width: v.width, height: v.height)
+        var v = s.visibleFrame
+        var top = s.frame.maxY - s.safeAreaInsets.top
+        if capmanConfig["reserve_menubar"] == "true" { top = min(top, s.frame.maxY - NSStatusBar.system.thickness) }
+        if v.maxY > top { v.size.height -= v.maxY - top }
+        return CGRect(x: v.minX, y: h - v.maxY, width: v.width, height: v.height)
+    }
+
+    static func areas() -> [CGRect] { NSScreen.screens.map(usable) }
+
+    static func grid(_ a: CGRect) -> Grid {
+        NSScreen.screens.first { usable($0) == a }.map(screenGrid) ?? Grid(cols: 2, rows: 2)
+    }
+
+    /// The nearest display in direction `d`.
+    static func neighbour(of a: CGRect, _ d: Direction) -> CGRect? {
+        let others = areas().filter {
+            switch d {
+            case .left: return $0.maxX <= a.minX + tol
+            case .right: return $0.minX >= a.maxX - tol
+            case .up: return $0.midY < a.minY
+            case .down: return $0.midY > a.maxY
+            }
         }
+        return others.min { hypot($0.midX - a.midX, $0.midY - a.midY) < hypot($1.midX - a.midX, $1.midY - a.midY) }
     }
 
     static func area(of r: CGRect) -> CGRect? {
@@ -408,6 +465,13 @@ enum Snapper {
         case .full: return (aLo, aLen)
         case .free: return keep
         }
+    }
+
+    /// `k` of the `n` columns at the left or right side of the area.
+    static func sideRect(_ d: Direction, _ k: Int, of n: Int, _ v: Span, in a: CGRect, keeping f: CGRect) -> CGRect {
+        let w = a.width * CGFloat(k) / CGFloat(n)
+        let (y, h) = place(v, a.minY, a.height, keep: (f.minY, f.height))
+        return CGRect(x: d == .left ? a.minX : a.maxX - w, y: y, width: w, height: h)
     }
 
     static func rect(_ h: Span, _ v: Span, in a: CGRect, keeping f: CGRect) -> CGRect {
@@ -442,9 +506,10 @@ enum Snapper {
         switch outcome {
         case let .frame(r):
             setFrame(w, r)
-            if var got = frame(w), got.maxX > a.maxX + 1 || got.maxY > a.maxY + 1 {
+            let t = area(of: r) ?? a // the display the window goes to
+            if var got = frame(w), got.maxX > t.maxX + 1 || got.maxY > t.maxY + 1 {
                 // The app kept a larger minimum size: keep the window on the display, anchored to the snapped edge.
-                got.origin = CGPoint(x: max(a.minX, min(got.minX, a.maxX - got.width)), y: max(a.minY, min(got.minY, a.maxY - got.height)))
+                got.origin = CGPoint(x: max(t.minX, min(got.minX, t.maxX - got.width)), y: max(t.minY, min(got.minY, t.maxY - got.height)))
                 var o = got.origin
                 AXUIElementSetAttributeValue(w, kAXPositionAttribute as CFString, AXValueCreate(.cgPoint, &o)!)
             }
@@ -469,6 +534,11 @@ enum Snapper {
         }
     }
 
+    /// Makes an app the frontmost one. Via Accessibility, because macOS may ignore `activate()` from a background app.
+    static func bringToFront(_ pid: pid_t) {
+        AXUIElementSetAttributeValue(AXUIElementCreateApplication(pid), kAXFrontmostAttribute as CFString, kCFBooleanTrue)
+    }
+
     /// Un-minimizes the window minimized last, if the focus is still where minimizing left it.
     static func unminimize() -> Bool {
         guard let w = minimized else { return false }
@@ -479,7 +549,7 @@ enum Snapper {
         AXUIElementSetAttributeValue(w, kAXMinimizedAttribute as CFString, kCFBooleanFalse)
         AXUIElementPerformAction(w, kAXRaiseAction as CFString)
         var pid: pid_t = 0
-        if AXUIElementGetPid(w, &pid) == .success { NSRunningApplication(processIdentifier: pid)?.activate() }
+        if AXUIElementGetPid(w, &pid) == .success { bringToFront(pid) }
         return true
     }
 
@@ -489,23 +559,34 @@ enum Snapper {
             let maximized = h == .full && v == .full
             switch d {
             case .left, .right:
-                let side: Span = d == .left ? .low : .high
-                if h == side && (v == .low || v == .high) {           // quarter: stretch to the half
-                    m.corner = v
-                    return .frame(rect(side, .full, in: a, keeping: f))
+                // A side is half the columns (rounded up: 2 of 3); with more than two columns, pressing the same
+                // side again cycles through one column less
+                // and its complement (on 4x2: half, quarter, three quarters, half, ...), so a neighbour can fill the rest.
+                let n = grid(a).cols, big = (n + 1) / 2, small = big - 1
+                var steps = [big]
+                for k in [small, n - small] where k > 0 && k < n && !steps.contains(k) { steps.append(k) }
+                let atSide = steps.first { k in
+                    k > 0 && near(f.width, a.width * CGFloat(k) / CGFloat(n)) && (d == .left ? near(f.minX, a.minX) : near(f.maxX, a.maxX))
                 }
-                if h == side && v == .full, let corner = m.corner {   // stretched half: back to the quarter
+                if let k = atSide, v == .low || v == .high {          // quarter: stretch to the full height
+                    m.corner = v
+                    return .frame(sideRect(d, k, of: n, .full, in: a, keeping: f))
+                }
+                if let k = atSide, v == .full, let corner = m.corner { // stretched: back to the quarter
                     m.corner = nil
-                    return .frame(rect(side, corner, in: a, keeping: f))
+                    return .frame(sideRect(d, k, of: n, corner, in: a, keeping: f))
                 }
                 m.corner = nil
-                if h == side {                                        // half: continue on the neighbouring display
-                    let others = areas().filter { d == .left ? $0.maxX <= a.minX + tol : $0.minX >= a.maxX - tol }
-                    guard let n = others.min(by: { abs($0.midX - a.midX) < abs($1.midX - a.midX) }) else { return .none }
-                    return .frame(rect(d == .left ? .high : .low, v == .free ? .full : v, in: n, keeping: f))
+                if let k = atSide {
+                    let v2: Span = v == .free ? .full : v
+                    if steps.count > 1 { return .frame(sideRect(d, steps[(steps.firstIndex(of: k)! + 1) % steps.count], of: n, v2, in: a, keeping: f)) }
+                    // Continue on the opposite side of the neighbouring display.
+                    guard let nb = neighbour(of: a, d) else { return .none }
+                    let nn = grid(nb).cols
+                    return .frame(sideRect(d == .left ? .right : .left, (nn + 1) / 2, of: nn, v2, in: nb, keeping: f))
                 }
                 let keepV = !maximized && (v == .low || v == .high)
-                return .frame(rect(side, keepV ? v : .full, in: a, keeping: f))
+                return .frame(sideRect(d, big, of: n, keepV ? v : .full, in: a, keeping: f))
             case .up:
                 m.corner = nil
                 if maximized { return .restore }
@@ -536,9 +617,224 @@ enum Snapper {
     static func minimize() {
         act { _, _, _, _, _ in .minimize }
     }
+
+    /// Minimizes the focused window, or brings back the window minimized last if the focus hasn't moved on since.
+    static func toggleMinimize() {
+        if !unminimize() { minimize() }
+    }
+
+    /// Moves the focused window to the next grid line in direction `d` without resizing it.
+    /// At the edge of the display, it continues on the neighbouring display.
+    static func move(_ d: Direction) {
+        act { f, a, _, _, m in
+            m.corner = nil
+            let g = grid(a), horizontal = d == .left || d == .right
+            let n = horizontal ? g.cols : g.rows
+            let lo = horizontal ? a.minX : a.minY, len = horizontal ? a.width : a.height
+            let lines = (0...n).map { lo + len * CGFloat($0) / CGFloat(n) }
+            var r = f
+            switch d {
+            case .left: if let x = lines.last(where: { $0 < f.minX - 2 }) { r.origin.x = x; return .frame(r) }
+            case .up: if let y = lines.last(where: { $0 < f.minY - 2 }) { r.origin.y = y; return .frame(r) }
+            case .right: if let x = lines.first(where: { $0 > f.maxX + 2 }) { r.origin.x = x - f.width; return .frame(r) }
+            case .down: if let y = lines.first(where: { $0 > f.maxY + 2 }) { r.origin.y = y - f.height; return .frame(r) }
+            }
+            guard let nb = neighbour(of: a, d) else { return .none }
+            let w = min(f.width, nb.width), h = min(f.height, nb.height)
+            if horizontal {
+                let y = nb.minY + min(max(f.minY - a.minY, 0), nb.height - h)
+                return .frame(CGRect(x: d == .left ? nb.maxX - w : nb.minX, y: y, width: w, height: h))
+            }
+            let x = nb.minX + min(max(f.minX - a.minX, 0), nb.width - w)
+            return .frame(CGRect(x: x, y: d == .up ? nb.maxY - h : nb.minY, width: w, height: h))
+        }
+    }
+
+    /// Gives the focused window the frame `r` (from the grid picker).
+    static func place(_ r: CGRect) {
+        act { _, _, _, _, m in
+            m.corner = nil
+            return .frame(r)
+        }
+    }
+
+    // The app hidden last, and the app in front right afterwards: like minimizing, hiding again brings it back
+    // as long as no other app came to the front in between.
+    static var hidden: NSRunningApplication?
+    static var frontAfterHide: pid_t?
+
+    static func toggleHide() {
+        let front = NSWorkspace.shared.frontmostApplication
+        if let app = hidden, app.isHidden, frontAfterHide == nil || frontAfterHide == front?.processIdentifier {
+            hidden = nil
+            app.unhide()
+            let pid = app.processIdentifier
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { bringToFront(pid) } // unhiding takes a moment
+            return
+        }
+        guard let app = front else { return }
+        hidden = app
+        frontAfterHide = nil
+        app.hide()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            if hidden === app { frontAfterHide = NSWorkspace.shared.frontmostApplication?.processIdentifier }
+        }
+    }
+
+    /// Switches the focused window into or out of the macOS full-screen mode.
+    static func toggleFullScreen() {
+        guard let w = focusedWindow() else { return }
+        var v: CFTypeRef?
+        let on = AXUIElementCopyAttributeValue(w, "AXFullScreen" as CFString, &v) == .success && (v as? Bool) == true
+        AXUIElementSetAttributeValue(w, "AXFullScreen" as CFString, (on ? kCFBooleanFalse : kCFBooleanTrue)!)
+    }
+}
+
+// MARK: - Grid picker
+
+/// CapsLock+Space: shows the tile grid of the display under the mouse. Typing two tiles (1-9, then a-z) moves the
+/// focused window to the smallest rectangle covering them; with `grid_confirm`, only after Enter. Esc cancels.
+final class GridPicker {
+    private var panel: NSPanel?
+    private var view: GridView?
+    private var screen: NSScreen?
+    private var tiles: [Int] = []
+    var isOpen: Bool { panel != nil }
+
+    func toggle() { if isOpen { close() } else { open() } }
+
+    func open() {
+        let mouse = NSEvent.mouseLocation
+        guard let s = NSScreen.screens.first(where: { NSMouseInRect(mouse, $0.frame, false) }) ?? NSScreen.main else { return }
+        let a = Snapper.usable(s), h = NSScreen.screens.first?.frame.height ?? 0
+        let rect = NSRect(x: a.minX, y: h - a.maxY, width: a.width, height: a.height)
+        let p = NSPanel(contentRect: rect, styleMask: [.borderless, .nonactivatingPanel], backing: .buffered, defer: false)
+        p.level = .popUpMenu
+        p.backgroundColor = .clear
+        p.isOpaque = false
+        p.hasShadow = false
+        p.ignoresMouseEvents = true
+        p.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
+        let v = GridView(grid: screenGrid(s))
+        p.contentView = v
+        p.setFrame(rect, display: false)
+        p.orderFrontRegardless()
+        panel = p
+        view = v
+        screen = s
+        tiles = []
+    }
+
+    func close() {
+        panel?.orderOut(nil)
+        panel = nil
+        view = nil
+    }
+
+    static func name(_ i: Int) -> String {
+        i < 9 ? String(i + 1) : String(UnicodeScalar(UInt8(97 + i - 9)))
+    }
+
+    static func index(_ ch: String) -> Int? {
+        guard ch.count == 1, let c = ch.unicodeScalars.first?.value else { return nil }
+        if (49...57).contains(c) { return Int(c) - 49 }   // 1-9
+        if (97...122).contains(c) { return Int(c) - 97 + 9 } // a-z
+        return nil
+    }
+
+    /// Gets every key press while open (see Engine.intercept).
+    func key(_ k: Int, _ ch: String) -> Bool {
+        guard isOpen, let s = screen, let v = view else { return false }
+        let g = screenGrid(s)
+        switch k {
+        case kVK_Escape, kVK_Space: close()
+        case kVK_Return, kVK_ANSI_KeypadEnter: apply(g, Snapper.usable(s))
+        case kVK_Delete: if !tiles.isEmpty { tiles.removeLast() }
+        default:
+            guard let t = Self.index(ch), t < g.cols * g.rows else { break }
+            if tiles.count == 2 { tiles = [] }
+            tiles.append(t)
+            // Without `grid_confirm`, the second tile applies right away (a single tile: type it twice, or Enter).
+            if tiles.count == 2 && capmanConfig["grid_confirm"] != "true" { apply(g, Snapper.usable(s)); return true }
+        }
+        v.tiles = tiles
+        return true
+    }
+
+    private func apply(_ g: Grid, _ a: CGRect) {
+        let t = tiles
+        close()
+        guard let first = t.first, let last = t.last else { return }
+        let c0 = min(first % g.cols, last % g.cols), c1 = max(first % g.cols, last % g.cols)
+        let r0 = min(first / g.cols, last / g.cols), r1 = max(first / g.cols, last / g.cols)
+        let cw = a.width / CGFloat(g.cols), rh = a.height / CGFloat(g.rows)
+        let r = CGRect(x: a.minX + CGFloat(c0) * cw, y: a.minY + CGFloat(r0) * rh,
+                       width: CGFloat(c1 - c0 + 1) * cw, height: CGFloat(r1 - r0 + 1) * rh)
+        DispatchQueue.main.async { Snapper.place(r) }
+    }
+}
+
+final class GridView: NSView {
+    let grid: Grid
+    var tiles: [Int] = [] { didSet { needsDisplay = true } }
+
+    init(grid: Grid) {
+        self.grid = grid
+        super.init(frame: .zero)
+    }
+
+    required init?(coder: NSCoder) { fatalError() }
+
+    override var isFlipped: Bool { true } // row 0 at the top
+
+    override func draw(_: NSRect) {
+        let cw = bounds.width / CGFloat(grid.cols), rh = bounds.height / CGFloat(grid.rows), pad: CGFloat = 8
+        func cell(_ c0: Int, _ r0: Int, _ c1: Int, _ r1: Int) -> NSRect {
+            NSRect(x: CGFloat(c0) * cw, y: CGFloat(r0) * rh, width: CGFloat(c1 - c0 + 1) * cw, height: CGFloat(r1 - r0 + 1) * rh)
+                .insetBy(dx: pad, dy: pad)
+        }
+        NSColor.black.withAlphaComponent(0.25).setFill()
+        bounds.fill()
+        if let first = tiles.first, let last = tiles.last {
+            let path = NSBezierPath(roundedRect: cell(min(first % grid.cols, last % grid.cols), min(first / grid.cols, last / grid.cols),
+                                                      max(first % grid.cols, last % grid.cols), max(first / grid.cols, last / grid.cols)),
+                                    xRadius: 14, yRadius: 14)
+            NSColor.systemBlue.withAlphaComponent(0.45).setFill()
+            path.fill()
+            NSColor.systemBlue.setStroke()
+            path.lineWidth = 4
+            path.stroke()
+        }
+        let shadow = NSShadow()
+        shadow.shadowColor = .black
+        shadow.shadowBlurRadius = 4
+        let font = NSFont.systemFont(ofSize: min(96, min(cw, rh) * 0.3), weight: .semibold)
+        for i in 0..<grid.cols * grid.rows {
+            let r = cell(i % grid.cols, i / grid.cols, i % grid.cols, i / grid.cols)
+            let path = NSBezierPath(roundedRect: r, xRadius: 14, yRadius: 14)
+            NSColor.white.withAlphaComponent(0.5).setStroke()
+            path.lineWidth = 2
+            path.stroke()
+            let label = NSAttributedString(string: GridPicker.name(i), attributes: [.font: font, .foregroundColor: NSColor.white, .shadow: shadow])
+            let size = label.size()
+            label.draw(at: NSPoint(x: r.midX - size.width / 2, y: r.midY - size.height / 2))
+        }
+        let typed = tiles.map(GridPicker.name).joined(separator: ", ")
+        let how = capmanConfig["grid_confirm"] == "true" ? "Type one or two tiles · Enter applies" : "Type two tiles (Enter after one)"
+        let hint = NSAttributedString(string: (typed.isEmpty ? "" : typed + "   ") + how + " · Esc cancels",
+                                      attributes: [.font: NSFont.systemFont(ofSize: 18, weight: .medium), .foregroundColor: NSColor.white, .shadow: shadow])
+        let size = hint.size()
+        let origin = NSPoint(x: bounds.midX - size.width / 2, y: bounds.maxY - size.height - 32)
+        NSColor.black.withAlphaComponent(0.75).setFill()
+        NSBezierPath(roundedRect: NSRect(origin: origin, size: size).insetBy(dx: -16, dy: -8), xRadius: 10, yRadius: 10).fill()
+        hint.draw(at: origin)
+    }
 }
 
 // MARK: - Config
+
+/// The current configuration (see `loadConfig`), read again by "Reload Config".
+var capmanConfig: [String: String] = [:]
 
 /// Reads `key = value` lines from ~/.config/capman/capman.conf (`#` starts a comment).
 func loadConfig() -> [String: String] {
@@ -556,7 +852,7 @@ func loadConfig() -> [String: String] {
 
 /// Small label at the bottom left of the main display (where Vim shows it) showing the current mode (hidden in Insert Mode).
 /// Colours of the modes, shared by the mode indicator and the menu-bar icon (Insert Mode has none).
-let modeColors: [Mode: NSColor] = [.normal: .systemBlue, .visual: .systemOrange, .window: .systemPurple]
+let modeColors: [Mode: NSColor] = [.normal: .systemBlue, .visual: .systemOrange]
 
 final class ModeIndicator {
     private let panel = NSPanel(contentRect: .zero, styleMask: [.borderless, .nonactivatingPanel], backing: .buffered, defer: false)
@@ -600,6 +896,7 @@ final class App: NSObject, NSApplicationDelegate, NSMenuDelegate {
     var sigterm: DispatchSourceSignal?
     let displays = DisplayManager()
     lazy var picker = DisplayPicker { [weak self] in self?.setDisplayMode($0) }
+    let gridPicker = GridPicker()
     var displayBusy = false
     // Keeps App Nap from throttling the display watchdog while Capman sits idle in the menu bar.
     let activity = ProcessInfo.processInfo.beginActivity(options: .userInitiatedAllowingIdleSystemSleep, reason: "display watchdog")
@@ -609,6 +906,7 @@ final class App: NSObject, NSApplicationDelegate, NSMenuDelegate {
         menu.delegate = self
         item.menu = menu
         engine.onModeChange = { [weak self] m in self?.showMode(m) }
+        engine.intercept = { [weak self] k, ch in self?.gridPicker.key(k, ch) ?? false }
         reloadConfig()
         showMode(.insert)
 
@@ -672,25 +970,47 @@ final class App: NSObject, NSApplicationDelegate, NSMenuDelegate {
         drain(deviceIterator) // arms the notification
     }
 
-    /// Flips `umlauts` in the config file. Writes in place, so a symlinked config (e.g. from a dotfiles repo) stays a symlink.
-    @objc func toggleUmlauts() {
+    /// Sets `key` in the config file, or removes it if `value` is nil, and reloads the config.
+    /// Writes in place, so a symlinked config (e.g. from a dotfiles repo) stays a symlink.
+    func setConfig(_ key: String, _ value: String?) {
         let target = configURL.resolvingSymlinksInPath()
         var lines = ((try? String(contentsOf: target, encoding: .utf8)) ?? "# Capman configuration, see \(helpURL)\n")
             .components(separatedBy: "\n")
-        let line = "umlauts = \(!engine.umlauts)"
-        if let i = lines.firstIndex(where: { $0.trimmingCharacters(in: .whitespaces).hasPrefix("umlauts") }) {
-            lines[i] = line
-        } else {
-            if lines.last == "" { lines.removeLast() }
-            lines += [line, ""]
+        let i = lines.firstIndex { line in
+            let content = line.split(separator: "#", maxSplits: 1, omittingEmptySubsequences: false).first ?? ""
+            return content.split(separator: "=", maxSplits: 1).first?.trimmingCharacters(in: .whitespaces) == key
+        }
+        if let value {
+            if let i { lines[i] = "\(key) = \(value)" } else {
+                if lines.last == "" { lines.removeLast() }
+                lines += ["\(key) = \(value)", ""]
+            }
+        } else if let i {
+            lines.remove(at: i)
         }
         try? FileManager.default.createDirectory(at: target.deletingLastPathComponent(), withIntermediateDirectories: true)
         try? lines.joined(separator: "\n").write(to: target, atomically: false, encoding: .utf8)
         reloadConfig()
     }
 
+    @objc func toggleUmlauts() { setConfig("umlauts", "\(!engine.umlauts)") }
+
+    @objc func toggleGridConfirm() {
+        setConfig("grid_confirm", capmanConfig["grid_confirm"] == "true" ? nil : "true")
+    }
+
+    @objc func toggleReserveMenuBar() {
+        setConfig("reserve_menubar", capmanConfig["reserve_menubar"] == "true" ? nil : "true")
+    }
+
+    @objc func pickGrid(_ sender: NSMenuItem) {
+        guard let (name, grid) = sender.representedObject as? (String, String?) else { return }
+        setConfig("grid.\(name)", grid)
+    }
+
     func reloadConfig() {
-        engine.umlauts = loadConfig()["umlauts"] == "true"
+        capmanConfig = loadConfig()
+        engine.umlauts = capmanConfig["umlauts"] == "true"
         buildBindings(umlauts: engine.umlauts)
     }
 
@@ -715,9 +1035,41 @@ final class App: NSObject, NSApplicationDelegate, NSMenuDelegate {
         umlauts.state = engine.umlauts ? .on : .off
         umlauts.target = self
         menu.addItem(umlauts)
+        let reserve = NSMenuItem(title: "Leave Room for Hidden Menu Bar", action: #selector(toggleReserveMenuBar), keyEquivalent: "")
+        reserve.state = capmanConfig["reserve_menubar"] == "true" ? .on : .off
+        reserve.target = self
+        menu.addItem(reserve)
+        let confirm = NSMenuItem(title: "Confirm Window Grid with Enter", action: #selector(toggleGridConfirm), keyEquivalent: "")
+        confirm.state = capmanConfig["grid_confirm"] == "true" ? .on : .off
+        confirm.target = self
+        menu.addItem(confirm)
         menu.addItem(withTitle: "Edit Config…", action: #selector(editConfig), keyEquivalent: "").target = self
         menu.addItem(withTitle: "Reload Config", action: #selector(reload), keyEquivalent: "r").target = self
         menu.addItem(withTitle: "Help", action: #selector(help), keyEquivalent: "").target = self
+        menu.addItem(.separator())
+        menu.addItem(.sectionHeader(title: "Window Grid (columns × rows, ⇪Space)"))
+        for s in NSScreen.screens {
+            let current = screenGrid(s), auto = defaultGrid(s), name = s.localizedName
+            let item = NSMenuItem(title: "\(name): \(current.cols) × \(current.rows)", action: nil, keyEquivalent: "")
+            let sub = NSMenu()
+            let explicit = parseGrid(capmanConfig["grid.\(name)"])
+            let a = NSMenuItem(title: "Automatic (\(auto.cols) × \(auto.rows))", action: #selector(pickGrid(_:)), keyEquivalent: "")
+            a.representedObject = (name, String?.none)
+            a.state = explicit == nil ? .on : .off
+            a.target = self
+            sub.addItem(a)
+            sub.addItem(.separator())
+            for (c, r) in [(2, 2), (3, 2), (4, 2), (6, 2), (2, 3), (3, 3), (4, 3), (1, 2), (1, 3)] {
+                let g = Grid(cols: c, rows: r)
+                let i = NSMenuItem(title: "\(c) × \(r)", action: #selector(pickGrid(_:)), keyEquivalent: "")
+                i.representedObject = (name, Optional(g.text))
+                i.state = explicit == g ? .on : .off
+                i.target = self
+                sub.addItem(i)
+            }
+            item.submenu = sub
+            menu.addItem(item)
+        }
         menu.addItem(.separator())
         menu.addItem(.sectionHeader(title: "Displays"))
         for d in displays.displays() {
