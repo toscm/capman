@@ -25,7 +25,7 @@ Most bindings are the same on both systems; differences are noted below.
 
 - Optional: `Option+a/o/u/s` type ä, ö, ü, ß, independent of the keyboard layout (macOS, off by default, see [Configuration](#configuration-macos)).
 
-- Optional: your own shortcuts that run shell commands, e.g. `Cmd+Shift+6` for a script (macOS, see [Configuration](#configuration-macos)).
+- Optional: your own shortcuts that run shell commands (macOS, none by default, see [Configuration](#configuration-macos)).
 
 ## Installation
 
@@ -422,7 +422,7 @@ reserve_menubar = true
 grid.LG HDR 4K = 3x2
 
 # Run a shell command on a shortcut, everywhere (none by default)
-run.cmd+shift+6 = ~/.local/bin/shotsync edit
+run.ctrl+opt+cmd+t = open -a Terminal ~/Downloads
 ```
 
 A `run.<shortcut> = <command>` line binds a shortcut to a shell command, run in the background by zsh with `~/.local/bin` and Homebrew on `PATH`.
