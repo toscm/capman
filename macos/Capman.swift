@@ -9,7 +9,7 @@ import Carbon.HIToolbox
 import IOKit
 import IOKit.hid
 
-let capmanVersion = "0.7.0"
+let capmanVersion = "0.8.0"
 let helpURL = "https://github.com/toscm/capman#readme"
 let configURL = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(".config/capman/capman.conf")
 
@@ -31,6 +31,7 @@ enum Action {
     case mode(Mode)
     case toggleCapsLock
     case open(String)
+    case run(String)
     case snap(Direction)
     case move(Direction)
     case toggleMaximize
@@ -174,6 +175,82 @@ func buildBindings(umlauts: Bool) {
             bind([global], k, [opt, shift], .text(upper))
         }
     }
+
+    // Shortcuts from the config: `run.<shortcut> = <shell command>`, e.g. `run.cmd+shift+6 = ~/bin/x`.
+    // They come last, so they win over a built-in shortcut with the same keys.
+    for (name, command) in capmanConfig where name.hasPrefix("run.") {
+        guard let (k, mods) = parseShortcut(String(name.dropFirst(4))) else {
+            NSLog("Capman: ignoring \(name): unknown key or modifier")
+            continue
+        }
+        bind([global], k, mods, .run(command))
+    }
+}
+
+/// Key codes by the names used in the config. Letters, digits and punctuation name the key at that
+/// position on a US keyboard, so `6` is the key labelled 6 on every layout.
+let keyNames: [String: Int] = {
+    var m: [String: Int] = [:]
+    let letterKeys = [kVK_ANSI_A, kVK_ANSI_B, kVK_ANSI_C, kVK_ANSI_D, kVK_ANSI_E, kVK_ANSI_F, kVK_ANSI_G, kVK_ANSI_H,
+                      kVK_ANSI_I, kVK_ANSI_J, kVK_ANSI_K, kVK_ANSI_L, kVK_ANSI_M, kVK_ANSI_N, kVK_ANSI_O, kVK_ANSI_P,
+                      kVK_ANSI_Q, kVK_ANSI_R, kVK_ANSI_S, kVK_ANSI_T, kVK_ANSI_U, kVK_ANSI_V, kVK_ANSI_W, kVK_ANSI_X,
+                      kVK_ANSI_Y, kVK_ANSI_Z]
+    for (i, k) in letterKeys.enumerated() { m[String(UnicodeScalar(UInt8(97 + i)))] = k }
+    let digitKeys = [kVK_ANSI_0, kVK_ANSI_1, kVK_ANSI_2, kVK_ANSI_3, kVK_ANSI_4,
+                     kVK_ANSI_5, kVK_ANSI_6, kVK_ANSI_7, kVK_ANSI_8, kVK_ANSI_9]
+    for (i, k) in digitKeys.enumerated() { m[String(i)] = k }
+    let fKeys = [kVK_F1, kVK_F2, kVK_F3, kVK_F4, kVK_F5, kVK_F6, kVK_F7, kVK_F8, kVK_F9, kVK_F10,
+                 kVK_F11, kVK_F12, kVK_F13, kVK_F14, kVK_F15, kVK_F16, kVK_F17]
+    for (i, k) in fKeys.enumerated() { m["f\(i + 1)"] = k }
+    let named: [String: Int] = [
+        "space": kVK_Space, "return": kVK_Return, "enter": kVK_Return, "tab": kVK_Tab, "escape": kVK_Escape,
+        "esc": kVK_Escape, "delete": kVK_Delete, "forwarddelete": kVK_ForwardDelete, "home": kVK_Home, "end": kVK_End,
+        "pageup": kVK_PageUp, "pagedown": kVK_PageDown, "left": left, "right": right, "up": up, "down": down,
+        "minus": kVK_ANSI_Minus, "equal": kVK_ANSI_Equal, "comma": kVK_ANSI_Comma, "period": kVK_ANSI_Period,
+        "slash": kVK_ANSI_Slash, "backslash": kVK_ANSI_Backslash, "semicolon": kVK_ANSI_Semicolon,
+        "quote": kVK_ANSI_Quote, "grave": kVK_ANSI_Grave, "leftbracket": kVK_ANSI_LeftBracket,
+        "rightbracket": kVK_ANSI_RightBracket,
+    ]
+    m.merge(named) { a, _ in a }
+    return m
+}()
+
+/// Parses a shortcut such as `cmd+shift+6` (modifiers cmd, shift, ctrl, opt/alt, in any order, and one key).
+func parseShortcut(_ s: String) -> (Int, CGEventFlags)? {
+    var flags: CGEventFlags = []
+    var key: Int?
+    for part in s.lowercased().split(separator: "+").map({ $0.trimmingCharacters(in: .whitespaces) }) {
+        switch part {
+        case "cmd", "command": flags.insert(cmd)
+        case "shift": flags.insert(shift)
+        case "ctrl", "control": flags.insert(ctrl)
+        case "opt", "option", "alt": flags.insert(opt)
+        default:
+            guard key == nil, let k = keyNames[part] else { return nil }
+            key = k
+        }
+    }
+    guard let key else { return nil }
+    return (key, flags)
+}
+
+/// Runs a shell command from a `run.` shortcut in the background, with ~/.local/bin and Homebrew on
+/// PATH (an app started at login only gets the system directories). Failures go to the system log.
+func runCommand(_ command: String) {
+    let p = Process()
+    p.executableURL = URL(fileURLWithPath: "/bin/zsh")
+    p.arguments = ["-c", command]
+    var env = ProcessInfo.processInfo.environment
+    let home = FileManager.default.homeDirectoryForCurrentUser.path
+    env["PATH"] = "\(home)/.local/bin:/opt/homebrew/bin:/usr/local/bin:" + (env["PATH"] ?? "/usr/bin:/bin:/usr/sbin:/sbin")
+    p.environment = env
+    p.standardInput = FileHandle.nullDevice
+    p.standardOutput = FileHandle.nullDevice
+    p.standardError = FileHandle.nullDevice
+    p.terminationHandler = { p in
+        if p.terminationStatus != 0 { NSLog("Capman: `\(command)` exited with \(p.terminationStatus)") }
+    }
+    do { try p.run() } catch { NSLog("Capman: cannot run `\(command)`: \(error)") }
 }
 
 /// Apps where the umlaut bindings are skipped, because they use Option for something else (iTerm2: Meta).
@@ -276,6 +353,7 @@ final class Engine {
             case let .mode(m): mode = m
             case .toggleCapsLock: toggleCapsLock()
             case let .open(url): DispatchQueue.main.async { NSWorkspace.shared.open(URL(string: url)!) }
+            case let .run(command): DispatchQueue.main.async { runCommand(command) }
             // Accessibility calls can be slow, so they run after the event tap has returned.
             case let .snap(d): DispatchQueue.main.async { Snapper.snap(d) }
             case let .move(d): DispatchQueue.main.async { Snapper.move(d) }

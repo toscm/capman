@@ -25,6 +25,8 @@ Most bindings are the same on both systems; differences are noted below.
 
 - Optional: `Option+a/o/u/s` type ä, ö, ü, ß, independent of the keyboard layout (macOS, off by default, see [Configuration](#configuration-macos)).
 
+- Optional: your own shortcuts that run shell commands, e.g. `Cmd+Shift+6` for a script (macOS, see [Configuration](#configuration-macos)).
+
 ## Installation
 
 ### Windows
@@ -418,7 +420,17 @@ reserve_menubar = true
 # Window grid (columns x rows) of a display, by its name as shown in the menu
 # (default: 2x2, ultrawide displays 4x2; at most 35 tiles)
 grid.LG HDR 4K = 3x2
+
+# Run a shell command on a shortcut, everywhere (none by default)
+run.cmd+shift+6 = ~/.local/bin/shotsync edit
 ```
+
+A `run.<shortcut> = <command>` line binds a shortcut to a shell command, run in the background by zsh with `~/.local/bin` and Homebrew on `PATH`.
+The shortcut is any of the modifiers `cmd`, `shift`, `ctrl` and `opt` (or `alt`) plus one key, joined by `+`.
+Keys are `a`–`z`, `0`–`9`, `f1`–`f17`, `space`, `return`, `tab`, `escape`, `delete`, `home`, `end`, `pageup`, `pagedown`, the arrows `left`, `right`, `up`, `down`, and `minus`, `equal`, `comma`, `period`, `slash`, `backslash`, `semicolon`, `quote`, `grave`, `leftbracket`, `rightbracket`; letters, digits and punctuation mean the key at that position on a US keyboard.
+Such a shortcut wins over a built-in Capman shortcut with the same keys, and the app in front no longer sees it.
+The command's output is discarded; a command that fails is logged to the system log ("Capman:" in Console.app).
+Since `#` starts a comment, a command cannot contain `#`; put longer commands into a script.
 
 ## Contributing
 
