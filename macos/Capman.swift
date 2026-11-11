@@ -1,5 +1,5 @@
 // Capman for macOS: CapsLock as a Vim-style modifier key, modes, Windows-like window snapping,
-// a tile grid for placing windows, and display switching (Displays.swift).
+// a tile grid for placing windows (also by Shift-dragging them), and display switching (Displays.swift).
 //
 // How it works: at startup hidutil maps the CapsLock key to F18, which has no other use.
 // A keyboard event tap then sees F18 going down and up, and rewrites the keys pressed meanwhile.
@@ -9,7 +9,7 @@ import Carbon.HIToolbox
 import IOKit
 import IOKit.hid
 
-let capmanVersion = "0.6.0"
+let capmanVersion = "0.7.0"
 let helpURL = "https://github.com/toscm/capman#readme"
 let configURL = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(".config/capman/capman.conf")
 
@@ -200,6 +200,8 @@ final class Engine {
     var tap: CFMachPort?
     /// While set (the grid picker is open), it gets every key press instead of the bindings; it returns false to decline.
     var intercept: (Int, String) -> Bool = { _, _ in false }
+    /// Gets the mouse events and modifier changes the tap sees (for Shift-dragging windows); they always pass on.
+    var onMouse: (CGEventType, CGEvent) -> Void = { _, _ in }
     var post: (CGEvent) -> Void = { $0.post(tap: .cgSessionEventTap) }
 
     func handle(_ type: CGEventType, _ e: CGEvent) -> CGEvent? {
@@ -208,6 +210,7 @@ final class Engine {
             return e
         }
         if e.getIntegerValueField(.eventSourceUserData) == marker { return e }
+        if type != .keyDown && type != .keyUp { onMouse(type, e); return e }
         let k = Int(e.getIntegerValueField(.keyboardEventKeycode))
 
         if k == kVK_F18 { // the remapped CapsLock key
@@ -491,12 +494,14 @@ enum Snapper {
 
     enum Outcome { case frame(CGRect), restore, minimize, none }
 
-    /// Applies one snapping step to the focused window.
-    static func act(_ decide: (CGRect, CGRect, Span, Span, inout Memory) -> Outcome) {
+    /// Applies one snapping step to `window` (default: the focused window). `origin` is the frame to restore
+    /// if Capman doesn't know the window yet (default: its current frame).
+    static func act(on window: AXUIElement? = nil, origin: CGRect? = nil, _ decide: (CGRect, CGRect, Span, Span, inout Memory) -> Outcome) {
         minimized = nil
-        guard let w = focusedWindow(), let f = frame(w), let a = area(of: f) else { return }
+        guard let w = window ?? focusedWindow(), let f = frame(w), let a = area(of: f) else { return }
         let id = CFHash(w)
-        let fresh = Memory(restore: f, restoreArea: a, corner: nil, lastSet: f, intended: f)
+        let o = origin ?? f
+        let fresh = Memory(restore: o, restoreArea: area(of: o) ?? a, corner: nil, lastSet: f, intended: f)
         var m = memory[id] ?? fresh
         if !near(f, m.lastSet) { m = fresh } // moved by the user
         // Decide from the frame Capman asked for, not the one the window got: a window with a minimum size
@@ -650,9 +655,9 @@ enum Snapper {
         }
     }
 
-    /// Gives the focused window the frame `r` (from the grid picker).
-    static func place(_ r: CGRect) {
-        act { _, _, _, _, m in
+    /// Gives a window (default: the focused one) the frame `r` (from the grid picker or a Shift-drag).
+    static func place(_ r: CGRect, on window: AXUIElement? = nil, origin: CGRect? = nil) {
+        act(on: window, origin: origin) { _, _, _, _, m in
             m.corner = nil
             return .frame(r)
         }
@@ -706,23 +711,16 @@ final class GridPicker {
     func open() {
         let mouse = NSEvent.mouseLocation
         guard let s = NSScreen.screens.first(where: { NSMouseInRect(mouse, $0.frame, false) }) ?? NSScreen.main else { return }
-        let a = Snapper.usable(s), h = NSScreen.screens.first?.frame.height ?? 0
-        let rect = NSRect(x: a.minX, y: h - a.maxY, width: a.width, height: a.height)
-        let p = NSPanel(contentRect: rect, styleMask: [.borderless, .nonactivatingPanel], backing: .buffered, defer: false)
-        p.level = .popUpMenu
-        p.backgroundColor = .clear
-        p.isOpaque = false
-        p.hasShadow = false
-        p.ignoresMouseEvents = true
-        p.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
-        let v = GridView(grid: screenGrid(s))
-        p.contentView = v
-        p.setFrame(rect, display: false)
-        p.orderFrontRegardless()
-        panel = p
-        view = v
+        (panel, view) = GridView.show(on: s)
         screen = s
         tiles = []
+        view?.hint = hint()
+    }
+
+    private func hint() -> String {
+        let typed = tiles.map(GridPicker.name).joined(separator: ", ")
+        let how = capmanConfig["grid_confirm"] == "true" ? "Type one or two tiles · Enter applies" : "Type two tiles (Enter after one)"
+        return (typed.isEmpty ? "" : typed + "   ") + how + " · Esc cancels"
     }
 
     func close() {
@@ -758,6 +756,7 @@ final class GridPicker {
             if tiles.count == 2 && capmanConfig["grid_confirm"] != "true" { apply(g, Snapper.usable(s)); return true }
         }
         v.tiles = tiles
+        v.hint = hint()
         return true
     }
 
@@ -767,16 +766,179 @@ final class GridPicker {
         guard let first = t.first, let last = t.last else { return }
         let c0 = min(first % g.cols, last % g.cols), c1 = max(first % g.cols, last % g.cols)
         let r0 = min(first / g.cols, last / g.cols), r1 = max(first / g.cols, last / g.cols)
-        let cw = a.width / CGFloat(g.cols), rh = a.height / CGFloat(g.rows)
-        let r = CGRect(x: a.minX + CGFloat(c0) * cw, y: a.minY + CGFloat(r0) * rh,
-                       width: CGFloat(c1 - c0 + 1) * cw, height: CGFloat(r1 - r0 + 1) * rh)
+        let r = GridView.rect(c0, r0, c1, r1, of: g, in: a)
         DispatchQueue.main.async { Snapper.place(r) }
+    }
+}
+
+// MARK: - Shift-drag
+
+/// Dragging a window with Shift held shows the grid of the display under the mouse. The pointer near a tile's centre
+/// picks that tile, near the edge between two tiles both, near a point where four tiles meet all four.
+/// Space fixes the current tiles, so further dragging stretches from them (Space again lets go).
+/// Releasing the mouse with Shift held places the window on the highlighted tiles; releasing Shift first, or Esc, cancels.
+final class DragSnap {
+    typealias Cells = (c0: Int, r0: Int, c1: Int, r1: Int)
+    private let queue = DispatchQueue(label: "capman.drag") // Accessibility calls, which can be slow, run here
+    private var down = false
+    private var generation = 0 // counts mouse presses, so late answers from the queue are dropped
+    private var window: AXUIElement?
+    private var start: CGRect?   // the window's frame when the mouse went down
+    private var moved = false    // the window follows the mouse, so this is a window drag
+    private var checking = false
+    private var cancelled = false
+    private var panel: NSPanel?
+    private var view: GridView?
+    private var screen: NSScreen?
+    private var cells: Cells?
+    private var anchor: Cells?
+    static let edge: CGFloat = 0.15 // share of a tile at each side that counts as the edge to the neighbour
+
+    func mouse(_ type: CGEventType, _ e: CGEvent) {
+        let shift = e.flags.contains(.maskShift)
+        switch type {
+        case .leftMouseDown:
+            generation += 1
+            down = true
+            moved = false
+            cancelled = false
+            window = nil
+            start = nil
+            anchor = nil
+            hide()
+            let gen = generation, p = e.location
+            queue.async {
+                let w = Self.window(at: p), f = w.flatMap(Snapper.frame)
+                DispatchQueue.main.async { if gen == self.generation { self.window = w; self.start = f } }
+            }
+        case .leftMouseDragged, .flagsChanged:
+            guard down, !cancelled else { return }
+            if !moved { if shift { check() }; return }
+            if shift { update(e.location) } else { hide() }
+        case .leftMouseUp:
+            generation += 1
+            down = false
+            if panel != nil, let c = cells, let s = screen, let w = window {
+                let r = GridView.rect(c.c0, c.r0, c.c1, c.r1, of: screenGrid(s), in: Snapper.usable(s))
+                let origin = start
+                // Let the app finish its own drag first.
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { Snapper.place(r, on: w, origin: origin) }
+            }
+            hide()
+        default:
+            break
+        }
+    }
+
+    /// Space (stretch) and Esc (cancel) while the grid is shown.
+    func key(_ k: Int) -> Bool {
+        guard panel != nil else { return false }
+        switch k {
+        case kVK_Space: anchor = anchor == nil ? cells : nil
+        case kVK_Escape: cancelled = true; hide(); return true
+        default: return false
+        }
+        if let p = CGEvent(source: nil)?.location { update(p) }
+        return true
+    }
+
+    /// The window under the point, in Accessibility coordinates.
+    static func window(at p: CGPoint) -> AXUIElement? {
+        var el: AXUIElement?
+        let system = AXUIElementCreateSystemWide()
+        AXUIElementSetMessagingTimeout(system, 0.3)
+        guard AXUIElementCopyElementAtPosition(system, Float(p.x), Float(p.y), &el) == .success, let el else { return nil }
+        var role: CFTypeRef?
+        AXUIElementCopyAttributeValue(el, kAXRoleAttribute as CFString, &role)
+        if role as? String == kAXWindowRole { return el }
+        var w: CFTypeRef?
+        guard AXUIElementCopyAttributeValue(el, kAXWindowAttribute as CFString, &w) == .success, let w else { return nil }
+        return (w as! AXUIElement)
+    }
+
+    /// Whether the window has moved (same size, other position) since the mouse went down.
+    private func check() {
+        guard !checking, let w = window, let f0 = start else { return }
+        checking = true
+        let gen = generation
+        queue.async {
+            let f = Snapper.frame(w)
+            DispatchQueue.main.async {
+                self.checking = false
+                guard gen == self.generation, let f else { return }
+                let sameSize = abs(f.width - f0.width) < 2 && abs(f.height - f0.height) < 2
+                if sameSize && (abs(f.minX - f0.minX) > 2 || abs(f.minY - f0.minY) > 2) {
+                    self.moved = true
+                    if let e = CGEvent(source: nil), e.flags.contains(.maskShift) { self.update(e.location) }
+                }
+            }
+        }
+    }
+
+    private func update(_ p: CGPoint) {
+        let h = NSScreen.screens.first?.frame.height ?? 0
+        let cocoa = NSPoint(x: p.x, y: h - p.y)
+        guard let s = NSScreen.screens.first(where: { NSMouseInRect(cocoa, $0.frame, false) }) else { return }
+        if s != screen || panel == nil {
+            hide()
+            (panel, view) = GridView.show(on: s)
+            screen = s
+            anchor = nil
+        }
+        let g = screenGrid(s), a = Snapper.usable(s)
+        let fx = (p.x - a.minX) / a.width * CGFloat(g.cols), fy = (p.y - a.minY) / a.height * CGFloat(g.rows)
+        func span(_ f: CGFloat, _ n: Int) -> (Int, Int) {
+            let i = min(max(Int(f.rounded(.down)), 0), n - 1), u = f - CGFloat(i)
+            if u < Self.edge && i > 0 { return (i - 1, i) }
+            if u > 1 - Self.edge && i < n - 1 { return (i, i + 1) }
+            return (i, i)
+        }
+        let (c0, c1) = span(fx, g.cols), (r0, r1) = span(fy, g.rows)
+        var c: Cells = (c0, r0, c1, r1)
+        if let a = anchor { c = (min(a.c0, c0), min(a.r0, r0), max(a.c1, c1), max(a.r1, r1)) }
+        cells = c
+        view?.tiles = [c.r0 * g.cols + c.c0, c.r1 * g.cols + c.c1]
+        view?.hint = (anchor == nil ? "Space: stretch from here" : "Space: stop stretching") + " · release Shift or Esc to cancel"
+    }
+
+    private func hide() {
+        panel?.orderOut(nil)
+        panel = nil
+        view = nil
+        screen = nil
+        cells = nil
     }
 }
 
 final class GridView: NSView {
     let grid: Grid
     var tiles: [Int] = [] { didSet { needsDisplay = true } }
+    var hint = "" { didSet { needsDisplay = true } }
+
+    /// Shows a grid overlay over the usable area of a display.
+    static func show(on s: NSScreen) -> (NSPanel, GridView) {
+        let a = Snapper.usable(s), h = NSScreen.screens.first?.frame.height ?? 0
+        let rect = NSRect(x: a.minX, y: h - a.maxY, width: a.width, height: a.height)
+        let p = NSPanel(contentRect: rect, styleMask: [.borderless, .nonactivatingPanel], backing: .buffered, defer: false)
+        p.level = .popUpMenu
+        p.backgroundColor = .clear
+        p.isOpaque = false
+        p.hasShadow = false
+        p.ignoresMouseEvents = true
+        p.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
+        let v = GridView(grid: screenGrid(s))
+        p.contentView = v
+        p.setFrame(rect, display: false)
+        p.orderFrontRegardless()
+        return (p, v)
+    }
+
+    /// The frame of the tiles from column c0, row r0 to column c1, row r1, in Accessibility coordinates.
+    static func rect(_ c0: Int, _ r0: Int, _ c1: Int, _ r1: Int, of g: Grid, in a: CGRect) -> CGRect {
+        let cw = a.width / CGFloat(g.cols), rh = a.height / CGFloat(g.rows)
+        return CGRect(x: a.minX + CGFloat(c0) * cw, y: a.minY + CGFloat(r0) * rh,
+                      width: CGFloat(c1 - c0 + 1) * cw, height: CGFloat(r1 - r0 + 1) * rh)
+    }
 
     init(grid: Grid) {
         self.grid = grid
@@ -819,9 +981,7 @@ final class GridView: NSView {
             let size = label.size()
             label.draw(at: NSPoint(x: r.midX - size.width / 2, y: r.midY - size.height / 2))
         }
-        let typed = tiles.map(GridPicker.name).joined(separator: ", ")
-        let how = capmanConfig["grid_confirm"] == "true" ? "Type one or two tiles · Enter applies" : "Type two tiles (Enter after one)"
-        let hint = NSAttributedString(string: (typed.isEmpty ? "" : typed + "   ") + how + " · Esc cancels",
+        let hint = NSAttributedString(string: hint,
                                       attributes: [.font: NSFont.systemFont(ofSize: 18, weight: .medium), .foregroundColor: NSColor.white, .shadow: shadow])
         let size = hint.size()
         let origin = NSPoint(x: bounds.midX - size.width / 2, y: bounds.maxY - size.height - 32)
@@ -897,6 +1057,7 @@ final class App: NSObject, NSApplicationDelegate, NSMenuDelegate {
     let displays = DisplayManager()
     lazy var picker = DisplayPicker { [weak self] in self?.setDisplayMode($0) }
     let gridPicker = GridPicker()
+    let dragSnap = DragSnap()
     var displayBusy = false
     // Keeps App Nap from throttling the display watchdog while Capman sits idle in the menu bar.
     let activity = ProcessInfo.processInfo.beginActivity(options: .userInitiatedAllowingIdleSystemSleep, reason: "display watchdog")
@@ -906,7 +1067,11 @@ final class App: NSObject, NSApplicationDelegate, NSMenuDelegate {
         menu.delegate = self
         item.menu = menu
         engine.onModeChange = { [weak self] m in self?.showMode(m) }
-        engine.intercept = { [weak self] k, ch in self?.gridPicker.key(k, ch) ?? false }
+        engine.intercept = { [weak self] k, ch in
+            guard let self else { return false }
+            return gridPicker.key(k, ch) || dragSnap.key(k)
+        }
+        engine.onMouse = { [weak self] type, e in self?.dragSnap.mouse(type, e) }
         reloadConfig()
         showMode(.insert)
 
@@ -944,7 +1109,8 @@ final class App: NSObject, NSApplicationDelegate, NSMenuDelegate {
     func startTap(prompt: Bool) -> Bool {
         let opts = [kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: prompt] as CFDictionary
         guard AXIsProcessTrustedWithOptions(opts) else { return false }
-        let mask = (1 << CGEventType.keyDown.rawValue) | (1 << CGEventType.keyUp.rawValue)
+        let mask = [CGEventType.keyDown, .keyUp, .flagsChanged, .leftMouseDown, .leftMouseDragged, .leftMouseUp]
+            .reduce(0) { $0 | (1 << $1.rawValue) }
         guard let tap = CGEvent.tapCreate(tap: .cgSessionEventTap, place: .headInsertEventTap, options: .defaultTap,
                                           eventsOfInterest: CGEventMask(mask), callback: { _, type, event, _ in
             guard let e = (NSApp.delegate as? App)?.engine.handle(type, event) else { return nil }

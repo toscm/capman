@@ -16,7 +16,7 @@ Most bindings are the same on both systems; differences are noted below.
 
 - [Snippets](#snippets-windows): paste up to twelve saved strings with `CapsLock + F1` ... `CapsLock + F12` (Windows).
 
-- Window management (macOS): Windows-like snapping with `Ctrl+Option+Arrow` (Windows has it built in as `Win+Arrow`), moving by grid tiles, and placing windows on a tile grid of each display.
+- Window management (macOS): Windows-like snapping with `Ctrl+Option+Arrow` (Windows has it built in as `Win+Arrow`), moving by grid tiles, and placing windows on a tile grid of each display by typing tiles or Shift-dragging.
   It replaces tools like Rectangle.
 
 - `Home`, `End` and `Cmd+Y` behave like on Windows and Linux (macOS).
@@ -301,6 +301,8 @@ These shortcuts work everywhere and act on the focused window:
 
 - `CapsLock + Space` or `Ctrl+Option+Cmd+Space`: place the window on the [window grid](#window-grid-macos)
 
+- Dragging a window with `Shift` held: drop it onto the [window grid](#dragging-onto-the-grid)
+
 Minimize, hide and full screen use `Cmd` in addition, because some editors use `Ctrl+Option+letter` themselves.
 
 Windows are placed within the usable area of a display, which leaves out the menu bar, the Dock and the camera notch.
@@ -351,6 +353,22 @@ The grid sets the steps of `Ctrl+Option+Cmd+Arrow` and of snapping on wide grids
 - With "Confirm Window Grid with Enter" in the menu, the tiles are only highlighted in blue, and `Enter` moves the window.
 
 - `Backspace` removes the last tile; `Esc`, CapsLock or `Space` closes the grid.
+
+#### Dragging onto the Grid
+
+Hold `Shift` while dragging a window (by its title bar, as usual) to show the grid of the display under the mouse:
+
+- With the pointer near the centre of a tile, that tile is highlighted; near the edge between two tiles, both; near a point where four tiles meet, all four.
+  The edge zones are 15% of a tile at each side.
+
+- `Space` fixes the highlighted tiles, so dragging on stretches the highlight from them to the tiles under the pointer, for areas of any size.
+  `Space` again lets go of them.
+
+- Releasing the mouse with `Shift` held places the window on the highlighted tiles.
+  Releasing `Shift` first hides the grid (pressing it again brings it back); `Esc` cancels for the rest of the drag.
+
+Capman notices a window drag by the window following the mouse at the same size, so it works with any app that macOS can move via Accessibility.
+If macOS's own tiling ("Drag windows to screen edges to tile" in System Settings) gets in the way, turn it off.
 
 ## Displays (macOS)
 
