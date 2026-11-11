@@ -2,6 +2,7 @@
 #include keyboard.ahk
 #include keymaps.ahk
 #include mouse.ahk
+#include snippets.ahk
 
 Keymaps := Map()
 
@@ -51,7 +52,20 @@ Keymaps["Caps"] := [
     ["CapsLock & f", TriggerHuntAndPeck],
     ["CapsLock & g", SwitchToModeGoto],
     ["CapsLock & r", ReloadCapman],
-    ["CapsLock & F12", ToggleInfoBar],
+
+    ; Snippets: paste / Shift: save clipboard / Ctrl: type (see snippets.ahk)
+    ["CapsLock & F1", Snippet],
+    ["CapsLock & F2", Snippet],
+    ["CapsLock & F3", Snippet],
+    ["CapsLock & F4", Snippet],
+    ["CapsLock & F5", Snippet],
+    ["CapsLock & F6", Snippet],
+    ["CapsLock & F7", Snippet],
+    ["CapsLock & F8", Snippet],
+    ["CapsLock & F9", Snippet],
+    ["CapsLock & F10", Snippet],
+    ["CapsLock & F11", Snippet],
+    ["CapsLock & F12", Snippet],
 
     ; F Keys
     ["CapsLock & 1", SendF1],
@@ -70,7 +84,7 @@ Keymaps["Caps"] := [
     ; Free
     ["CapsLock & x", SwitchToModeMouse],
     ["CapsLock & y", DoNothing],
-    ["CapsLock & z", DoNothing],
+    ["CapsLock & z", ToggleInfoBar],
 ]
 
 Keymaps["Insert"] := [

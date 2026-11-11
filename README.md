@@ -14,6 +14,8 @@ Most bindings are the same on both systems; differences are noted below.
 
 - A status bar showing the current mode (Windows, macOS).
 
+- [Snippets](#snippets-windows): paste up to twelve saved strings with `CapsLock + F1` ... `CapsLock + F12` (Windows).
+
 - Windows-like window snapping with `Ctrl+Option+Cmd+Arrow` and in Window Mode (macOS; Windows has it built in as `Win+Arrow`).
 
 - `Home`, `End` and `Cmd+Y` behave like on Windows and Linux (macOS).
@@ -115,7 +117,7 @@ Bindings that differ between the systems:
 
 - `/`: macOS only: find (`Cmd+F`); `?` opens this page
 
-- Windows only: `1`-`3`, `5`-`9`, `-`, `=` send `F1`-`F12`; `` ` `` and `'` send `` Ctrl+` `` (toggle terminal), `;` sends `Ctrl+L`; `F12` toggles the info bar
+- Windows only: `1`-`3`, `5`-`9`, `-`, `=` send `F1`-`F12`; `` ` `` and `'` send `` Ctrl+` `` (toggle terminal), `;` sends `Ctrl+L`; `z` toggles the info bar; `F1`-`F12` paste [snippets](#snippets-windows)
 
 ## Control Mode
 
@@ -247,6 +249,20 @@ Enter with `CapsLock + x`.
 - `u`, `o`: Scroll up / down
 
 - `a`, `i`: Insert Mode
+
+## Snippets (Windows)
+
+Snippets are saved strings that you paste with a single shortcut.
+
+- `CapsLock + F1` ... `CapsLock + F12`: Paste snippet F1 ... F12
+
+- `CapsLock + Shift + F1` ... `F12`: Save the text in the clipboard as that snippet
+
+- `CapsLock + Ctrl + F1` ... `F12`: Type that snippet into a masked input box (submit it empty to clear the snippet)
+
+Snippets are kept in memory only and never written to disk, so they can hold sensitive strings; they are lost when Capman exits or reloads.
+Snippets are pasted through the clipboard, and the previous clipboard is restored afterwards.
+Neither the snippet nor the restored clipboard shows up in the `Win+V` clipboard history.
 
 ## Always-on Remappings (macOS)
 

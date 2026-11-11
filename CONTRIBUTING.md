@@ -58,6 +58,7 @@ The Karabiner-Elements rules that preceded the app are still in `macos/capman/`.
   - `commands.ahk` Public actions (Copy, MoveWindow, etc.)
   - `keyboard.ahk` Internal helpers for enabling/disabling keymaps.
   - `mouse.ahk` Actions for mouse mode.
+  - `snippets.ahk` Saved strings pasted with `CapsLock + F1` ... `F12`.
   - `config.ahk` Global constants and settings.
 - `macos` MacOS codebase.
   - `Capman.swift` The macOS app (event tap, bindings, window snapping, menu).

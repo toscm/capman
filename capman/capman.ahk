@@ -6,6 +6,7 @@
 #include keyboard.ahk
 #include mouse.ahk
 #include commands.ahk
+#include snippets.ahk
 
 ; Default config and default key mappings
 #include config.ahk
